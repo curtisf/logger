@@ -18,7 +18,7 @@ class GenericCommand {
     this.type = data.type || 'any'
     this.category = data.category || 'Uncategorized'
 
-    bot.commands[data.name] = this
+    global.bot.commands[data.name] = this
   }
 
   run (msg) {

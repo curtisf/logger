@@ -5,9 +5,7 @@ async function createGuild (guild) {
     'id': guild.id,
     'ignoredChannels': [],
     'disabledEvents': ['voiceChannelJoin', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildEmojisUpdate'],
-    'logchannel': '',
     'ownerID': guild.ownerID,
-    'overviewID': '',
     'logBots': false,
     'eventLogs': {
       'channelCreate': '',
@@ -17,7 +15,7 @@ async function createGuild (guild) {
       'guildBanRemove': '',
       'guildEmojisUpdate': '',
       'guildMemberAdd': '',
-      'guildMemberKick': '',
+      'guildMemberKick': '', // NOT an event, but something we will manually fire
       'guildMemberRemove': '',
       'guildMemberUpdate': '',
       'guildRoleCreate': '',
@@ -34,8 +32,14 @@ async function createGuild (guild) {
       'voiceStateUpdate': ''
     },
     'prefixes': [],
-    'premium': false
+    'premium': false,
+    'ignoredUsers': []
   }).run()
 }
 
+async function createUserDocument (userID) {
+  return await r.db('Logger').table('Users').insert({ 'id': userID, 'names': [], 'ignored': false }).run() // Yes, an ignored flag exists. This will not be granted to anyone unless they ask very nicely. Or if you're selfhosting and want to be immune from logging :) TODO: actually implement this functionality
+}
+
+exports.createUserDocument = createUserDocument
 exports.createGuild = createGuild

@@ -67,7 +67,6 @@ module.exports = {
         channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
         await send(channelDeleteEvent)
       } else {
-        console.log('weewooweewoo', new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime())
         await send(channelDeleteEvent)
       }
     }, 1000)

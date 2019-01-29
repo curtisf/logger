@@ -1,4 +1,5 @@
 const Eris = require('eris')
+const cluster = require('cluster')
 const raven = require('raven')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
@@ -16,13 +17,17 @@ if (process.env.SENTRY_URI) {
 async function init () {
   global.logger.info('Shard booting')
   global.redis = require('../db/clients/redis')
-  global.bot = new Eris('MjgzNzQzNDYwNTQyOTA2MzY4.DsIDCQ.UadL838EKt2zrgeZFvl4aDam7YE', {
+  global.bot = new Eris(process.env.BOT_TOKEN, {
     firstShardID: cluster.worker.shardStart,
     lastShardID: cluster.worker.shardEnd,
     maxShards: cluster.worker.totalShards,
-    disableEvents: { TYPING_START: true, PRESENCE_UPDATE: true },
+    disableEvents: { TYPING_START: true },
     restMode: true,
     messageLimit: 0
+  })
+
+  global.bot.editStatus('dnd', {
+    name: `Shard booting...`
   })
 
   global.bot.commands = {}
@@ -34,16 +39,16 @@ async function init () {
   await cacheGuildInfo()
   let [on, once] = listenerIndexer()
 
-  on.forEach((event) => bot.on(event.name, event.handle))
-  once.forEach((event) => bot.once(event.name, event.handle))
+  on.forEach(async (event) => global.bot.on(event.name, await event.handle))
+  once.forEach(async (event) => global.bot.once(event.name, await event.handle))
 
   let [ignoredChannels, guildPrefixes] = await getCacheInfo()
-  bot.ignoredChannels = ignoredChannels
-  bot.guildPrefixes = guildPrefixes
+  global.bot.ignoredChannels = ignoredChannels
+  global.bot.guildPrefixes = guildPrefixes
 
-  bot.connect()
+  global.bot.connect()
 
-  bot.on('error', console.error)
+  global.bot.on('error', console.error)
 }
 
 init()

@@ -35,7 +35,6 @@ module.exports = {
         }
         await send(guildBanRemoveEvent)
       } else {
-        console.log('weewooweewoo', new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime())
         await send(guildBanRemoveEvent)
       }
     }, 1000)

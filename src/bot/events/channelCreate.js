@@ -30,7 +30,6 @@ module.exports = {
       }
     }
     if (newChannel.permissionOverwrites.size !== 0) {
-      console.log('has overrides')
       let nameToInfo = {}
       newChannel.permissionOverwrites.forEach((overwrite) => {
         if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
@@ -42,7 +41,7 @@ module.exports = {
           })
         }
       })
-    } else console.log('no overrides')
+    }
     await setTimeout(async () => {
       let logs = await newChannel.guild.getAuditLogs(1, null, 10)
       let log = logs.entries[0]
@@ -53,7 +52,6 @@ module.exports = {
         channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
         await send(channelCreateEvent)
       } else {
-        console.log('weewooweewoo', new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime())
         await send(channelCreateEvent)
       }
     }, 1000)

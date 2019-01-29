@@ -31,16 +31,12 @@ module.exports = {
         if (channel[property] !== old[property]) toProcess.push(property)
       } else if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).join(' ') !== old.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).join(' ')) toProcess.push('permissionOverwrites')
     })
-    console.log('to process', toProcess)
     toProcess.forEach((property) => {
-      console.log(property, channel[property], old[property])
       if (property !== 'permissionOverwrites') {
         embed.embed.fields.push({
           name: property,
           value: `Now: ${channel[property]}\nPreviously: ${old[property]}`
         })
-      } else {
-        console.log('perm overwrite wew lad')
       }
     })
     await setTimeout(async () => {
@@ -53,7 +49,6 @@ module.exports = {
         embed.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
         await send(embed)
       } else {
-        console.log('weewooweewoo', new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime())
         await send(embed)
       }
     }, 1000)

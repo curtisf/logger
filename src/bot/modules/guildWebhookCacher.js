@@ -2,7 +2,7 @@ const webhookCache = require('./webhookcache')
 const clearEventByID = require('../../db/interfaces/rethink/update').clearEventByID
 
 module.exports = async (guildID) => {
-  let perms = bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
+  let perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
   if (!perms['manageWebhooks']) return // If I can't manage webhooks, then you don't get any logs >:)
   let eventObj = global.bot.guildSettingsCache[guildID].getEventLogRaw()
   let keys = Object.keys(eventObj)
@@ -46,5 +46,5 @@ module.exports = async (guildID) => {
         await clearEventByID(guildID, channelID)
       }
     })
-  } else return
+  }
 }

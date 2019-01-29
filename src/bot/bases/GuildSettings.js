@@ -3,21 +3,25 @@ const cacheGuild = require('../utils/cacheGuild')
 class GuildSettings {
   constructor (data) {
     if (data.disabled) return
-    if (!data.ownerID) global.logger.fatal('A guild settings doc is missing an ownerID!', data)
+    if (!data.ownerID) {
+      global.logger.info(JSON.stringify(data))
+      global.logger.fatal('A guild settings doc is missing an ownerID!', data)
+    }
     this.id = data.id
     this.ignoredChannels = data.ignoredChannels
     this.logBots = data.logBots
-    this.eventLogs = data.eventLogs
+    this.eventLogs = data.eventLogs // TODO: make a guild doc transformer that converts old docs to new
     this.allLog = data.logchannel
     this.ownerID = data.ownerID
     this.disabledEvents = data.disabledEvents
-    this.feeds = data.feeds
-    this.joinlog = this.feeds.joinlog.channelID
-    this.mod = data.feeds.mod.channelID
-    this.messageLog = data.feeds.messages.channelID
-    this.serverLog = data.feeds.server.channelID
-    this.voice = data.feeds.voice.channelID
-    this.premium = data.premium
+    this.feeds = data.feeds ? data.feeds : ''
+    this.joinlog = this.feeds ? this.feeds.joinlog.channelID : ''
+    this.mod = data.feeds ? data.feeds.mod.channelID : ''
+    this.messageLog = data.feeds ? data.feeds.messages.channelID : ''
+    this.serverLog = data.feeds ? data.feeds.server.channelID : ''
+    this.voice = data.feeds ? data.feeds.voice.channelID : ''
+    this.premium = data.premium ? data.premium : false
+    this.ignoredUsers = data.ignoredUsers
 
     global.bot.guildSettingsCache[data.id] = this
   }
@@ -28,6 +32,10 @@ class GuildSettings {
 
   isPremium () {
     return this.premium
+  }
+
+  isUserIgnored (userID) {
+    return this.ignoredUsers.includes(userID)
   }
 
   getID () {

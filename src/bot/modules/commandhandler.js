@@ -16,7 +16,7 @@ module.exports = async (message) => {
 }
 
 function processCommand (message, commandName, suffix) {
-  let command = Object.keys(bot.commands).map(k => bot.commands[k]).find(c => c.name === commandName)
+  let command = Object.keys(global.bot.commands).map(k => global.bot.commands[k]).find(c => c.name === commandName)
   if (!command) return
   let bp = message.channel.guild.members.get(global.bot.user.id).permission.json
   if (!bp.readMessages || !bp.sendMessages || !bp.manageWebhooks) return

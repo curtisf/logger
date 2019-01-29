@@ -106,6 +106,7 @@ exports.error = error
 exports.warn = warn
 exports.generic = generic
 exports.fatal = fatal
+exports.custom = custom
 
 if (!process.env.DISCORD_WEBHOOK_URL) {
   global.logger.warn('Discord webhook url not specified, disabling webhook notifier.')

@@ -1,3 +1,4 @@
+const cluster = require('cluster')
 const path = require('path')
 
 async function assignWorkerInfo (info) {

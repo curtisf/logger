@@ -4,5 +4,8 @@ module.exports = {
   },
   getWebhook: async (channelID) => {
     return await global.redis.get(`webhook-${channelID}`)
+  },
+  deleteWebhook: async (channelID) => {
+    return await global.redis.del(`webhook-${channelID}`)
   }
 }

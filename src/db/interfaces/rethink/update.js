@@ -1,4 +1,5 @@
 const r = require('../../clients/rethink')
+const getDoc = require('./read').getGuild
 
 async function clearEventLog (guildID) {
   return await r.db('Logger').table('Guilds').get(guildID).update({
@@ -36,7 +37,40 @@ async function clearEventByID (guildID, channelID) {
       doc.eventLogs[event] = ''
     }
   })
+  return await r.db('Logger').table('Guilds').get(guildID).update(doc).run()
 }
 
+async function disableEvent (guildID, event) {
+  let doc = await getDoc(guildID)
+  let disabled = true
+  if (doc.disabledEvents.includes(event)) {
+    doc.disabledEvents.splice(doc.disabledEvents.indexOf(event), 1)
+    disabled = false
+  } else {
+    doc.disabledEvents.push(event)
+  }
+  await r.db('Logger').table('Guilds').get(guildID).update({
+    'disabledEvents': doc.disabledEvents
+  }).run()
+  return disabled
+}
+
+async function ignoreChannel (guildID, channelID) {
+  let doc = await getDoc(guildID)
+  let disabled = true
+  if (doc.ignoredChannels.includes(channelID)) {
+    doc.ignoredChannels.splice(doc.ignoredChannels.indexOf(channelID), 1)
+    disabled = false
+  } else {
+    doc.ignoredChannels.push(channelID)
+  }
+  await r.db('Logger').table('Guilds').get(guildID).update({
+    'ignoredChannels': doc.ignoredChannels
+  }).run()
+  return disabled
+}
+
+exports.disableEvent = disableEvent
+exports.ignoreChannel = ignoreChannel
 exports.clearEventLog = clearEventLog
 exports.clearEventByID = clearEventByID

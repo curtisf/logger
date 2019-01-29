@@ -10,9 +10,6 @@ module.exports = {
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
     let type
-    console.log(emojis)
-    console.log('\n\n\n\n\n\n\n\n')
-    console.log(oldEmojis)
     let guildEmojisUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildEmojisUpdateEvent',
@@ -34,7 +31,6 @@ module.exports = {
         return oldEmojis.indexOf(el) < 0
       })
       emoji = newEmojis[0]
-      console.log(emoji)
       type = 'added'
       guildEmojisUpdateEvent.embed.thumbnail = {
         'url': `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
@@ -51,7 +47,6 @@ module.exports = {
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
     } else {
       type = 'updated'
-      console.log('dont do anything')
       return
     }
     await setTimeout(async () => {
@@ -63,7 +58,6 @@ module.exports = {
         guildEmojisUpdateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nEmoji = ${emoji.id}\`\`\``
         await send(guildEmojisUpdateEvent)
       } else {
-        console.log('weewooweewoo', new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime())
         await send(guildEmojisUpdateEvent)
       }
     }, 1000)

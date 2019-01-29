@@ -1,3 +1,4 @@
+const cluster = require('cluster')
 const sa = require('superagent')
 const addListeners = require('./src/miscellaneous/workerlistener')
 
@@ -27,7 +28,6 @@ async function init () {
       const worker = cluster.fork()
       Object.assign(worker, { type: 'bot', shardStart, shardEnd, rangeForShard, totalShards })
       addListeners(worker)
-      // Object.assign(worker, { shardStart, shardEnd, totalShards })
     }
   }).catch(console.error)
 }

@@ -8,6 +8,5 @@ if (cluster.isMaster) {
   require('./primary')
 } else {
   console.log('Starting a worker')
-  // require('./replica')
   require('./replica')
 }

@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = () => {
-  console.log('listener indexer called')
   let files = fs.readdirSync(path.resolve('src', 'bot', 'events'))
   let once = []
   let on = []

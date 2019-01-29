@@ -1,3 +1,4 @@
+const cluster = require('cluster')
 const webhookLogger = require('./webhooklogger')
 const workerCrashes = {}
 
@@ -22,8 +23,7 @@ module.exports = async worker => {
   })
 
   worker.on('exit', (code, signal) => {
-    if (signal) return // if there's a signal, that means something killed the worker and as thus shouldn't be restarted.
-    else if (code === 0) {
+    if (code === 0) {
       global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
     } else if (workerCrashes[worker.rangeForShard] >= 2) {

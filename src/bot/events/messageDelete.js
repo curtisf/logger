@@ -22,7 +22,7 @@ module.exports = {
         description: `Message deleted in <#${message.channel.id}>`,
         fields: [{
           name: 'Content',
-          value: cachedMessage.content
+          value: cachedMessage.content ? cachedMessage.content : 'None'
         }, {
           name: 'ID',
           value: `\`\`\`ini\nUser = ${cachedMessage.userID}\nMessage = ${message.id}\`\`\``

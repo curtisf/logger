@@ -23,7 +23,7 @@ module.exports = {
       },
       'fields': []
     }
-    Object.keys(bot.commands).map(k => bot.commands[k]).forEach((command) => {
+    Object.keys(global.bot.commands).map(k => global.bot.commands[k]).forEach((command) => {
       embed.fields.push({
         name: command.name,
         value: `${command.description}`
