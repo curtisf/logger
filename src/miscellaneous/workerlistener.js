@@ -22,7 +22,7 @@ module.exports = async worker => {
     }
   })
 
-  worker.on('exit', (code, signal) => {
+  worker.on('exit', code => {
     if (code === 0) {
       global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
@@ -44,8 +44,8 @@ module.exports = async worker => {
       module.exports(nw) // assign listeners to recreated worker
 
       global.webhook.generic(`Respawned dead worker ${worker.id} hosting ${worker.rangeForShard} as ${nw.id}.`)
-      if (!workerCrashes[worker.rangeForShard]) workerCrashes[worker.rangeForShard] = 1
-      else workerCrashes[worker.rangeForShard]++
+      if (workerCrashes[worker.rangeForShard]) workerCrashes[worker.rangeForShard]++
+      else workerCrashes[worker.rangeForShard] = 1
       setTimeout(() => {
         if (workerCrashes[worker.rangeForShard] === 1) delete workerCrashes[worker.rangeForShard]
         else workerCrashes[worker.rangeForShard]--

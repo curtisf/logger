@@ -1,9 +1,9 @@
 const ignoreChannel = require('../../db/interfaces/rethink/update').ignoreChannel
 
 module.exports = {
-  func: async (message, suffix) => {
+  func: async message => {
     let disabled = ignoreChannel(message.channel.guild.id, message.channel.id)
-    let respStr = `Toggled logging events targeting <#${message.channel.id}> (${message.channel.name})`
+    const respStr = `Toggled logging events targeting <#${message.channel.id}> (${message.channel.name})`
     message.channel.createMessage({ embed: {
       'description': respStr,
       'color': 3553599,

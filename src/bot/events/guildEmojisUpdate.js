@@ -10,7 +10,7 @@ module.exports = {
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
     let type
-    let guildEmojisUpdateEvent = {
+    const guildEmojisUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildEmojisUpdateEvent',
       embed: {
@@ -27,7 +27,7 @@ module.exports = {
     }
     let emoji
     if (emojis.length > oldEmojis.length) {
-      let newEmojis = emojis.filter(function (el) {
+      const newEmojis = emojis.filter(function (el) {
         return oldEmojis.indexOf(el) < 0
       })
       emoji = newEmojis[0]
@@ -38,7 +38,7 @@ module.exports = {
       guildEmojisUpdateEvent.embed.fields[0].value = 'Added emoji'
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
     } else if (oldEmojis.length > emojis.length) {
-      let removedEmojis = oldEmojis.filter(function (el) {
+      const removedEmojis = oldEmojis.filter(function (el) {
         return emojis.indexOf(el) < 0
       })
       emoji = removedEmojis[0]
@@ -50,10 +50,10 @@ module.exports = {
       return
     }
     await setTimeout(async () => {
-      let num = AUDIT_ID[type]
-      let logs = await guild.getAuditLogs(1, null, num)
-      let log = logs.entries[0]
-      let user = logs.users[0]
+      const num = AUDIT_ID[type]
+      const logs = await guild.getAuditLogs(1, null, num)
+      const log = logs.entries[0]
+      const user = logs.users[0]
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
         guildEmojisUpdateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nEmoji = ${emoji.id}\`\`\``
         await send(guildEmojisUpdateEvent)

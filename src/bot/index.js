@@ -37,18 +37,16 @@ async function init () {
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
-  let [on, once] = listenerIndexer()
+  const [on, once] = listenerIndexer()
 
-  on.forEach(async (event) => global.bot.on(event.name, await event.handle))
-  once.forEach(async (event) => global.bot.once(event.name, await event.handle))
+  on.forEach(async event => global.bot.on(event.name, await event.handle))
+  once.forEach(async event => global.bot.once(event.name, await event.handle))
 
-  let [ignoredChannels, guildPrefixes] = await getCacheInfo()
+  const [ignoredChannels, guildPrefixes] = await getCacheInfo()
   global.bot.ignoredChannels = ignoredChannels
   global.bot.guildPrefixes = guildPrefixes
 
   global.bot.connect()
-
-  global.bot.on('error', console.error)
 }
 
 init()

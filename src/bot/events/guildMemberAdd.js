@@ -4,7 +4,7 @@ module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
   handle: async (guild, member) => {
-    let GMAEvent = {
+    const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
       embed: {

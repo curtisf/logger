@@ -2,39 +2,13 @@ const getUser = require('../../db/interfaces/rethink/read').getUser
 
 module.exports = {
   func: async (message, suffix) => {
-    let memberPerms = message.member.permission.json
-    if (!memberPerms['kickMembers']) {
-      let userDoc = await getUser(message.author.id)
-      let m = await message.channel.createMessage({ embed: {
-        'description': `${userDoc.names.length} stored names for you. Type **${process.env.GLOBAL_BOT_PREFIX}clearmynames** to delete them.`,
-        'url': 'https://whatezlife.com/lastnames',
-        'color': 3553599,
-        'timestamp': new Date(),
-        'footer': {
-          'icon_url': global.bot.user.avatarURL,
-          'text': `${global.bot.user.username}#${global.bot.user.discriminator}`
-        },
-        'thumbnail': {
-          'url': message.author.avatarURL
-        },
-        'author': {
-          'name': `${message.author.username}#${message.author.discriminator}`,
-          'icon_url': message.author.avatarURL
-        },
-        'fields': [{
-          'name': 'Stored',
-          'value': `\`\`\`${userDoc.names.length !== 0 ? userDoc.names.join(', ').substr(0, 1200) : 'None'}\`\`\``
-        }]
-      } })
-      await setTimeout(() => {
-        m.delete()
-      }, 20000)
-    } else {
+    const memberPerms = message.member.permission.json
+    if (memberPerms['kickMembers']) {
       let userID
       if (message.mentions.length !== 0) {
         userID = message.mentions[0].id
       }
-      let splitSuffix = suffix.split(' ').filter(id => !isNaN(id))
+      const splitSuffix = suffix.split(' ').filter(id => !isNaN(id))
       if (splitSuffix.length !== 0) {
         userID = splitSuffix[0]
       }
@@ -59,9 +33,9 @@ module.exports = {
           }
         } })
       } else {
-        let userDoc = await getUser(userID)
-        let user = message.channel.guild.members.get(userID)
-        let m = await message.channel.createMessage({ embed: {
+        const userDoc = await getUser(userID)
+        const user = message.channel.guild.members.get(userID)
+        const m = await message.channel.createMessage({ embed: {
           'description': `${userDoc.names.length} stored names. <@${userDoc.id}>, type **${process.env.GLOBAL_BOT_PREFIX}clearmynames** to delete them.`,
           'url': 'https://whatezlife.com/lastnames',
           'color': 3553599,
@@ -79,13 +53,39 @@ module.exports = {
           },
           'fields': [{
             'name': 'Stored',
-            'value': `\`\`\`${userDoc.names.length !== 0 ? userDoc.names.join(', ').substr(0, 1200) : 'None'}\`\`\``
+            'value': `\`\`\`${userDoc.names.length === 0 ? 'None' : userDoc.names.join(', ').substr(0, 1200)}\`\`\``
           }]
         } })
         await setTimeout(() => {
           m.delete()
         }, 20000)
       }
+    } else {
+      const userDoc = await getUser(message.author.id)
+      const m = await message.channel.createMessage({ embed: {
+        'description': `${userDoc.names.length} stored names for you. Type **${process.env.GLOBAL_BOT_PREFIX}clearmynames** to delete them.`,
+        'url': 'https://whatezlife.com/lastnames',
+        'color': 3553599,
+        'timestamp': new Date(),
+        'footer': {
+          'icon_url': global.bot.user.avatarURL,
+          'text': `${global.bot.user.username}#${global.bot.user.discriminator}`
+        },
+        'thumbnail': {
+          'url': message.author.avatarURL
+        },
+        'author': {
+          'name': `${message.author.username}#${message.author.discriminator}`,
+          'icon_url': message.author.avatarURL
+        },
+        'fields': [{
+          'name': 'Stored',
+          'value': `\`\`\`${userDoc.names.length === 0 ? 'None' : userDoc.names.join(', ').substr(0, 1200)}\`\`\``
+        }]
+      } })
+      await setTimeout(() => {
+        m.delete()
+      }, 20000)
     }
   },
   name: 'lastnames',

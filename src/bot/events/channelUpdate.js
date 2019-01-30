@@ -4,7 +4,7 @@ module.exports = {
   name: 'channelUpdate',
   type: 'on',
   handle: async (channel, old) => {
-    let embed = {
+    const embed = {
       guildID: channel.guild.id,
       eventName: 'channelUpdate',
       embed: {
@@ -23,15 +23,15 @@ module.exports = {
         color: 3553599
       }
     }
-    let possibleChanges = Object.keys(old)
-    let toProcess = []
+    const possibleChanges = Object.keys(old)
+    const toProcess = []
     if (old.topic === null) old.topic = '' // Inconsistency with Eris.
-    possibleChanges.forEach((property) => {
+    possibleChanges.forEach(property => {
       if (property !== 'permissionOverwrites') {
         if (channel[property] !== old[property]) toProcess.push(property)
       } else if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).join(' ') !== old.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).join(' ')) toProcess.push('permissionOverwrites')
     })
-    toProcess.forEach((property) => {
+    toProcess.forEach(property => {
       if (property !== 'permissionOverwrites') {
         embed.embed.fields.push({
           name: property,
@@ -40,9 +40,9 @@ module.exports = {
       }
     })
     await setTimeout(async () => {
-      let logs = await channel.guild.getAuditLogs(1, null, 11)
-      let log = logs.entries[0]
-      let user = logs.users[0]
+      const logs = await channel.guild.getAuditLogs(1, null, 11)
+      const log = logs.entries[0]
+      const user = logs.users[0]
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
         embed.embed.author.name = `${user.username}#${user.discriminator}`
         embed.embed.author.icon_url = user.avatarURL

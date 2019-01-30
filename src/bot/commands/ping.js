@@ -1,7 +1,7 @@
 module.exports = {
   func: async message => {
-    let start = new Date().getTime()
-    let m = await message.channel.createMessage('Fetching...')
+    const start = new Date().getTime()
+    const m = await message.channel.createMessage('Fetching...')
     m.edit(`Done. RTT: ${new Date().getTime() - start}`)
   },
   name: 'ping',

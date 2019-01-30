@@ -16,7 +16,7 @@ async function init () {
     global.webhook.generic(`Shard manager is booting up. Discord recommends ${totalShards} shards. With the core count being ${coreCount}, there will be ${shardsPerWorker} shards per worker, and ${workerCount} workers.`)
     console.log(`TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nshards per worker: ${shardsPerWorker}\nworker count: ${workerCount}`)
     for (let i = 0; i < workerCount; i++) {
-      let shardStart = i * shardsPerWorker
+      const shardStart = i * shardsPerWorker
       let shardEnd = ((i + 1) * shardsPerWorker) - 1
       if (shardEnd > totalShards - 1) shardEnd = totalShards - 1
       let rangeForShard

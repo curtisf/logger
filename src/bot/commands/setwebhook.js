@@ -2,16 +2,18 @@ const webhookCache = require('../modules/webhookcache')
 
 module.exports = {
   func: async message => {
-    let cachedWebhook = await webhookCache.getWebhook(message.channel.id)
-    if (!cachedWebhook) {
-      let webhooks = await message.channel.guild.getWebhooks()
-      let eventObj = global.bot.guildSettingsCache[message.channel.guild.id].getEventLogRaw()
-      let keys = Object.keys(eventObj)
-      let idsToCache = []
-      keys.forEach((key) => {
+    const cachedWebhook = await webhookCache.getWebhook(message.channel.id)
+    if (cachedWebhook) {
+      let savedHookStuff = await global.redis.get(`webhook-${message.channel.id}`)
+    } else {
+      const webhooks = await message.channel.guild.getWebhooks()
+      const eventObj = global.bot.guildSettingsCache[message.channel.guild.id].getEventLogRaw()
+      const keys = Object.keys(eventObj)
+      const idsToCache = []
+      keys.forEach(key => {
         if (eventObj[key]) idsToCache.push(eventObj[key])
       })
-      idsToCache.forEach((channelID) => {
+      idsToCache.forEach(channelID => {
         for (let i = 0; i < webhooks.length; i++) {
           if (webhooks[i].channel_id === channelID) {
             console.log('GOT MATCH')
@@ -20,8 +22,6 @@ module.exports = {
           }
         }
       })
-    } else {
-      let savedHookStuff = await global.redis.get(`webhook-${message.channel.id}`)
     }
   },
   name: 'setwebhook',

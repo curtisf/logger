@@ -3,13 +3,13 @@ const send = require('../modules/webhooksender')
 module.exports = {
   name: 'messageDelete',
   type: 'on',
-  handle: async (message) => {
+  handle: async message => {
     if (!message.channel.guild) return // TODO: do the same for message update
     let cachedMessage = await global.redis.get(message.id)
     if (!cachedMessage) return // later, add some new logic
     cachedMessage = JSON.parse(cachedMessage)
     global.redis.del(message.id)
-    let cachedUser = global.bot.users.get(cachedMessage.userID)
+    const cachedUser = global.bot.users.get(cachedMessage.userID)
     // TODO: Add logic to check who deleted the message from audit logs for premium
     await send({
       guildID: message.channel.guild.id,

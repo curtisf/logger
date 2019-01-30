@@ -3,8 +3,8 @@ const path = require('path')
 const GenericCommand = require('../bot/bases/GenericCommand')
 
 module.exports = () => {
-  let files = fs.readdirSync(path.resolve('src', 'bot', 'commands'))
-  files.forEach((filename) => {
+  const files = fs.readdirSync(path.resolve('src', 'bot', 'commands'))
+  files.forEach(filename => {
     new GenericCommand(require(path.resolve('src', 'bot', 'commands', filename)))
   })
 }

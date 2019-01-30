@@ -1,4 +1,4 @@
-module.exports = async (message) => {
+module.exports = async message => {
   if (message.author.bot || !message.member) return
   if (global.bot.guildPrefixes[message.channel.guild.id] && global.bot.guildPrefixes[message.channel.guild.id].length !== 0) {
     // premium logic
@@ -8,17 +8,17 @@ module.exports = async (message) => {
     let suffix = splitSuffix.slice(1, splitSuffix.length).join(' ')
     */
   } else if (message.content.startsWith(process.env.GLOBAL_BOT_PREFIX)) {
-    let cmd = message.content.substring(process.env.GLOBAL_BOT_PREFIX.length).split(' ')[0].toLowerCase()
-    let splitSuffix = message.content.substr(process.env.GLOBAL_BOT_PREFIX).split(' ')
-    let suffix = splitSuffix.slice(1, splitSuffix.length).join(' ')
+    const cmd = message.content.substring(process.env.GLOBAL_BOT_PREFIX.length).split(' ')[0].toLowerCase()
+    const splitSuffix = message.content.substr(process.env.GLOBAL_BOT_PREFIX).split(' ')
+    const suffix = splitSuffix.slice(1, splitSuffix.length).join(' ')
     processCommand(message, cmd, suffix)
   }
 }
 
 function processCommand (message, commandName, suffix) {
-  let command = Object.keys(global.bot.commands).map(k => global.bot.commands[k]).find(c => c.name === commandName)
+  const command = Object.keys(global.bot.commands).map(k => global.bot.commands[k]).find(c => c.name === commandName)
   if (!command) return
-  let bp = message.channel.guild.members.get(global.bot.user.id).permission.json
+  const bp = message.channel.guild.members.get(global.bot.user.id).permission.json
   if (!bp.readMessages || !bp.sendMessages || !bp.manageWebhooks) return
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')

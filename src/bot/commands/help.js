@@ -6,27 +6,27 @@ module.exports = {
     } catch (e) {
       message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`)
     }
-    let embed = {
+    const embed = {
       'description': 'Below, you can see my commands listed by name and description. If it has arguments you can pass, an example will be included.',
       'color': 3553599,
       'timestamp': new Date(),
       'footer': {
         'icon_url': global.bot.user.avatarURL,
-        'text': global.bot.user.username + '#' + global.bot.user.discriminator
+        'text': `${global.bot.user.username}#${global.bot.user.discriminator}`
       },
       'thumbnail': {
         'url': global.bot.user.avatarURL
       },
       'author': {
-        'name': message.author.username + '#' + message.author.discriminator,
+        'name': `${message.author.username}#${message.author.discriminator}`,
         'icon_url': message.author.avatarURL
       },
       'fields': []
     }
-    Object.keys(global.bot.commands).map(k => global.bot.commands[k]).forEach((command) => {
+    Object.values(global.bot.commands).forEach(command => {
       embed.fields.push({
         name: command.name,
-        value: `${command.description}`
+        value: command.description
       })
     })
     DMC.createMessage({

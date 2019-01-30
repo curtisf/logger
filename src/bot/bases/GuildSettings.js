@@ -59,7 +59,7 @@ class GuildSettings {
   }
 
   clearEventByID (id) {
-    getEventLogNames(id).forEach((name) => {
+    getEventLogNames(id).forEach(name => {
       this.eventLogs[name] = ''
     })
   }
@@ -69,7 +69,7 @@ class GuildSettings {
   }
 
   clearEventLog () {
-    Object.keys(this.eventLogs).forEach((event) => {
+    Object.keys(this.eventLogs).forEach(event => {
       this.eventLogs[event] = ''
     })
   }

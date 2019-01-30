@@ -1,8 +1,8 @@
 const r = require('../../clients/rethink')
 const getDoc = require('./read').getGuild
 
-async function clearEventLog (guildID) {
-  return await r.db('Logger').table('Guilds').get(guildID).update({
+function clearEventLog (guildID) {
+  return r.db('Logger').table('Guilds').get(guildID).update({
     'eventLogs': {
       'channelCreate': '',
       'channelUpdate': '',
@@ -31,17 +31,17 @@ async function clearEventLog (guildID) {
 }
 
 async function clearEventByID (guildID, channelID) {
-  let doc = await r.db('Logger').table('Guilds').get(guildID).run()
-  Object.keys(doc.eventLogs).forEach((event) => {
+  const doc = await r.db('Logger').table('Guilds').get(guildID).run()
+  Object.keys(doc.eventLogs).forEach(event => {
     if (doc.eventLogs[event] === channelID) {
       doc.eventLogs[event] = ''
     }
   })
-  return await r.db('Logger').table('Guilds').get(guildID).update(doc).run()
+  return r.db('Logger').table('Guilds').get(guildID).update(doc).run()
 }
 
 async function disableEvent (guildID, event) {
-  let doc = await getDoc(guildID)
+  const doc = await getDoc(guildID)
   let disabled = true
   if (doc.disabledEvents.includes(event)) {
     doc.disabledEvents.splice(doc.disabledEvents.indexOf(event), 1)
@@ -56,7 +56,7 @@ async function disableEvent (guildID, event) {
 }
 
 async function ignoreChannel (guildID, channelID) {
-  let doc = await getDoc(guildID)
+  const doc = await getDoc(guildID)
   let disabled = true
   if (doc.ignoredChannels.includes(channelID)) {
     doc.ignoredChannels.splice(doc.ignoredChannels.indexOf(channelID), 1)

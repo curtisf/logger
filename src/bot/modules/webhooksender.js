@@ -1,14 +1,14 @@
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
 
-module.exports = async (pkg) => {
+module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
 
-  let guildSettings = global.bot.guildSettingsCache[pkg.guildID]
-  let webhook = await webhookCache.getWebhook(guildSettings.getEventByName(pkg.eventName))
+  const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
+  const webhook = await webhookCache.getWebhook(guildSettings.getEventByName(pkg.eventName))
   let webhookID, webhookToken
   if (webhook) {
-    let split = webhook.split('|')
+    const split = webhook.split('|')
     webhookID = split[0]
     webhookToken = split[1]
   }
@@ -22,7 +22,7 @@ module.exports = async (pkg) => {
     console.log('Good.')
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
-        text: global.bot.user.username + '#' + global.bot.user.discriminator,
+        text: `${global.bot.user.username}#${global.bot.user.discriminator}`,
         icon_url: global.bot.user.avatarURL
       }
     }
@@ -32,7 +32,7 @@ module.exports = async (pkg) => {
       username: global.bot.user.username,
       avatarURL: global.bot.user.avatarURL,
       embeds: [pkg.embed]
-    }).catch(async (e) => {
+    }).catch(async e => {
       if (e.code === 10015) { // Webhook doesn't exist anymore.
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
         return await guildWebhookCacher(pkg.guildID)

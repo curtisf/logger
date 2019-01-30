@@ -3,7 +3,7 @@ const createGuild = require('../../db/interfaces/rethink/create').createGuild
 
 module.exports = {
   func: async message => {
-    let msg = await message.channel.createMessage({ embed: {
+    const msg = await message.channel.createMessage({ embed: {
       'description': `Are you absolutely sure, ${message.author.username}#${message.author.discriminator} (${message.author.id})? Reply *yes* if so.`,
       'color': 3553599,
       'timestamp': new Date(),

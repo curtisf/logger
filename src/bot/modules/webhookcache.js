@@ -1,11 +1,11 @@
 module.exports = {
-  setWebhook: async (channelID, webhookID, webhookToken) => {
-    return await global.redis.set(`webhook-${channelID}`, `${webhookID}|${webhookToken}`, 'EX', 10800000)
+  setWebhook: (channelID, webhookID, webhookToken) => {
+    return global.redis.set(`webhook-${channelID}`, `${webhookID}|${webhookToken}`, 'EX', 10800000)
   },
-  getWebhook: async (channelID) => {
-    return await global.redis.get(`webhook-${channelID}`)
+  getWebhook: channelID => {
+    return global.redis.get(`webhook-${channelID}`)
   },
-  deleteWebhook: async (channelID) => {
-    return await global.redis.del(`webhook-${channelID}`)
+  deleteWebhook: channelID => {
+    return global.redis.del(`webhook-${channelID}`)
   }
 }

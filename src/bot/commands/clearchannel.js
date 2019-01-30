@@ -3,12 +3,12 @@ const clearEventByID = require('../../db/interfaces/rethink/update').clearEventB
 
 module.exports = {
   func: async message => {
-    let str = await webhookCache.getWebhook(message.channel.id)
+    const str = await webhookCache.getWebhook(message.channel.id)
     if (!str) return await message.channel.createMessage('I\'m not logging here!')
     await webhookCache.deleteWebhook(message.channel.id)
     await clearEventByID(message.channel.guild.id, message.channel.id)
     try {
-      let split = str.split('|')
+      const split = str.split('|')
       await global.bot.deleteWebhook(split[0], split[1], `Clearing logging configs from this channel - ${message.author.username}#${message.author.discriminator}`)
     } catch (_) {}
     await message.channel.createMessage({

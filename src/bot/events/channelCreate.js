@@ -8,9 +8,9 @@ const CHANNEL_TYPE_MAP = {
 module.exports = {
   name: 'channelCreate',
   type: 'on',
-  handle: async (newChannel) => {
+  handle: async newChannel => {
     if (newChannel.type === 1 || newChannel.type === 3) return
-    let channelCreateEvent = {
+    const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
       embed: {
@@ -31,9 +31,9 @@ module.exports = {
     }
     if (newChannel.permissionOverwrites.size !== 0) {
       let nameToInfo = {}
-      newChannel.permissionOverwrites.forEach((overwrite) => {
+      newChannel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
-          let role = newChannel.guild.roles.find(r => r.id === overwrite.id)
+          const role = newChannel.guild.roles.find(r => r.id === overwrite.id)
           if (role.name === '@everyone') return
           channelCreateEvent.embed.fields.push({
             name: role.name,
@@ -43,9 +43,9 @@ module.exports = {
       })
     }
     await setTimeout(async () => {
-      let logs = await newChannel.guild.getAuditLogs(1, null, 10)
-      let log = logs.entries[0]
-      let user = logs.users[0]
+      const logs = await newChannel.guild.getAuditLogs(1, null, 10)
+      const log = logs.entries[0]
+      const user = logs.users[0]
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
         channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator}`
         channelCreateEvent.embed.author.icon_url = user.avatarURL

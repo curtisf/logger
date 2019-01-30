@@ -3,7 +3,7 @@ const commandHandler = require('../modules/commandhandler')
 module.exports = {
   name: 'messageCreate',
   type: 'on',
-  handle: async (message) => {
+  handle: async message => {
     global.redis.set(message.id, JSON.stringify({
       userID: message.author.id,
       content: message.content.substring(0, 1020),

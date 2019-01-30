@@ -8,9 +8,9 @@ const CHANNEL_TYPE_MAP = {
 module.exports = {
   name: 'channelDelete',
   type: 'on',
-  handle: async (channel) => {
+  handle: async channel => {
     if (channel.type === 1 || channel.type === 3) return
-    let channelDeleteEvent = {
+    const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
       embed: {
@@ -39,16 +39,16 @@ module.exports = {
     let lastCachedMessage = await global.redis.get(channel.lastMessageID)
     if (lastCachedMessage) {
       lastCachedMessage = JSON.parse(lastCachedMessage)
-      let user = global.bot.users.get(lastCachedMessage.userID)
+      const user = global.bot.users.get(lastCachedMessage.userID)
       channelDeleteEvent.embed.fields.push({
         name: 'Last message',
         value: `Author: **${user.username}#${user.discriminator}**\n${lastCachedMessage.content}`
       })
     }
     if (channel.permissionOverwrites.size !== 0) {
-      channel.permissionOverwrites.forEach((overwrite) => {
+      channel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
-          let role = channel.guild.roles.find(r => r.id === overwrite.id)
+          const role = channel.guild.roles.find(r => r.id === overwrite.id)
           if (role.name === '@everyone') return
           channelDeleteEvent.embed.fields.push({
             name: role.name,
@@ -58,9 +58,9 @@ module.exports = {
       })
     }
     await setTimeout(async () => {
-      let logs = await channel.guild.getAuditLogs(1, null, 12)
-      let log = logs.entries[0]
-      let user = logs.users[0]
+      const logs = await channel.guild.getAuditLogs(1, null, 12)
+      const log = logs.entries[0]
+      const user = logs.users[0]
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
         channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator}`
         channelDeleteEvent.embed.author.icon_url = user.avatarURL

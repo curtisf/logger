@@ -2,9 +2,9 @@ const getAllGuilds = require('../../db/interfaces/rethink/read').getAllGuilds
 
 module.exports = async () => {
   const allGuilds = await getAllGuilds()
-  let ignoredChannels = []
-  let guildPrefixes = {}
-  allGuilds.forEach((guild) => {
+  const ignoredChannels = []
+  const guildPrefixes = {}
+  allGuilds.forEach(guild => {
     if (guild.ignoredChannels.length !== 0) {
       ignoredChannels.concat(guild.ignoredChannels)
     }
