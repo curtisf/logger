@@ -70,6 +70,15 @@ async function ignoreChannel (guildID, channelID) {
   return disabled
 }
 
+async function toggleLogBots (guildID) {
+  const doc = await getDoc(guildID)
+  await r.db('Logger').table('Guilds').get(guildID).update({
+    'logBots': !doc.logBots
+  }).run()
+  return !doc.logBots
+}
+
+exports.toggleLogBots = toggleLogBots()
 exports.disableEvent = disableEvent
 exports.ignoreChannel = ignoreChannel
 exports.clearEventLog = clearEventLog
