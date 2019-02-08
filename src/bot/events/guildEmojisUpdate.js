@@ -54,7 +54,7 @@ module.exports = {
       const logs = await guild.getAuditLogs(1, null, num)
       const log = logs.entries[0]
       const user = logs.users[0]
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
+      if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         guildEmojisUpdateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nEmoji = ${emoji.id}\`\`\``
         await send(guildEmojisUpdateEvent)
       } else {
