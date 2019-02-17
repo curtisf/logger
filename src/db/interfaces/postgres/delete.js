@@ -7,3 +7,7 @@ exports.deleteGuild = async function (guildID) {
 exports.deleteUser = async function (userID) {
     return await pool.query('DELETE FROM users WHERE id=$1', [userID])
 }
+
+exports.deleteMessage = async function (messageID) {
+    return await pool.query('DELETE FROM messages WHERE id=$1', [messageID])
+}

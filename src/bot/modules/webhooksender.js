@@ -19,7 +19,7 @@ module.exports = async pkg => {
       module.exports(pkg)
     }, 2000)
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
-    console.log('Good.')
+    console.log('Good. all is good')
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
         text: `${global.bot.user.username}#${global.bot.user.discriminator}`,

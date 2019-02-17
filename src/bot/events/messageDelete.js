@@ -1,15 +1,16 @@
 const send = require('../modules/webhooksender')
+const getMessage = require('../../db/interfaces/postgres/read').getMessageById
+const deleteMessage = require('../../db/interfaces/postgres/delete').deleteMessage
 
 module.exports = {
   name: 'messageDelete',
   type: 'on',
   handle: async message => {
     if (!message.channel.guild) return // TODO: do the same for message update
-    let cachedMessage = await global.redis.get(message.id)
+    let cachedMessage = await getMessage(message.id)
     if (!cachedMessage) return // later, add some new logic
-    cachedMessage = JSON.parse(cachedMessage)
-    global.redis.del(message.id)
-    const cachedUser = global.bot.users.get(cachedMessage.userID)
+    await deleteMessage(message.id)
+    const cachedUser = global.bot.users.get(cachedMessage.author_id)
     // TODO: Add logic to check who deleted the message from audit logs for premium
     await send({
       guildID: message.channel.guild.id,
@@ -25,10 +26,10 @@ module.exports = {
           value: cachedMessage.content ? cachedMessage.content : 'None'
         }, {
           name: 'ID',
-          value: `\`\`\`ini\nUser = ${cachedMessage.userID}\nMessage = ${message.id}\`\`\``
+          value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${message.id}\`\`\``
         }, {
           name: 'Date',
-          value: new Date(cachedMessage.timestamp).toString()
+          value: new Date(cachedMessage.ts)
         }],
         color: 3553599
       }

@@ -7,7 +7,7 @@ const placeholder = aes.encrypt(arr)
 
 async function createGuild (guild) {
     console.log(`Creating a guild document for guild ${guild.name} with ${guild.memberCount} members.`)
-    return await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, log_bots) VALUES ($1, $2, $3, $4, $5)', [guild.id, guild.ownerID, [], [], false]) // Regenerate the document if a user kicks and reinvites the bot.
+    return await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots) VALUES ($1, $2, $3, $4, $5, $6)', [guild.id, guild.ownerID, [], [], {}, false]) // Regenerate the document if a user kicks and reinvites the bot.
 }
 
 async function createUserDocument (userID) {

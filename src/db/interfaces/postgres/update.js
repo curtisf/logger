@@ -18,6 +18,22 @@ async function clearEventByID (guildID, channelID) {
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
+async function setAllEventsOneId(guildID, channelID) {
+  const doc = await getDoc(guildID)
+  Object.keys(doc.event_logs).forEach(event => {
+    doc.event_logs[event] = channelID
+  })
+  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+}
+
+async function setEventsLogId(guildID, channelID, events) {
+  const doc = await getDoc(guildID)
+  events.forEach(event => {
+    doc.event_logs[event] = channelID
+  })
+  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+}
+
 async function disableEvent (guildID, event) {
   const doc = await getDoc(guildID)
   let disabled = true
@@ -65,3 +81,5 @@ exports.disableEvent = disableEvent
 exports.ignoreChannel = ignoreChannel
 exports.clearEventLog = clearEventLog
 exports.clearEventByID = clearEventByID
+exports.setAllEventsOneId = setAllEventsOneId
+exports.setEventsLogId = setEventsLogId

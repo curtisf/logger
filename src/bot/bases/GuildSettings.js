@@ -10,7 +10,7 @@ class GuildSettings {
     this.id = data.id
     this.ignoredChannels = data.ignoredChannels || data.ignored_channels
     this.logBots = data.logBots || data.log_bots
-    this.eventLogs = data.eventLogs // TODO: make a guild doc transformer that converts old docs to new
+    this.event_logs = data.event_logs // TODO: make a guild doc transformer that converts old docs to new
     this.allLog = data.logchannel
     this.ownerID = data.ownerID || data.owner_id
     this.disabledEvents = data.disabledEvents || data.disabled_events
@@ -27,7 +27,7 @@ class GuildSettings {
   }
 
   getEventLogID (eventName) {
-    return this.eventLogs[eventName]
+    return this.event_logs[eventName]
   }
 
   isPremium () {
@@ -47,30 +47,30 @@ class GuildSettings {
   }
 
   getEventLogRaw () {
-    return this.eventLogs
+    return this.event_logs
   }
 
   getEventByName (name) {
-    return this.eventLogs[name]
+    return this.event_logs[name]
   }
 
   getEventLogNames (channelID) {
-    return Object.keys(this.eventLogs).filter(event => this.eventLogs[event] === channelID)
+    return Object.keys(this.event_logs).filter(event => this.event_logs[event] === channelID)
   }
 
   clearEventByID (id) {
     getEventLogNames(id).forEach(name => {
-      this.eventLogs[name] = ''
+      this.event_logs[name] = ''
     })
   }
 
   clearEventByName (name) {
-    this.eventLogs[name] = ''
+    this.event_logs[name] = ''
   }
 
   clearEventLog () {
-    Object.keys(this.eventLogs).forEach(event => {
-      this.eventLogs[event] = ''
+    Object.keys(this.event_logs).forEach(event => {
+      this.event_logs[event] = ''
     })
   }
 
