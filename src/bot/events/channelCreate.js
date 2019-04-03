@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelCreate',
   type: 'on',
   handle: async newChannel => {
-    if (newChannel.type === 1 || newChannel.type === 3) return
+    if (newChannel.type === 1 || newChannel.type === 3|| !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',

@@ -5,6 +5,7 @@ const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const getCacheInfo = require('./utils/getCacheInfo')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
+const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
 
 require('dotenv').config()
 
@@ -23,11 +24,13 @@ async function init () {
     maxShards: cluster.worker.totalShards,
     disableEvents: { TYPING_START: true },
     restMode: true,
-    messageLimit: 0
+    messageLimit: 0,
+    autoreconnect: true,
+    getAllUsers: true
   })
 
   global.bot.editStatus('dnd', {
-    name: `Shard booting...`
+    name: `logger test bootup.`
   })
 
   global.bot.commands = {}
@@ -46,7 +49,10 @@ async function init () {
   global.bot.ignoredChannels = ignoredChannels
   global.bot.guildPrefixes = guildPrefixes
 
-  global.bot.connect()
+  await global.bot.connect() // wait for everything to be cached
+
+  const oldMessagesDeleted = await deleteMessagesOlderThanDays(process.env.MESSAGE_HISTORY_DAYS)
+  global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${process.env.MESSAGE_HISTORY_DAYS} day(s).`)
 }
 
 init()

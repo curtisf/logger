@@ -3,8 +3,6 @@ const clearEventByID = require('../../db/interfaces/postgres/update').clearEvent
 
 module.exports = {
   func: async message => {
-    const str = await webhookCache.getWebhook(message.channel.id)
-    if (!str) return await message.channel.createMessage('I\'m not logging here!')
     await webhookCache.deleteWebhook(message.channel.id)
     await clearEventByID(message.channel.guild.id, message.channel.id)
     try {

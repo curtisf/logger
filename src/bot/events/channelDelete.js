@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelDelete',
   type: 'on',
   handle: async channel => {
-    if (channel.type === 1 || channel.type === 3) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
@@ -24,7 +24,7 @@ module.exports = {
           value: channel.name
         }, {
           name: 'Creation date',
-          value: new Date((channel.id / 4194304) + 1420070400000).toString()
+          value: new Date(channel.createdAt).toString()
         },
         {
           name: 'Position',
@@ -61,7 +61,7 @@ module.exports = {
       const logs = await channel.guild.getAuditLogs(1, null, 12)
       const log = logs.entries[0]
       const user = logs.users[0]
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
+      if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator}`
         channelDeleteEvent.embed.author.icon_url = user.avatarURL
         channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``

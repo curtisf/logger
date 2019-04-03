@@ -1,10 +1,16 @@
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
+const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
+  if (!pkg.embed.color) pkg.embed.color = 3553599
 
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
+  if (!guildSettings) {
+    await cacheGuild(pkg.guildID)
+    return
+  }
   const webhook = await webhookCache.getWebhook(guildSettings.getEventByName(pkg.eventName))
   let webhookID, webhookToken
   if (webhook) {
@@ -27,6 +33,7 @@ module.exports = async pkg => {
       }
     }
     if (!pkg.embed.timestamp) pkg.embed.timestamp = new Date()
+    console.log('sending webhook')
     global.bot.executeWebhook(webhookID, webhookToken, {
       file: pkg.file ? pkg.file : '',
       username: global.bot.user.username,
@@ -40,5 +47,5 @@ module.exports = async pkg => {
         console.error(e)
       }
     })
-  } else console.log('Cache the webhook.')
+  }
 }

@@ -5,9 +5,35 @@ arr[0] = 'placeholder'
 arr = JSON.stringify(arr)
 const placeholder = aes.encrypt(arr)
 
+const eventLogs = {
+    'channelCreate': '',
+    'channelUpdate': '',
+    'channelDelete': '',
+    'guildBanAdd': '',
+    'guildBanRemove': '',
+    'guildRoleCreate': '',
+    'guildRoleDelete': '',
+    'guildRoleUpdate': '',
+    'guildUpdate': '',
+    'messageDelete': '',
+    'messageDeleteBulk': '',
+    'messageReactionRemoveAll': '',
+    'messageUpdate': '',
+    'guildMemberAdd': '',
+    'guildMemberKick': '',
+    'guildMemberRemove': '',
+    'guildMemberUpdate': '',
+    'voiceChannelLeave': '',
+    'voiceChannelJoin': '',
+    'voiceStateUpdate': '',
+    'voiceChannelSwitch': '',
+    'guildEmojisUpdate': '',
+    'guildMemberNickUpdate': ''
+  }
+
 async function createGuild (guild) {
     console.log(`Creating a guild document for guild ${guild.name} with ${guild.memberCount} members.`)
-    return await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots) VALUES ($1, $2, $3, $4, $5, $6)', [guild.id, guild.ownerID, [], [], {}, false]) // Regenerate the document if a user kicks and reinvites the bot.
+    return await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots) VALUES ($1, $2, $3, $4, $5, $6)', [guild.id, guild.ownerID, [], [], eventLogs, false]) // Regenerate the document if a user kicks and reinvites the bot.
 }
 
 async function createUserDocument (userID) {
@@ -16,7 +42,6 @@ async function createUserDocument (userID) {
 }
 
 async function cacheMessage(message) {
-    console.log('caching')
     message.content = aes.encrypt(message.content ? message.content : 'None')
     if (message.attachment_b64) {
         message.attachment_b64 = aes.encrypt(message.attachment_b64)

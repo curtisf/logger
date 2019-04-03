@@ -34,6 +34,10 @@ class GuildSettings {
     return this.premium
   }
 
+  isLogBots() {
+    return this.logBots
+  }
+
   isUserIgnored (userID) {
     return this.ignoredUsers.includes(userID)
   }

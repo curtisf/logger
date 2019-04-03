@@ -29,6 +29,14 @@ module.exports = {
         value: command.description
       })
     })
+    embed.fields.push({
+      name: 'Support',
+      value: 'If something is going horribly wrong, go ahead and join [my support server](https://discord.gg/ed7Gaa3)'
+    },
+    {
+      name: 'Patreon',
+      value: 'If you like me and want to support my owner (or want coolio Patreon features), check out [my Patreon page](https://patreon.com/logger)'
+    })
     DMC.createMessage({
       embed: embed
     })

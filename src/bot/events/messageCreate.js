@@ -7,6 +7,7 @@ module.exports = {
   handle: async message => {
     if (message.author.bot || !message.member) return
     await commandHandler(message)
+    if (message.author.id === global.bot.user.id) return // dump logs made by the bot
     await cacheMessage(message)
   }
 }

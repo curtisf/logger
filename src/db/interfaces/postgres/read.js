@@ -10,6 +10,13 @@ async function getAllGuilds () {
 
 async function getGuild (guildID) {
   const doc = await pool.query('SELECT * FROM guilds WHERE id=$1;', [guildID])
+  if (doc.rows.length === 0) {
+    if (global.bot.guilds.get(guildID)) {
+      console.log('Recovering a missing doc.')
+      await createGuild(global.bot.guilds.get(guildID))
+      return await getGuild(guildID)
+    }
+  }
   return doc.rows[0]
 }
 
@@ -23,7 +30,7 @@ async function getUser (userID) {
   const doc = await pool.query('SELECT * FROM users WHERE id=$1', [userID])
   if (doc.rows.length === 0) {
     await createUserDocument(userID)
-    return exports.getGuild(userID)
+    return exports.getUser(userID)
   }
   const decryptedDoc = await decryptUserDoc(doc.rows[0])
   return decryptedDoc
@@ -41,6 +48,7 @@ async function getMessagesByAuthor(userID) {
 
 async function getMessageById(messageID) {
   let message = await pool.query('SELECT * FROM messages WHERE id=$1', [messageID])
+  if (message.rows.length === 0) return null
   message = await decryptMessageDoc(message.rows[0])
   return message
 }
@@ -56,9 +64,15 @@ async function decryptMessageDoc(message) {
   return message
 }
 
+async function getAllMessages() {
+  const messages = await pool.query('SELECT * FROM messages')
+  return messages.rows
+}
+
 exports.getMessageById = getMessageById
 exports.getMessagesByAuthor = getMessagesByAuthor
 exports.getUser = getUser
 exports.getAllGuilds = getAllGuilds
 exports.getGuild = getGuild
 exports.getUsers = getUsers
+exports.getAllMessages = getAllMessages
