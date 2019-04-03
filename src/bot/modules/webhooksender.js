@@ -19,13 +19,11 @@ module.exports = async pkg => {
     webhookToken = split[1]
   }
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
-    console.log('Try to get the hook')
     await guildWebhookCacher(pkg.guildID)
     return await setTimeout(() => {
       module.exports(pkg)
     }, 2000)
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
-    console.log('Good. all is good')
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
         text: `${global.bot.user.username}#${global.bot.user.discriminator}`,
@@ -33,7 +31,6 @@ module.exports = async pkg => {
       }
     }
     if (!pkg.embed.timestamp) pkg.embed.timestamp = new Date()
-    console.log('sending webhook')
     global.bot.executeWebhook(webhookID, webhookToken, {
       file: pkg.file ? pkg.file : '',
       username: global.bot.user.username,
