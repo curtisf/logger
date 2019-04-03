@@ -2,6 +2,7 @@ const pool = require('../../clients/postgres')
 const getDoc = require('./read').getGuild
 const getMessageById = require('./read').getMessageById
 const getUser = require('./read').getUser
+const cacheGuild = require('../../../bot/utils/cacheGuild')
 const aes = require('../../aes')
 
 const eventList = [
@@ -57,6 +58,7 @@ const eventLogs = {
 }
 
 async function clearEventLog (guildID) {
+  await cacheGuild(guildID)
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
@@ -68,6 +70,7 @@ async function clearEventByID (guildID, channelID) {
       eventLogs[event] = ''
     }
   })
+  await cacheGuild(guildID)
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
@@ -76,6 +79,7 @@ async function setAllEventsOneId (guildID, channelID) {
   eventList.forEach(event => {
     doc.event_logs[event] = channelID
   })
+  await cacheGuild(guildID)
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
@@ -84,6 +88,7 @@ async function setEventsLogId (guildID, channelID, events) {
   events.forEach(event => {
     doc.event_logs[event] = channelID
   })
+  await cacheGuild(guildID)
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
@@ -97,6 +102,7 @@ async function disableEvent (guildID, event) {
     doc.disabled_events.push(event)
   }
   await pool.query('UPDATE guilds SET disabled_events=$1 WHERE id=$2', [doc.disabled_events, guildID])
+  await cacheGuild(guildID)
   return disabled
 }
 

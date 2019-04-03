@@ -21,7 +21,7 @@ module.exports = {
         'fields': [
           {
             'name': 'Technical Details',
-            'value': `${global.bot.user.username} is written in JavaScript utilizing the Node.js runtime. It uses the [eris](https://github.com/abalabahaha/eris) library to interact with the Discord API. RethinkDB and Redis are used.`
+            'value': `${global.bot.user.username} is written in JavaScript utilizing the Node.js runtime. It uses the [eris](https://github.com/abalabahaha/eris) library to interact with the Discord API. PostgreSQL and Redis are used.`
           },
           {
             'name': 'The Author',
