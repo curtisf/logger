@@ -1,4 +1,5 @@
 const send = require('../modules/webhooksender')
+const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = {
   name: 'guildMemberUpdate',
@@ -21,12 +22,13 @@ module.exports = {
       }
     }
     if (member.roles.length !== oldMember.roles.length || member.roles.filter(r => !oldMember.roles.includes(r)).length !== 0) {
-      guild.getAuditLogs(1, null, 25).then((log) => {
+      guild.getAuditLogs(1, null, 25).then(async (log) => {
         if (!log.entries[0]) return
         let auditEntryDate = new Date((log.entries[0].id / 4194304) + 1420070400000)
         if (new Date().getTime() - auditEntryDate.getTime() < 3000) {
           log.entries[0].guild = []
           let user = log.entries[0].user
+          if (!global.bot.guildSettingsCache[guild.id]) await cacheGuild(guild.id)
           if (user.bot && global.bot.guildSettingsCache[guild.id].isLogBots()) {
             processRoleChange()
           } else if (!user.bot) {

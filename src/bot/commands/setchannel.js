@@ -32,6 +32,8 @@ const eventList = [
 
 module.exports = {
   func: async (message, suffix) => {
+    const webhookPerm = message.channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']
+    if (!webhookPerm) return await message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.')
     let events = suffix.split(', ')
     events = cleanArray(events)
     const hookStr = await webhookCache.getWebhook(message.channel.id)
@@ -51,7 +53,7 @@ module.exports = {
   },
   name: 'setchannel',
   description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageCreate, messageDelete, messageUpdate`,
-  type: 'admin',
+  perm: 'manageWebhooks',
   category: 'Logging'
 }
 

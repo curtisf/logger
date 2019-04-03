@@ -5,8 +5,6 @@ module.exports = {
   name: 'guildCreate',
   type: 'on',
   handle: async guild => { // keep the first arg for later
-    console.log('ding dong')
-    console.log(guild.members.get(global.bot.user.id).permission.json['manageWebhooks'])
     if (guild.memberCount < 0) { //  || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']
       console.log('missing perms, byes')
       // guild.leave()

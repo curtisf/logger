@@ -12,7 +12,6 @@ async function getGuild (guildID) {
   const doc = await pool.query('SELECT * FROM guilds WHERE id=$1;', [guildID])
   if (doc.rows.length === 0) {
     if (global.bot.guilds.get(guildID)) {
-      console.log('Recovering a missing doc.')
       await createGuild(global.bot.guilds.get(guildID))
       return await getGuild(guildID)
     }
