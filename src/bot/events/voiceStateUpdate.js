@@ -36,7 +36,7 @@ module.exports = {
       const logs = await member.guild.getAuditLogs(1, null, 24)
       const log = logs.entries[0]
       const user = logs.users[0]
-      if (!log) return await send(voiceStateUpdateEvent)
+      if (!log) return
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         voiceStateUpdateEvent.embed.fields[1].value += `Perpetrator = ${user.id}\`\`\``
         voiceStateUpdateEvent.embed.footer = {
