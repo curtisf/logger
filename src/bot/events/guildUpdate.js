@@ -15,6 +15,7 @@ module.exports = {
     let fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => { // Ported from logger v2
       const user = log.users[0]
+      const member = newGuild.members.get(user.id)
       let arr
       if (Object.keys(log.entries[0].before) > Object.keys(log.entries[0].after)) {
         arr = Object.keys(log.entries[0].before)
@@ -32,7 +33,7 @@ module.exports = {
         eventName: 'guildUpdate',
         embed: {
           author: {
-            name: `${user.username}#${user.discriminator}`,
+            name: `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
             icon_url: user.avatarURL
           },
           description: `The guild was updated`,
@@ -79,7 +80,6 @@ module.exports = {
             value: `► Now: **${after}**\n► Was: **${before}**`
           }
         case 'afk_channel_id':
-          console.log('hi')
           const beforeChannel = newGuild.channels.get(log.entries[0].before.afk_channel_id)
           const afterChannel = newGuild.channels.get(log.entries[0].after.afk_channel_id)
           if (!beforeChannel) {

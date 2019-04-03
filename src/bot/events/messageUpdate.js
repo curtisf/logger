@@ -8,6 +8,7 @@ module.exports = {
   handle: async (newMessage, oldMessage) => {
     if (!newMessage.channel.guild || !newMessage.author) return
     if (newMessage.author.id === global.bot.user.id) return
+    const member = newMessage.channel.guild.members.get(newMessage.author.id)
     oldMessage = await getMessage(newMessage.id)
     if (!oldMessage) return
     if (newMessage.author.bot) {
@@ -21,10 +22,10 @@ module.exports = {
         eventName: 'messageUpdate',
         embed: {
           author: {
-            name: `${newMessage.author.username}#${newMessage.author.discriminator}`,
+            name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
             icon_url: newMessage.author.avatarURL
           },
-          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** updated their message in: ${newMessage.channel.name}.`,
+          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
           fields: [{
             name: 'Channel',
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})`

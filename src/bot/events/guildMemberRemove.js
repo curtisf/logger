@@ -24,11 +24,11 @@ module.exports = {
         event.eventName = 'guildMemberKick'
         event.embed = {
           author: {
-            name: `${member.username}#${member.discriminator}`,
+            name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
             icon_url: member.avatarURL
           },
           color: 16711680,
-          description: `${member.username}#${member.discriminator} was kicked`,
+          description: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''} was kicked`,
           fields: [{
             name: 'User Information',
             value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`

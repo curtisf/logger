@@ -14,10 +14,10 @@ module.exports = {
       eventName: 'voiceStateUpdate',
       embed: {
         author: {
-          name: `${member.username}#${member.discriminator}`,
+          name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
         },
-        description: `**${member.username}#${member.discriminator}** was `,
+        description: `**${member.username}#${member.discriminator}** ${member.nick ? `(${member.nick})` : ''} was `,
         fields: [{
           name: 'Voice Channel',
           value: `<#${channel.id}> (${channel.name})`
@@ -37,6 +37,7 @@ module.exports = {
       const log = logs.entries[0]
       const user = logs.users[0]
       if (!log) return
+      if (voiceStateUpdateEvent.embed.description.endsWith('was ')) return
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         voiceStateUpdateEvent.embed.fields[1].value += `Perpetrator = ${user.id}\`\`\``
         voiceStateUpdateEvent.embed.footer = {

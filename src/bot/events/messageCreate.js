@@ -1,5 +1,6 @@
 const commandHandler = require('../modules/commandhandler')
 const cacheMessage = require('../../db/interfaces/postgres/create').cacheMessage
+const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = {
   name: 'messageCreate',
@@ -8,6 +9,10 @@ module.exports = {
     if (message.author.bot || !message.member) return
     await commandHandler(message)
     if (message.author.id === global.bot.user.id) return // dump logs made by the bot
-    await cacheMessage(message)
+    const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
+    if (!guildSettings) await cacheGuild(message.channel.guild.id)
+    if (!global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) {
+      await cacheMessage(message)
+    }
   }
 }

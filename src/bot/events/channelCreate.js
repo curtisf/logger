@@ -46,8 +46,9 @@ module.exports = {
       const logs = await newChannel.guild.getAuditLogs(1, null, 10)
       const log = logs.entries[0]
       const user = logs.users[0]
+      const member = newChannel.guild.members.get(user.id)
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
-        channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator}`
+        channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
         channelCreateEvent.embed.author.icon_url = user.avatarURL
         channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
         await send(channelCreateEvent)

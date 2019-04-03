@@ -7,17 +7,21 @@ module.exports = {
   type: 'on',
   handle: async message => {
     if (!message.channel.guild) return // TODO: do the same for message update
+    const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
+    if (!guildSettings) await cacheGuild(message.channel.guild.id)
+    if (global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) return
     let cachedMessage = await getMessage(message.id)
     if (!cachedMessage) return // later, add some new logic
     await deleteMessage(message.id)
     const cachedUser = global.bot.users.get(cachedMessage.author_id)
     // TODO: Add logic to check who deleted the message from audit logs for premium
+    const member = message.channel.guild.members.get(cachedMessage.author_id)
     await send({
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
         author: {
-          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator}` : 'User not in cache',
+          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${member && member.nick ? `(${member.nick})` : ''}` : 'User not in cache',
           icon_url: cachedUser ? cachedUser.avatarURL : 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
         },
         description: `Message deleted in <#${message.channel.id}>`,

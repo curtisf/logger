@@ -14,7 +14,7 @@ module.exports = {
           name: `${member.username}#${member.discriminator}`,
           icon_url: member.avatarURL
         },
-        description: `${member.mention} joined `,
+        description: `<@${member.id}> joined `,
         fields: [{
           name: 'Name',
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`

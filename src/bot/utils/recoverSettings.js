@@ -5,7 +5,6 @@ module.exports = async () => { // the name of this file is a bit vague. if you h
   const allGuilds = await getAllDBGuilds()
   global.bot.guilds.forEach(async guild => {
     if (!allGuilds.find(g => g.id === guild.id)) {
-      console.log(`missing guild settings for ${guild.name}, recovering`)
       await createGuild(guild)
     }
   })

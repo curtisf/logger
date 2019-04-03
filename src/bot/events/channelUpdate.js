@@ -6,7 +6,7 @@ const CHANNEL_TYPE_MAP = {
 }
 
 module.exports = {
-  name: 'channelUpdateDisabled',
+  name: 'channelUpdateDisabled', // for now
   type: 'on',
   handle: async (channel, oldChannel) => {
     console.log('channel update')

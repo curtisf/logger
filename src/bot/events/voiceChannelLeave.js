@@ -9,10 +9,10 @@ module.exports = {
       eventName: 'voiceChannelLeave',
       embed: {
         author: {
-          name: `${member.username}#${member.discriminator}`,
+          name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
         },
-        description: `**${member.username}#${member.discriminator}** left voice channel: ${channel.name}.`,
+        description: `**${member.username}#${member.discriminator}** ${member.nick ? `(${member.nick})` : ''} left voice channel: ${channel.name}.`,
         fields: [{
           name: 'Channel',
           value: `<#${channel.id}> (${channel.name})`

@@ -10,7 +10,7 @@ module.exports = {
       eventName: 'guildBanAdd',
       embed: {
         author: {
-          name: `${user.username}#${user.discriminator}`,
+          name: `${user.username}#${user.discriminator} `,
           icon_url: user.avatarURL
         },
         description: `${user.username}#${user.discriminator} was banned`,

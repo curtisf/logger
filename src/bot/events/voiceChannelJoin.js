@@ -9,7 +9,7 @@ module.exports = {
       eventName: 'voiceChannelJoin',
       embed: {
         author: {
-          name: `${member.username}#${member.discriminator}`,
+          name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
         },
         description: `**${member.username}#${member.discriminator}** joined voice channel: ${channel.name}.`,

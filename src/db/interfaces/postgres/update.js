@@ -104,11 +104,13 @@ async function ignoreChannel (guildID, channelID) {
   const doc = await getDoc(guildID)
   let disabled = true
   if (doc.ignored_channels.includes(channelID)) {
-    doc.ignored_channels.splice(doc.ignored_channels.indexOf(channelID), 1)
+    const index = doc.ignored_channels.indexOf(channelID)
+    doc.ignored_channels.splice(index, 1)
     disabled = false
   } else {
     doc.ignored_channels.push(channelID)
   }
+  global.bot.guildSettingsCache[guildID].ignoredChannels = doc.ignored_channels
   await pool.query('UPDATE guilds SET ignored_channels=$1 WHERE id=$2', [doc.ignored_channels, guildID])
   return disabled
 }

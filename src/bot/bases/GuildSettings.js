@@ -30,6 +30,10 @@ class GuildSettings {
     return this.event_logs[eventName]
   }
 
+  isChannelIgnored (channelID) {
+    return this.ignoredChannels.includes(channelID)
+  }
+
   isPremium () {
     return this.premium
   }
