@@ -5,6 +5,8 @@ const cacheGuild = require('../utils/cacheGuild')
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
   if (!pkg.embed.color) pkg.embed.color = 3553599
+  const guild = global.bot.guilds.get(pkg.guildID)
+  if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
 
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
