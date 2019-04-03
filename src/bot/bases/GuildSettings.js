@@ -62,12 +62,13 @@ class GuildSettings {
     return this.event_logs[name]
   }
 
-  getEventLogNames (channelID) {
+  eventLogByNames (channelID) {
     return Object.keys(this.event_logs).filter(event => this.event_logs[event] === channelID)
   }
 
   clearEventByID (id) {
-    getEventLogNames(id).forEach(name => {
+    const events = this.eventLogByNames(id)
+    events.forEach(name => {
       this.event_logs[name] = ''
     })
   }
