@@ -1,6 +1,7 @@
 const send = require('../modules/webhooksender')
 const getMessage = require('../../db/interfaces/postgres/read').getMessageById
 const deleteMessage = require('../../db/interfaces/postgres/delete').deleteMessage
+const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = {
   name: 'messageDelete',
