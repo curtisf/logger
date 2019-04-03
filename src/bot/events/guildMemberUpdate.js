@@ -18,7 +18,7 @@ module.exports = {
         fields: [{
           name: 'Changes',
           value: 'Unknown. Look at the footer to see who updated the affected user.'
-        }],
+        }]
       }
     }
     if (member.roles.length !== oldMember.roles.length || member.roles.filter(r => !oldMember.roles.includes(r)).length !== 0) {
@@ -34,7 +34,7 @@ module.exports = {
           } else if (!user.bot) {
             processRoleChange()
           }
-          function processRoleChange() {
+          function processRoleChange () {
             let added = []
             let removed = []
             let roleColor
@@ -46,8 +46,7 @@ module.exports = {
             }
             if (added.length !== 0) {
               if (added[0].color) roleColor = added[0].color
-            }
-            else if (removed.length !== 0) {
+            } else if (removed.length !== 0) {
               if (removed[0].color) roleColor = removed[0].color
             }
             guildMemberUpdate.embed.fields[0].value = `${added.map(role => `➕ **${role.name}** (${role.id})`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}** (${role.id})`).join('\n')}`
@@ -83,8 +82,8 @@ module.exports = {
   }
 }
 
-function arrayCompare(base, toCompare) {
-  let baseArr = base.filter(i => { return toCompare.indexOf(i) < 0; })
-  let comparedArr = toCompare.filter(i => { return base.indexOf(i) < 0; })
+function arrayCompare (base, toCompare) {
+  let baseArr = base.filter(i => { return toCompare.indexOf(i) < 0 })
+  let comparedArr = toCompare.filter(i => { return base.indexOf(i) < 0 })
   return baseArr.concat(comparedArr)
 }

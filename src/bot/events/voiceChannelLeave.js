@@ -4,7 +4,7 @@ module.exports = {
   name: 'voiceChannelLeave',
   type: 'on',
   handle: async (member, channel) => {
-    await send( {
+    await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelLeave',
       embed: {

@@ -3,7 +3,7 @@ const request = require('superagent')
 
 module.exports = {
   cache: {},
-  handle(logID, guild, member, perp) {
+  handle (logID, guild, member, perp) {
     if (!this.cache.hasOwnProperty(logID)) {
       this.cache[logID] = {
         count: 0,
@@ -16,20 +16,20 @@ module.exports = {
     this.cache[logID].list += `\n${member.username}#${member.discriminator} (${member.id})`
     this.cache[logID].count++
   },
-  async send(logID) {
+  async send (logID) {
     const log = this.cache[logID]
     delete this.cache[logID]
     let res
     try {
       res = await request
-      .post('https://paste.lemonmc.com/api/json/create')
-      .send({
-        data: log.list,
-        language: 'text',
-        private: true,
-        title: log.guild.name.slice(0, 29),
-        expire: '2592000'
-      })
+        .post('https://paste.lemonmc.com/api/json/create')
+        .send({
+          data: log.list,
+          language: 'text',
+          private: true,
+          title: log.guild.name.slice(0, 29),
+          expire: '2592000'
+        })
 
       if (res.statusCode === 200 && res.body.result.id) {
         res = `[${log.count} members](https://paste.lemonmc.com/${res.body.result.id}/${res.body.result.hash})`
@@ -45,7 +45,7 @@ module.exports = {
       guildID: log.guild.id,
       eventName: 'guildMemberPrune',
       embed: {
-         author: {
+        author: {
           name: `${log.perp.username}#${log.perp.discriminator}`,
           icon_url: log.perp.avatarURL
         },

@@ -4,7 +4,7 @@ module.exports = {
   name: 'guildBanAdd',
   type: 'on',
   handle: async (guild, user) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return;
+    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
     const guildBanAddEvent = {
       guildID: guild.id,
       eventName: 'guildBanAdd',

@@ -76,7 +76,7 @@ module.exports = {
   }
 }
 
-function compareInvites(current, saved) {
+function compareInvites (current, saved) {
   let i = 0
   for (i = 0; i < current.length; i++) {
     if (current[i] !== saved[i]) return current[i]

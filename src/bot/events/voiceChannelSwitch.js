@@ -4,7 +4,7 @@ module.exports = {
   name: 'voiceChannelSwitch',
   type: 'on',
   handle: async (member, channel, oldChannel) => {
-    await send( {
+    await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelSwitch',
       embed: {
@@ -17,8 +17,8 @@ module.exports = {
           name: 'New Channel',
           value: `<#${channel.id}> (${channel.name})`
         }, {
-            name: 'Old Channel',
-            value: `<#${oldChannel.id}> (${oldChannel.name})`
+          name: 'Old Channel',
+          value: `<#${oldChannel.id}> (${oldChannel.name})`
         }, {
           name: 'ID',
           value: `\`\`\`ini\nUser = ${member.id}\nNew = ${channel.id}\nOld = ${oldChannel.id}\`\`\``

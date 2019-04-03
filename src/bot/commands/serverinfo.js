@@ -1,14 +1,14 @@
 module.exports = {
   func: async message => {
-      const fields = []
+    const fields = []
     const embed = {
-        description: `Information about ${message.channel.guild.name}`,
-        timestamp: new Date(),
-        color: 319403,
-        fields: [{
-      name: 'Name',
-      value: `**${message.channel.guild.name}** (${message.channel.guild.id})`
-    }, {
+      description: `Information about ${message.channel.guild.name}`,
+      timestamp: new Date(),
+      color: 319403,
+      fields: [{
+        name: 'Name',
+        value: `**${message.channel.guild.name}** (${message.channel.guild.id})`
+      }, {
         name: 'Verification Level',
         value: `${message.channel.guild.verificationLevel}`
       }, {
@@ -32,38 +32,38 @@ module.exports = {
       }]
     }
     if (message.channel.guild.iconURL) {
-        embed.thumbnail = {
-            url: message.channel.guild.iconURL
-        }
+      embed.thumbnail = {
+        url: message.channel.guild.iconURL
+      }
     }
     if (message.channel.guild.emojis.length === 0) {
-        fields.push({
-            name: 'Emojis',
-            value: 'None'
-        })
+      fields.push({
+        name: 'Emojis',
+        value: 'None'
+      })
     } else {
-        const emojiObj = {
-            0: []
+      const emojiObj = {
+        0: []
+      }
+      let counter = 0
+      message.channel.guild.emojis.forEach(emoji => {
+        if (emojiObj[counter].join('\n').length < 950) {
+          emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
+        } else {
+          counter++
+          emojiObj[counter] = []
+          emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
         }
-        let counter = 0
-        message.channel.guild.emojis.forEach(emoji => {
-            if (emojiObj[counter].join('\n').length < 950) {
-                emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
-            } else {
-                counter++
-                emojiObj[counter] = []
-                emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
-            }
+      })
+      Object.keys(emojiObj).forEach(key => {
+        fields.push({
+          name: 'Emojis',
+          value: emojiObj[key].join('\n')
         })
-        Object.keys(emojiObj).forEach(key => {
-            fields.push({
-                name: 'Emojis',
-                value: emojiObj[key].join('\n')
-            })
-        })
+      })
     }
     embed.fields = embed.fields.concat(fields)
-    await message.channel.createMessage({embed: embed})
+    await message.channel.createMessage({ embed: embed })
   },
   name: 'serverinfo',
   description: 'Get information about the server this command is used in.',

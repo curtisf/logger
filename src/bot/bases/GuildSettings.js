@@ -34,7 +34,7 @@ class GuildSettings {
     return this.premium
   }
 
-  isLogBots() {
+  isLogBots () {
     return this.logBots
   }
 

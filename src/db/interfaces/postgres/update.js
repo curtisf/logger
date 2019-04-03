@@ -61,8 +61,8 @@ async function clearEventLog (guildID) {
 }
 
 async function clearEventByID (guildID, channelID) {
-    const doc = await getDoc(guildID)
-    const eventLogs = doc.event_logs
+  const doc = await getDoc(guildID)
+  const eventLogs = doc.event_logs
   Object.keys(eventLogs).forEach(event => {
     if (eventLogs[event] === channelID) {
       eventLogs[event] = ''
@@ -71,7 +71,7 @@ async function clearEventByID (guildID, channelID) {
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
-async function setAllEventsOneId(guildID, channelID) {
+async function setAllEventsOneId (guildID, channelID) {
   const doc = await getDoc(guildID)
   eventList.forEach(event => {
     doc.event_logs[event] = channelID
@@ -79,7 +79,7 @@ async function setAllEventsOneId(guildID, channelID) {
   return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
-async function setEventsLogId(guildID, channelID, events) {
+async function setEventsLogId (guildID, channelID, events) {
   const doc = await getDoc(guildID)
   events.forEach(event => {
     doc.event_logs[event] = channelID
@@ -119,14 +119,14 @@ async function toggleLogBots (guildID) {
   return !doc.log_bots
 }
 
-async function updateNames(userID, name) {
+async function updateNames (userID, name) {
   const doc = await getUser(userID)
   doc.names.push(name)
   doc.names = aes.encrypt(JSON.stringify(doc.names))
   return await pool.query('UPDATE users SET names=$1 WHERE id=$2', [doc.names, userID])
 }
 
-async function updateMessageByID(id, content) {
+async function updateMessageByID (id, content) {
   const message = await getMessageById(id)
   const updatedContent = aes.encrypt(message.content)
   return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [updatedContent, message.id])

@@ -8,14 +8,14 @@ const checkExempt = [
 ]
 
 module.exports = {
-    name: 'guildUpdate',
-    type: 'on',
-    handle: async (newGuild, oldGuild) => {
-      if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+  name: 'guildUpdate',
+  type: 'on',
+  handle: async (newGuild, oldGuild) => {
+    if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
     let fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => { // Ported from logger v2
       const user = log.users[0]
-        let arr
+      let arr
       if (Object.keys(log.entries[0].before) > Object.keys(log.entries[0].after)) {
         arr = Object.keys(log.entries[0].before)
       } else {
@@ -133,5 +133,5 @@ module.exports = {
           }
       }
     }
-}
+  }
 }

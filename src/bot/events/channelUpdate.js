@@ -37,10 +37,10 @@ module.exports = {
         color: 3553599
       }
     }
-    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}`})
-    if (channel.nsfw !== oldChannel.nsfw) channelUpdateEvent.embed.fields.push({name: 'NSFW', value: `Now: ${channel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}\nWas: ${oldChannel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}`})
-    if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({name: 'Topic', value: `Now: ${channel.topic.substr(0, 400)}\nWas: ${oldChannel.topic.substr(0, 400)}`})
-    if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}`})
+    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}` })
+    if (channel.nsfw !== oldChannel.nsfw) channelUpdateEvent.embed.fields.push({ name: 'NSFW', value: `Now: ${channel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}\nWas: ${oldChannel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}` })
+    if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({ name: 'Topic', value: `Now: ${channel.topic.substr(0, 400)}\nWas: ${oldChannel.topic.substr(0, 400)}` })
+    if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({ name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}` })
     let channelOverwrites = channel.permissionOverwrites.map(o => o) // convert to array
     let oldOverwrites = oldChannel.permissionOverwrites.map(o => o)
     const uniques = getDifference(channelOverwrites, oldOverwrites)
@@ -89,7 +89,7 @@ module.exports = {
           field.value += `\n😐 INHERIT ${perm}`
         }
       })
-      ////////////////////
+      /// /////////////////
       channelUpdateEvent.embed.fields.push(field)
     })
     console.log(channelUpdateEvent.embed.fields)
@@ -109,7 +109,7 @@ module.exports = {
   }
 }
 
-function getDifference(array1, array2) {
+function getDifference (array1, array2) {
   return array1.filter(x => {
     return array2.indexOf(x) < 0
   })

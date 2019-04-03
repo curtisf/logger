@@ -6,7 +6,7 @@ module.exports = {
   name: 'messageUpdate',
   type: 'on',
   handle: async (newMessage, oldMessage) => {
-      if (!newMessage.channel.guild || !newMessage.author) return
+    if (!newMessage.channel.guild || !newMessage.author) return
     if (newMessage.author.id === global.bot.user.id) return
     oldMessage = await getMessage(newMessage.id)
     if (!oldMessage) return
@@ -29,11 +29,11 @@ module.exports = {
             name: 'Channel',
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})`
           }, {
-              name: 'Now',
-              value: `${newMessage.cleanContent.replace(/\"/g, '"').replace(/`/g, '')}`
+            name: 'Now',
+            value: `${newMessage.cleanContent.replace(/\"/g, '"').replace(/`/g, '')}`
           }, {
-              name: 'Previously',
-              value: `${oldMessage.content.replace(/\"/g, '"').replace(/`/g, '')}`
+            name: 'Previously',
+            value: `${oldMessage.content.replace(/\"/g, '"').replace(/`/g, '')}`
           }, {
             name: 'ID',
             value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
@@ -43,6 +43,6 @@ module.exports = {
       }
       await send(messageUpdateEvent)
       await updateMessageByID(newMessage.id, newMessage.content)
-}
+    }
   }
 }

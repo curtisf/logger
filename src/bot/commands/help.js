@@ -32,7 +32,7 @@ module.exports = {
     embed.fields.push({
       name: 'Changes',
       value: 'Version 3 is in active testing at the moment. What changed? The bot was rewritten from scratch with a push for future viability and a dynamic framework. View my commands above for anything new. Look at what patreons get below. Why is nothing working?? The bot now needs manage webhook permissions as to abate the huge ratelimits from sending messages.'
-    },{
+    }, {
       name: 'Support',
       value: 'If something is going horribly wrong, go ahead and join [my support server](https://discord.gg/ed7Gaa3)'
     },

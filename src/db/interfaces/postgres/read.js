@@ -35,7 +35,7 @@ async function getUser (userID) {
   return decryptedDoc
 }
 
-async function getMessagesByAuthor(userID) {
+async function getMessagesByAuthor (userID) {
   const resp = await pool.query('SELECT * FROM messages WHERE author_id=$1', [userID])
   const promiseArray = resp.rows.map(m => {
     const decryptedMessage = decryptMessageDoc(m)
@@ -45,25 +45,25 @@ async function getMessagesByAuthor(userID) {
   return done
 }
 
-async function getMessageById(messageID) {
+async function getMessageById (messageID) {
   let message = await pool.query('SELECT * FROM messages WHERE id=$1', [messageID])
   if (message.rows.length === 0) return null
   message = await decryptMessageDoc(message.rows[0])
   return message
 }
 
-async function decryptUserDoc(userDoc) {
+async function decryptUserDoc (userDoc) {
   userDoc.names = JSON.parse(aes.decrypt(userDoc.names))
   return userDoc
 }
 
-async function decryptMessageDoc(message) {
+async function decryptMessageDoc (message) {
   message.content = aes.decrypt(message.content)
   if (message.attachment_b64) message.attachment_b64 = aes.decrypt(message.attachment_b64)
   return message
 }
 
-async function getAllMessages() {
+async function getAllMessages () {
   const messages = await pool.query('SELECT * FROM messages')
   return messages.rows
 }

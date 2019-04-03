@@ -57,7 +57,7 @@ module.exports = {
   category: 'Logging'
 }
 
-function cleanArray(events) {
+function cleanArray (events) {
   const tempEvents = []
   events.forEach(event => {
     if (eventList.includes(event)) isGood = true
@@ -68,7 +68,6 @@ function cleanArray(events) {
         tempEvents.push(validEvent)
       }
     })
-
   })
   return tempEvents
 }
