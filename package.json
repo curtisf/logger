@@ -33,7 +33,8 @@
     "rethinkdbdash": "^2.3.31",
     "standard": "^12.0.1",
     "superagent": "^4.0.0",
-    "util": "^0.11.1"
+    "util": "^0.11.1",
+    "ws": "^6.2.1"
   },
   "devDependencies": {
     "eslint": "^5.12.1"

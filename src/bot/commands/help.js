@@ -4,7 +4,7 @@ module.exports = {
     try {
       DMC = await message.author.getDMChannel()
     } catch (e) {
-      message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`)
+      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`)
     }
     const embed = {
       'description': 'Below, you can see my commands listed by name and description. If it has arguments you can pass, an example will be included.',
@@ -40,9 +40,10 @@ module.exports = {
       name: 'Patreon',
       value: 'If you like me and want to support my owner (or want coolio Patreon features), check out [my Patreon page](https://patreon.com/logger)'
     })
-    DMC.createMessage({
+    await DMC.createMessage({
       embed: embed
     })
+    await message.addReaction('📜')
   },
   name: 'help',
   description: 'DM you with this help message!',

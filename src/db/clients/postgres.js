@@ -1,4 +1,3 @@
-const readline = require('readline')
 const { Client, Pool } = require('pg') // PREREQUISITE: Have postgres installed and your user can connect
 
 require('dotenv').config()

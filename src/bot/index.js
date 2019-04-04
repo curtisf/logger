@@ -51,6 +51,8 @@ async function init () {
 
   await global.bot.connect() // wait for everything to be cached
 
+  require('../miscellaneous/bezerk')
+
   const oldMessagesDeleted = await deleteMessagesOlderThanDays(process.env.MESSAGE_HISTORY_DAYS)
   global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${process.env.MESSAGE_HISTORY_DAYS} day(s).`)
 }

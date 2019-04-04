@@ -18,6 +18,9 @@ module.exports = {
           name: 'User Information',
           value: `${user.username}#${user.discriminator} (${user.id}) ${user.mention} ${user.bot ? '\nIs a bot' : ''}`
         }, {
+          name: 'Reason',
+          value: 'None provided'
+        }, {
           name: 'ID',
           value: `\`\`\`ini\nUser = ${user.id}\nPerpetrator = Unknown\`\`\``
         }],
@@ -29,7 +32,8 @@ module.exports = {
       const log = logs.entries[0]
       const perp = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-        guildBanRemoveEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
+        if (log.reason) guildBanRemoveEvent.embed.fields[1].value = log.reason
+        guildBanRemoveEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
         guildBanRemoveEvent.embed.footer = {
           text: `${perp.username}#${perp.discriminator}`,
           icon_url: perp.avatarURL

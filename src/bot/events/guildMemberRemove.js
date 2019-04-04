@@ -11,6 +11,15 @@ module.exports = {
       member.username = 'Unknown'
       member.discriminator = 'Unknown'
     }
+    let roles = []
+    member.roles.forEach(roleID => {
+      const role = guild.roles.find(r => r.id === roleID) 
+      if (role) roles.push(role)
+    })
+    const rolesField = {
+      name: 'Roles',
+      value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ')
+    }
     await setTimeout(async () => {
       const event = {
         guildID: guild.id,
@@ -19,7 +28,6 @@ module.exports = {
       let logs = await guild.getAuditLogs(1, null, 20)
       let log = logs.entries[0]
       let user = logs.users[1]
-      if (!log) return
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         event.eventName = 'guildMemberKick'
         event.embed = {
@@ -32,9 +40,9 @@ module.exports = {
           fields: [{
             name: 'User Information',
             value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
-          }, {
+          }, rolesField, {
             name: 'Reason',
-            value: log.reason
+            value: log.reason ? log.reason : 'None provided'
           }, {
             name: 'ID',
             value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
@@ -59,7 +67,7 @@ module.exports = {
             fields: [{
               name: 'User Information',
               value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
-            }, {
+            }, rolesField, {
               name: 'ID',
               value: `\`\`\`ini\nUser = ${member.id}\`\`\``
             }]
