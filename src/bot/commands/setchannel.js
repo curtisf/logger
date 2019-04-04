@@ -39,9 +39,10 @@ module.exports = {
     const hookStr = await webhookCache.getWebhook(message.channel.id)
     try {
       global.bot.executeWebhook()
-      console.log(hookStr)
     } catch (_) {}
-    if (events.length === 0) {
+    if (events.length === 0 && suffix) {
+      message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
+    } else if (events.length === 0 && !suffix) {
       await setAllOneID(message.channel.guild.id, message.channel.id)
       await cacheGuild(message.channel.guild.id)
       message.channel.createMessage(`<@${message.author.id}>, I set all events to log here!`)

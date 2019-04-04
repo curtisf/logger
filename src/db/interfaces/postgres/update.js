@@ -135,9 +135,7 @@ async function updateNames (userID, name) {
 }
 
 async function updateMessageByID (id, content) {
-  const message = await getMessageById(id)
-  const updatedContent = aes.encrypt(message.content)
-  return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [updatedContent, message.id])
+  return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content), id])
 }
 
 exports.updateNames = updateNames
