@@ -23,6 +23,10 @@ function processCommand (message, commandName, suffix) {
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')
     return
+  } else if (message.author.id === process.env.CREATOR_IDS) {
+    global.logger.info(`Developer override by ${message.author.username}#${message.author.discriminator} at ${new Date().toUTCString()}`)
+    command.func(message, suffix)
+    return
   } else if (command.type === 'creator' && !process.env.CREATOR_IDS.includes(message.author.id)) {
     message.channel.createMessage('This command is creator only!')
     return
