@@ -1,6 +1,7 @@
 const Eris = require('eris')
 const cluster = require('cluster')
 const raven = require('raven')
+const Raven = require('raven')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const getCacheInfo = require('./utils/getCacheInfo')
@@ -8,6 +9,7 @@ const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
 
 require('dotenv').config()
+Raven.config(process.env.RAVEN_URI).install()
 
 if (process.env.SENTRY_URI) {
   raven.config(process.env.SENTRY_URI).install()
@@ -60,6 +62,14 @@ async function init () {
 process.on('exit', (code) => {
   global.logger.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)
   require('../db/clients/postgres').end()
+})
+
+process.on('unhandledRejection', (e) => {
+  Raven.captureException(e, {level: 'error'})
+})
+
+process.on('uncaughtException', (e) => {
+  Raven.captureException(e, {level: 'fatal'})
 })
 
 init()
