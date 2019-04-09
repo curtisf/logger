@@ -19,8 +19,8 @@ module.exports = {
         }
       } })
     }
-    let disabled = disableEvent(message.channel.guild.id, split[0])
-    const respStr = `Toggled ${split[0]}.`
+    let disabled = await disableEvent(message.channel.guild.id, split[0])
+    const respStr = `${!disabled ? 'Enabled' : 'Disabled'} ${split[0]}.`
     message.channel.createMessage({ embed: {
       'description': respStr,
       'color': 3553599,

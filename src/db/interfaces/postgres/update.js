@@ -101,6 +101,7 @@ async function disableEvent (guildID, event) {
   } else {
     doc.disabled_events.push(event)
   }
+  global.bot.guildSettingsCache[guildID].disabledEvents = doc.disabled_events
   await pool.query('UPDATE guilds SET disabled_events=$1 WHERE id=$2', [doc.disabled_events, guildID])
   await cacheGuild(guildID)
   return disabled
