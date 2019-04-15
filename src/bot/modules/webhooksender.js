@@ -43,7 +43,7 @@ module.exports = async pkg => {
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
         return await guildWebhookCacher(pkg.guildID)
       } else {
-        console.error('Error while sending a message over webhook!', e, pkg)
+        console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
       }
     })
   }

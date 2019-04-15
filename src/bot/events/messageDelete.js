@@ -17,7 +17,7 @@ module.exports = {
     const cachedUser = global.bot.users.get(cachedMessage.author_id)
     // TODO: Add logic to check who deleted the message from audit logs for premium
     const member = message.channel.guild.members.get(cachedMessage.author_id)
-    await send({
+    let messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
@@ -26,18 +26,34 @@ module.exports = {
           icon_url: cachedUser ? cachedUser.avatarURL : 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
         },
         description: `Message deleted in <#${message.channel.id}>`,
-        fields: [{
-          name: 'Content',
-          value: cachedMessage.content ? cachedMessage.content : 'None'
-        }, {
-          name: 'ID',
-          value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${message.id}\`\`\``
-        }, {
-          name: 'Date',
-          value: new Date(cachedMessage.ts)
-        }],
+        fields: [],
         color: 8530669
       }
+    }
+    const messageChunks = []
+    if (cachedMessage.content) {
+      if (cachedMessage.content.length > 1024) {
+        messageChunks.push(cachedMessage.content.substring(0, 1023))
+        messageChunks.push(cachedMessage.content.substring(1024, cachedMessage.content.length))
+      } else {
+        messageChunks.push(cachedMessage.content)
+      }
+    } else {
+      messageChunks.push('None')
+    }
+    messageChunks.forEach((chunk, i) => {
+        messageDeleteEvent.embed.fields.push({
+          name: i === 0 ? 'Content' : 'Continued',
+          value: chunk
+        })
     })
+    messageDeleteEvent.embed.fields.push({
+      name: 'ID',
+      value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
+    }, {
+      name: 'Date',
+      value: new Date(cachedMessage.ts)
+    })
+    await send(messageDeleteEvent)
   }
 }
