@@ -12,10 +12,12 @@ module.exports = {
       member.discriminator = 'Unknown'
     }
     let roles = []
-    member.roles.forEach(roleID => {
-      const role = guild.roles.find(r => r.id === roleID) 
-      if (role) roles.push(role)
-    })
+    if (member.roles) {
+      member.roles.forEach(roleID => {
+        const role = guild.roles.find(r => r.id === roleID)
+        if (role) roles.push(role)
+      })
+    }
     const rolesField = {
       name: 'Roles',
       value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ')

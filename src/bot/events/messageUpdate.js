@@ -28,7 +28,7 @@ module.exports = {
           description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
           fields: [{
             name: 'Channel',
-            value: `<#${newMessage.channel.id}> (${newMessage.channel.name})`
+            value: `<#${newMessage.channel.id}> (${newMessage.channel.name})\n[Go To Message](https://discordapp.com/channels/${newMessage.channel.guild.id}/${newMessage.channel.id}/${newMessage.id})`
           }, {
             name: 'Now',
             value: `${newMessage.cleanContent.replace(/\"/g, '"').replace(/`/g, '')}`
@@ -39,7 +39,7 @@ module.exports = {
             name: 'ID',
             value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
           }],
-          color: 3553599
+          color: 15084269
         }
       }
       await send(messageUpdateEvent)

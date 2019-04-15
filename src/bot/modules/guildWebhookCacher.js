@@ -19,7 +19,6 @@ module.exports = async guildID => {
   idsToCache.forEach(channelID => {
     for (let i = 0; i < webhooks.length; i++) {
       if (webhooks[i].channel_id === channelID) {
-        console.log('GOT MATCH')
         idsToCache.splice(idsToCache.indexOf(channelID), 1)
         webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)
       }

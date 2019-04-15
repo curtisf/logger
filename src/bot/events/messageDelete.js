@@ -36,7 +36,7 @@ module.exports = {
           name: 'Date',
           value: new Date(cachedMessage.ts)
         }],
-        color: 3553599
+        color: 8530669
       }
     })
   }
