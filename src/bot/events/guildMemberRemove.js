@@ -29,8 +29,8 @@ module.exports = {
       }
       let logs = await guild.getAuditLogs(1, null, 20)
       let log = logs.entries[0]
-      let user = logs.users[1]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
+        let user = logs.users[1]
         event.eventName = 'guildMemberKick'
         event.embed = {
           author: {
