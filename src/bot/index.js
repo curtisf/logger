@@ -65,10 +65,12 @@ process.on('exit', (code) => {
 })
 
 process.on('unhandledRejection', (e) => {
+  console.error(e)
   Raven.captureException(e, {level: 'error'})
 })
 
 process.on('uncaughtException', (e) => {
+  console.error(e)
   Raven.captureException(e, {level: 'fatal'})
 })
 
