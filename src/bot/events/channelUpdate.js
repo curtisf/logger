@@ -55,7 +55,7 @@ module.exports = {
     } else auditLogId = 14
     channelOverwrites.forEach(newOverwrite => {
       const oldOverwrite = oldOverwrites.find(ow => ow.id === newOverwrite.id)
-      if (!newOverwrite.json || !oldOverwrite.json) return
+      if (!newOverwrite || !oldOverwrite) return
       const newPerms = Object.keys(newOverwrite.json)
       const oldPerms = Object.keys(oldOverwrite.json)
       let differentPerms = getDifference(newPerms, oldPerms)
