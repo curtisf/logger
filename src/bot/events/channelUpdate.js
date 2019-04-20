@@ -37,7 +37,7 @@ module.exports = {
     }
     if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}` })
     if (channel.nsfw !== oldChannel.nsfw) channelUpdateEvent.embed.fields.push({ name: 'NSFW', value: `Now: ${channel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}\nWas: ${oldChannel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}` })
-    if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({ name: 'Topic', value: `Now: ${channel.topic.substr(0, 400)}\nWas: ${oldChannel.topic.substr(0, 400)}` })
+    if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({ name: 'Topic', value: `Now: ${channel.topic ? channel.topic.substr(0, 400) : 'Empty'}\nWas: ${oldChannel.topic ? oldChannel.topic.substr(0, 400) : 'Empty'}` })
     if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({ name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}` })
     let channelOverwrites = channel.permissionOverwrites.map(o => o) // convert to array
     let oldOverwrites = oldChannel.permissionOverwrites.map(o => o)
@@ -55,6 +55,7 @@ module.exports = {
     } else auditLogId = 14
     channelOverwrites.forEach(newOverwrite => {
       const oldOverwrite = oldOverwrites.find(ow => ow.id === newOverwrite.id)
+      if (!newOverwrite.json || !oldOverwrite.json) return
       const newPerms = Object.keys(newOverwrite.json)
       const oldPerms = Object.keys(oldOverwrite.json)
       let differentPerms = getDifference(newPerms, oldPerms)
@@ -95,6 +96,7 @@ module.exports = {
     await setTimeout(async () => {
       const logs = await channel.guild.getAuditLogs(1, null, auditLogId)
       const log = logs.entries[0]
+      if (!log) return
       const user = logs.users[0]
       if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
         channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
