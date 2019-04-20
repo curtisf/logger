@@ -125,6 +125,7 @@ async function ignoreChannel (guildID, channelID) {
 async function toggleLogBots (guildID) {
   const doc = await getDoc(guildID)
   await pool.query('UPDATE guilds SET log_bots=$1 WHERE id=$2', [!doc.log_bots, guildID])
+  global.bot.guildSettingsCache[guildID].logBots = !doc.log_bots
   return !doc.log_bots
 }
 

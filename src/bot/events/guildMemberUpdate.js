@@ -28,13 +28,15 @@ module.exports = {
         if (new Date().getTime() - auditEntryDate.getTime() < 3000) {
           log.entries[0].guild = []
           let user = log.entries[0].user
-          if (!global.bot.guildSettingsCache[guild.id]) await cacheGuild(guild.id)
-          if (user.bot && global.bot.guildSettingsCache[guild.id].isLogBots()) {
-            processRoleChange()
-          } else if (!user.bot) {
-            processRoleChange()
+          if (!global.bot.guildSettingsCache[guild.id]) {
+            await cacheGuild(guild.id)
           }
-          function processRoleChange () {
+          if (user.bot && global.bot.guildSettingsCache[guild.id].isLogBots()) {
+            await processRoleChange()
+          } else if (!user.bot) {
+            await processRoleChange()
+          }
+          async function processRoleChange () {
             let added = []
             let removed = []
             let roleColor
@@ -51,16 +53,16 @@ module.exports = {
             }
             guildMemberUpdate.embed.fields[0].value = `${added.map(role => `➕ **${role.name}** (${role.id})`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}** (${role.id})`).join('\n')}`
             guildMemberUpdate.embed.color = roleColor
+            guildMemberUpdate.embed.footer = {
+              text: `${user.username}#${user.discriminator}`,
+              icon_url: `${user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`}`
+            }
+            guildMemberUpdate.embed.fields.push({
+              name: 'ID',
+              value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
+            })
+            await send(guildMemberUpdate)
           }
-          guildMemberUpdate.embed.footer = {
-            text: `${user.username}#${user.discriminator}`,
-            icon_url: `${user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`}`
-          }
-          guildMemberUpdate.embed.fields.push({
-            name: 'ID',
-            value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
-          })
-          send(guildMemberUpdate)
         }
       })
     } else if (member.nick !== oldMember.nick) {
@@ -77,7 +79,7 @@ module.exports = {
         name: 'ID',
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``
       })
-      send(guildMemberUpdate)
+      await send(guildMemberUpdate)
     }
   }
 }

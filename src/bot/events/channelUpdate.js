@@ -6,10 +6,9 @@ const CHANNEL_TYPE_MAP = {
 }
 
 module.exports = {
-  name: 'channelUpdateDisabled', // for now
+  name: 'channelUpdate',
   type: 'on',
   handle: async (channel, oldChannel) => {
-    console.log('channel update')
     if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
     const channelUpdateEvent = {
       guildID: channel.guild.id,
@@ -33,8 +32,7 @@ module.exports = {
         }, {
           name: 'ID',
           value: `\`\`\`ini\nUser = Unknown\nChannel = ${channel.id}\`\`\``
-        }],
-        color: 3553599
+        }]
       }
     }
     if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}` })
@@ -43,7 +41,10 @@ module.exports = {
     if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({ name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}` })
     let channelOverwrites = channel.permissionOverwrites.map(o => o) // convert to array
     let oldOverwrites = oldChannel.permissionOverwrites.map(o => o)
-    const uniques = getDifference(channelOverwrites, oldOverwrites)
+    let uniques = getDifference(channelOverwrites, oldOverwrites)
+    if (oldOverwrites.length > channelOverwrites.length) {
+      uniques = getDifference(oldOverwrites, channelOverwrites)
+    }
     let auditLogId
     if (channelOverwrites.length > oldOverwrites.length) {
       auditLogId = 13
@@ -56,9 +57,9 @@ module.exports = {
       const oldOverwrite = oldOverwrites.find(ow => ow.id === newOverwrite.id)
       const newPerms = Object.keys(newOverwrite.json)
       const oldPerms = Object.keys(oldOverwrite.json)
-      console.log('DIFFERENCE', getDifference(newPerms, oldPerms))
-      if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString() !== oldChannel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString()) return
-      console.log(newPerms, oldPerms)
+      let differentPerms = getDifference(newPerms, oldPerms)
+      if (oldPerms.length > newPerms.length) differentPerms = getDifference(oldPerms, newPerms)
+      if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString() === oldChannel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString()) return
       let overwriteName = newOverwrite.type + ' '
       if (newOverwrite.type === 'member') {
         const member = channel.guild.members.get(newOverwrite.id)
@@ -72,27 +73,25 @@ module.exports = {
         name: overwriteName,
         value: ''
       }
-      newPerms.forEach(perm => {
+      differentPerms.forEach(perm => {
         if (newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
           if (newOverwrite.json[perm] === true && oldOverwrite.json[perm] === false) {
-            field.value += `\n<:plus:480606882311176192> ${perm}`
+            field.value += `\n+ ${perm}`
           } else if (newOverwrite.json[perm] === false && oldOverwrite.json[perm] === true) {
-            field.value += `\n<:fullredminus:480606882294267924> ${perm}`
+            field.value += `\n− ${perm}`
           }
         } else if (newOverwrite.json.hasOwnProperty(perm) && !oldOverwrite.json.hasOwnProperty(perm)) {
           if (newOverwrite.json[perm]) {
-            field.value += `\n<:plus:480606882311176192> ${perm}`
+            field.value += `\n+ ${perm}`
           } else {
-            field.value += `\n<:fullredminus:480606882294267924> ${perm}`
+            field.value += `\n− ${perm}`
           }
         } else if (!newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
-          field.value += `\n😐 INHERIT ${perm}`
+          field.value += `\n⚖️ neutral/inherit ${perm}`
         }
       })
-      /// /////////////////
-      channelUpdateEvent.embed.fields.push(field)
+      if (field.value) channelUpdateEvent.embed.fields.push(field)
     })
-    console.log(channelUpdateEvent.embed.fields)
     await setTimeout(async () => {
       const logs = await channel.guild.getAuditLogs(1, null, auditLogId)
       const log = logs.entries[0]
@@ -110,7 +109,7 @@ module.exports = {
 }
 
 function getDifference (array1, array2) {
-  return array1.filter(x => {
-    return array2.indexOf(x) < 0
+  return array1.filter(i => {
+    return array2.indexOf(i) < 0
   })
 }
