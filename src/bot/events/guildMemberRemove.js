@@ -1,5 +1,6 @@
 const send = require('../modules/webhooksender')
 const prunecache = require('../modules/prunecache')
+const getUser = require('../../db/interfaces/postgres/read').getUser
 
 module.exports = {
   name: 'guildMemberRemove',
@@ -30,6 +31,7 @@ module.exports = {
       let logs = await guild.getAuditLogs(1, null, 20)
       let log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
+        const dbUser = await getUser(member.id)
         let user = logs.users[1]
         event.eventName = 'guildMemberKick'
         event.embed = {
@@ -54,11 +56,21 @@ module.exports = {
             icon_url: user.avatarURL
           }
         }
+        if (dbUser.names.includes('placeholder')) {
+          dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
+        }
+        if (dbUser.names.length !== 0) {
+          event.embed.fields.push({
+            name: 'Last Names',
+            value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
+          })
+        }
         return send(event)
       } else {
         const purgeLogs = await guild.getAuditLogs(1, null, 21)
         purgeLogEntry = purgeLogs.entries[0]
         let user = purgeLogs.users[1]
+        const dbUser = await getUser(member.id)
         if (!purgeLogEntry || Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) > 30000) {
           event.embed = {
             author: {
@@ -74,6 +86,15 @@ module.exports = {
               name: 'ID',
               value: `\`\`\`ini\nUser = ${member.id}\`\`\``
             }]
+          }
+          if (dbUser.names.includes('placeholder')) {
+            dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
+          }
+          if (dbUser.names.length !== 0) {
+            event.embed.fields.push({
+              name: 'Last Names',
+              value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
+            })
           }
           return send(event)
         } else if (Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) < 30000) { // 30 seconds

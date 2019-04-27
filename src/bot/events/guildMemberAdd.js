@@ -1,11 +1,13 @@
 const send = require('../modules/webhooksender')
 const inviteCache = require('../modules/invitecache')
+const getUser = require('../../db/interfaces/postgres/read').getUser
 
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
   handle: async (guild, member) => {
     if (!guild.members.get(global.bot.user.id).permission.json['manageGuild']) return
+    const dbUser = await getUser(member.id)
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
@@ -76,6 +78,15 @@ module.exports = {
       name: 'ID',
       value: `\`\`\`ini\nMember = ${member.id}\nGuild = ${guild.id}\`\`\``
     })
+    if (dbUser.names.includes('placeholder')) {
+      dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
+    }
+    if (dbUser.names.length !== 0) {
+      event.embed.fields.push({
+        name: 'Last Names',
+        value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
+      })
+    }
     await send(GMAEvent)
   }
 }
