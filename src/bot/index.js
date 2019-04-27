@@ -66,12 +66,12 @@ process.on('exit', (code) => {
 
 process.on('unhandledRejection', (e) => {
   console.error(e)
-  Raven.captureException(e, {level: 'error'})
+  if (!e.message.includes('[50013]')) Raven.captureException(e, {level: 'error'})
 })
 
 process.on('uncaughtException', (e) => {
   console.error(e)
-  Raven.captureException(e, {level: 'fatal'})
+  if (!e.message.includes('[50013]')) Raven.captureException(e, {level: 'fatal'})
 })
 
 init()
