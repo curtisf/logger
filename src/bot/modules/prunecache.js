@@ -11,7 +11,8 @@ module.exports = {
         list: `${new Date((logID / 4194304) + 1420070400000).toString()}\n`,
         perp
       }
-      setTimeout(async () => this.send(logID), 10000)
+      setTimeout(async () => {
+        this.send(logID)}, 10000)
     }
     this.cache[logID].list += `\n${member.username}#${member.discriminator} (${member.id})`
     this.cache[logID].count++
@@ -32,6 +33,7 @@ module.exports = {
         })
 
       if (res.statusCode === 200 && res.body.result.id) {
+        console.log('succ  setting value')
         res = `[${log.count} members](https://paste.lemonmc.com/${res.body.result.id}/${res.body.result.hash})`
       } else {
         console.error(res)
@@ -43,7 +45,7 @@ module.exports = {
     }
     const event = {
       guildID: log.guild.id,
-      eventName: 'guildMemberPrune',
+      eventName: 'guildMemberKick',
       embed: {
         author: {
           name: `${log.perp.username}#${log.perp.discriminator}`,

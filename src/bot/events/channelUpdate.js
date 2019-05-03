@@ -35,7 +35,7 @@ module.exports = {
         }]
       }
     }
-    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}` })
+    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `**Now**: ${channel.name}\n\n**Was**: ${oldChannel.name}` })
     if (channel.nsfw !== oldChannel.nsfw) channelUpdateEvent.embed.fields.push({ name: 'NSFW', value: `Now: ${channel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}\nWas: ${oldChannel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}` })
     if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({ name: 'Topic', value: `Now: ${channel.topic ? channel.topic.substr(0, 400) : 'Empty'}\nWas: ${oldChannel.topic ? oldChannel.topic.substr(0, 400) : 'Empty'}` })
     if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({ name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}` })
@@ -52,6 +52,8 @@ module.exports = {
     } else if (oldOverwrites.length > channelOverwrites.length) {
       auditLogId = 15
       oldOverwrites = oldOverwrites.filter(val => !uniques.includes(val))
+    } else if (channel.topic !== oldChannel.topic || channel.nsfw !== oldChannel.nsfw || channel.name !== oldChannel.name) {
+      auditLogId = 11
     } else auditLogId = 14
     channelOverwrites.forEach(newOverwrite => {
       const oldOverwrite = oldOverwrites.find(ow => ow.id === newOverwrite.id)

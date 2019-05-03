@@ -69,7 +69,7 @@ module.exports = {
       } else {
         const purgeLogs = await guild.getAuditLogs(1, null, 21)
         purgeLogEntry = purgeLogs.entries[0]
-        let user = purgeLogs.users[1]
+        let user = purgeLogs.users[0]
         const dbUser = await getUser(member.id)
         if (!purgeLogEntry || Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) > 30000) {
           event.embed = {

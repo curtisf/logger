@@ -11,7 +11,7 @@ module.exports = {
     } catch (_) {}
     await message.channel.createMessage({
       embed: {
-        'title': 'Done clearing configs from this channel.',
+        'title': 'Any events associated with this channel along with the webhook has been undone.',
         'color': 16711680,
         'timestamp': new Date(),
         'footer': {
