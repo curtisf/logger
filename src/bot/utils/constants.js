@@ -16,6 +16,7 @@ exports.ALL_EVENTS = [
   'guildMemberKick',
   'guildMemberRemove',
   'guildMemberUpdate',
+  'guildMemberNickUpdate',
   'voiceChannelLeave',
   'voiceChannelJoin',
   'voiceStateUpdate',
