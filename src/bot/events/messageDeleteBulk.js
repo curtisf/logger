@@ -25,6 +25,14 @@ async function paste(messages, guildID) {
           color: 15550861
         }
       }
+      let globalUser = global.bot.users.get(m.author_id)
+      if (!globalUser) {
+        globalUser = {
+          username: 'Unknown',
+          discriminator: '0000',
+          avatarURL: 'http://www.clker.com/cliparts/C/8/4/G/W/o/transparent-red-circle-hi.png'
+        }
+      }
     const pasteString = messages.reverse().map(m => `${global.bot.users.get(m.author_id).username}#${global.bot.users.get(m.author_id).discriminator} (${m.author_id}) | (${global.bot.users.get(m.author_id).avatarURL}) | ${new Date(m.ts)}: ${m.content} |  | `).join('\r\n')
       sa
         .post(process.env.PASTE_CREATE_ENDPOINT)

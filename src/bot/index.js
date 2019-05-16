@@ -66,12 +66,12 @@ process.on('exit', (code) => {
 
 process.on('unhandledRejection', (e) => {
   console.error(e)
-  if (!e.message.includes('[50013]')) Raven.captureException(e, {level: 'error'})
+  if (!e.message.includes('[50013]') && !e.message.startsWith('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) Raven.captureException(e.stack, {level: 'error'}) // handle when Discord freaks out
 })
 
 process.on('uncaughtException', (e) => {
   console.error(e)
-  if (!e.message.includes('[50013]')) Raven.captureException(e, {level: 'fatal'})
+  if (!e.message.includes('[50013]')) Raven.captureException(e.stack, {level: 'fatal'})
 })
 
 init()
