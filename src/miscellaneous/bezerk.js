@@ -1,6 +1,7 @@
 const uri = process.env.BEZERK_URI
 const secret = process.env.BEZERK_SECRET
 const WS = require('ws')
+const cacheGuild = require('../bot/utils/cacheGuild')
 
 let socket
 
@@ -43,17 +44,24 @@ function start () {
       case '2001': { // REQUEST
         const bot = global.bot // eslint-disable-line
         try {
+          if (msg.c.startsWith('recache')) {
+            msg.c = msg.c.replace('recache ', '')
+            cacheGuild(msg.c)
+          } else {
           const resp = eval(msg.c) // eslint-disable-line no-eval
           global.logger.info(resp)
           send({
             op: '2002', // REQUEST_REPLY
-            c: resp
+            c: resp,
+            uuid: msg.uuid
           })
+        }
         } catch (e) {
           global.logger.error(e)
           send({
             op: '5000', // CANNOT_COMPLY
-            c: e.message
+            c: e.message,
+            uuid: msg.uuid ? msg.uuid : 6334
           })
         }
       }
