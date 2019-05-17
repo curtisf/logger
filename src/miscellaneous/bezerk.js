@@ -57,7 +57,6 @@ function start () {
           })
         }
         } catch (e) {
-          global.logger.error(e)
           send({
             op: '5000', // CANNOT_COMPLY
             c: e.message,
