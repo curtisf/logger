@@ -32,7 +32,7 @@ module.exports = {
       let log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         const dbUser = await getUser(member.id)
-        let user = logs.users[1]
+        let user = logs.users.find(u => u.id !== member.id)
         event.eventName = 'guildMemberKick'
         event.embed = {
           author: {
