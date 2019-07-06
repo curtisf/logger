@@ -38,18 +38,18 @@ async function paste(messages, guildID) {
   }).join('\r\n')
   sa
     .post(process.env.PASTE_CREATE_ENDPOINT)
+    .set('Authorization', `ApiKey ${process.env.PASTE_CREATE_TOKEN}`)
+    .set('Content-Type', 'application/json')
     .send({
-      data: pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.',
-      private: true,
-      language: 'text',
-      title: `${messages.length} messages were purged`,
-      expire: '2592000'
+      code: pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.',
+      title: 'message purge',
+      lexer: 'text'
     })
     .end((err, res) => {
-      if (!err && res.statusCode === 200 && res.body.result.id) {
+      if (!err && res.statusCode === 201 && res.body.absolute_url) {
         messageDeleteBulkEvent.embed.fields.push({
           name: 'Link',
-          value: `https://paste.lemonmc.com/${res.body.result.id}/${res.body.result.hash}`
+          value: `https://snip.lemonmc.com${res.body.absolute_url}`
         })
         send(messageDeleteBulkEvent)
       } else {
