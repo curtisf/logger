@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       name: 'Patreon',
-      value: 'If you like me and want to support my owner (or want coolio Patreon features), check out [my Patreon page](https://patreon.com/logger)'
+      value: 'If you like me and want to support my owner (or want coolio Patreon features like seeing WHO DELETES MESSAGES), check out [my Patreon page](https://patreon.com/logger)'
     })
     await DMC.createMessage({
       embed: embed
