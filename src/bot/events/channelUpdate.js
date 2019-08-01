@@ -10,6 +10,7 @@ module.exports = {
   type: 'on',
   handle: async (channel, oldChannel) => {
     if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (channel.position !== oldChannel.position) return
     const channelUpdateEvent = {
       guildID: channel.guild.id,
       eventName: 'channelUpdate',
