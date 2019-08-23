@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelCreate',
   type: 'on',
   handle: async newChannel => {
-    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newChannel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
@@ -43,7 +43,7 @@ module.exports = {
       })
     }
     await setTimeout(async () => {
-      const logs = await newChannel.guild.getAuditLogs(1, null, 10)
+      const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {return})
       const log = logs.entries[0]
       const user = logs.users[0]
       const member = newChannel.guild.members.get(user.id)

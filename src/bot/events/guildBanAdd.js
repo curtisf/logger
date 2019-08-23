@@ -4,7 +4,7 @@ module.exports = {
   name: 'guildBanAdd',
   type: 'on',
   handle: async (guild, user) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     const guildBanAddEvent = {
       guildID: guild.id,
       eventName: 'guildBanAdd',
@@ -28,7 +28,7 @@ module.exports = {
       }
     }
     await setTimeout(async () => {
-      const logs = await guild.getAuditLogs(1, null, 22)
+      const logs = await guild.getAuditLogs(1, null, 22).catch(() => {return})
       const log = logs.entries[0]
       const perp = logs.users.find(u => u.id !== user.id)
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off

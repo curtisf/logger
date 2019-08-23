@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelUpdate',
   type: 'on',
   handle: async (channel, oldChannel) => {
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     if (channel.position !== oldChannel.position) return
     const channelUpdateEvent = {
       guildID: channel.guild.id,
@@ -97,7 +97,7 @@ module.exports = {
       if (field.value) channelUpdateEvent.embed.fields.push(field)
     })
     await setTimeout(async () => {
-      const logs = await channel.guild.getAuditLogs(1, null, auditLogId)
+      const logs = await channel.guild.getAuditLogs(1, null, auditLogId).catch(() => {return})
       const log = logs.entries[0]
       if (!log) return
       const user = logs.users[0]

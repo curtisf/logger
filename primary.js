@@ -6,7 +6,7 @@ require('dotenv').config()
 
 async function init () {
   let totalShards
-  sa.get('https://discordapp.com/api/gateway/bot').set('Authorization', process.env.BOT_TOKEN).then(b => {
+  sa.get('https://discordapp.com/api/gateway/bot').set('Authorization', `Bot ${process.env.BOT_TOKEN}`).then(b => {
     totalShards = b.body.shards
     let shardsPerWorker
     const coreCount = require('os').cpus().length

@@ -4,6 +4,8 @@ module.exports = {
   name: 'guildRoleUpdate',
   type: 'on',
   handle: async (guild, role, oldRole) => {
+    const botPermissions = Object.keys(guild.members.get(global.bot.user.id).permission.json)
+    if (!botPermissions.includes('viewAuditLogs') || !botPermissions.includes('manageWebhooks')) return
     const guildRoleUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildRoleUpdate',
@@ -30,7 +32,7 @@ module.exports = {
       }
     })
     await setTimeout(async () => {
-      const logs = await guild.getAuditLogs(1, null, 31)
+      const logs = await guild.getAuditLogs(1, null, 31).catch(() => {return})
       const log = logs.entries[0]
       const perp = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {

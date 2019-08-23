@@ -4,7 +4,7 @@ module.exports = {
   name: 'voiceStateUpdate',
   type: 'on',
   handle: async (member, oldState) => {
-    if (!member.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (!member.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !member.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     const state = member.voiceState
     const channel = member.guild.channels.get(state.channelID)
     if (!state.channelID || oldState.channelID) return
@@ -33,7 +33,7 @@ module.exports = {
     else if (oldState.deaf && !state.deaf) voiceStateUpdateEvent.embed.description += 'undeafened'
     else if (!oldState.deaf && state.deaf) voiceStateUpdateEvent.embed.description += 'deafened'
     await setTimeout(async () => {
-      const logs = await member.guild.getAuditLogs(1, null, 24)
+      const logs = await member.guild.getAuditLogs(1, null, 24).catch(() => {return})
       const log = logs.entries[0]
       const user = logs.users[0]
       if (!log) return

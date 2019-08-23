@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelDelete',
   type: 'on',
   handle: async channel => {
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
@@ -58,7 +58,7 @@ module.exports = {
       })
     }
     await setTimeout(async () => {
-      const logs = await channel.guild.getAuditLogs(1, null, 12)
+      const logs = await channel.guild.getAuditLogs(1, null, 12).catch(() => {return})
       const log = logs.entries[0]
       const user = logs.users[0]
       const member = channel.guild.members.get(user.id)

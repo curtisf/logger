@@ -6,7 +6,7 @@ module.exports = {
   name: 'guildMemberRemove',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     if (!member.createdAt) {
       member.id = 'Unknown'
       member.username = 'Unknown'
@@ -23,12 +23,26 @@ module.exports = {
       name: 'Roles',
       value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ')
     }
+    if (!member.username) { // If they don't have a username, then either the lib is dying or it is a lurker
+      return await send({
+        guildID: guild.id,
+        eventName: 'guildMemberRemove',
+        embed: {
+          author: {
+            name: 'Lurker',
+            icon_url: 'https://images.emojiterra.com/twitter/512px/1f440.png' // I'm not worried about using a website url for icon because
+            //                                                                   Discord caches the image as to prevent unneccesary load
+          },
+          description: 'A lurker has left the server'
+        }
+      })
+    }
     await setTimeout(async () => {
       const event = {
         guildID: guild.id,
         eventName: 'guildMemberRemove'
       }
-      let logs = await guild.getAuditLogs(1, null, 20)
+      let logs = await guild.getAuditLogs(1, null, 20).catch(() => {return})
       let log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         const dbUser = await getUser(member.id)

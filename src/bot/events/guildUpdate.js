@@ -11,7 +11,7 @@ module.exports = {
   name: 'guildUpdate',
   type: 'on',
   handle: async (newGuild, oldGuild) => {
-    if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+    if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newGuild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     let fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => { // Ported from logger v2
       const user = log.users[0]
@@ -41,7 +41,7 @@ module.exports = {
           color: 3553599
         }
       })
-    }).catch(() => {})
+    }).catch(() => {return})
     function handle (name, log) {
       let after = 'None'
       let before = 'None'

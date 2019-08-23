@@ -36,6 +36,9 @@ module.exports = {
         color: 65280
       }
     }
+    if (!member.username) { // No username? nope.
+      return
+    }
     let guildInvites
     try {
       guildInvites = await guild.getInvites()
