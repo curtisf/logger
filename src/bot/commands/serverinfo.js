@@ -13,7 +13,7 @@ module.exports = {
         value: `${message.channel.guild.verificationLevel}`
       }, {
         name: 'Owner',
-        value: `**${bot.users.get(message.channel.guild.ownerID).username}#${bot.users.get(message.channel.guild.ownerID).discriminator}** (${message.channel.guild.ownerID})`
+        value: `**${global.bot.users.get(message.channel.guild.ownerID).username}#${global.bot.users.get(message.channel.guild.ownerID).discriminator}** (${message.channel.guild.ownerID})`
       }, {
         name: 'Member Count',
         value: `**${message.channel.guild.memberCount}**\n**${message.channel.guild.members.filter(u => u.bot).length}** bots\n**${message.channel.guild.members.filter(u => !u.bot).length}** users`
@@ -45,7 +45,7 @@ module.exports = {
       const emojiObj = {
         0: []
       }
-      let counter = 0
+      let counter = 0 // Dynamically create embed fields based on character count
       message.channel.guild.emojis.forEach(emoji => {
         if (emojiObj[counter].join('\n').length < 950) {
           emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)

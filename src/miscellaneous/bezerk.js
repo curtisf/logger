@@ -1,3 +1,8 @@
+/* This file interacts with the websocket management system bezerk.
+ * Since shards are spawned separately from eachother (processes), they need to communicate
+ * From https://github.com/thesharks/wildbeast
+ */
+
 const uri = process.env.BEZERK_URI
 const secret = process.env.BEZERK_SECRET
 const WS = require('ws')
@@ -42,14 +47,13 @@ function start () {
         break
       }
       case '2001': { // REQUEST
-        const bot = global.bot // eslint-disable-line
+        const bot = global.bot
         try {
           if (msg.c.startsWith('recache')) {
             msg.c = msg.c.replace('recache ', '')
             cacheGuild(msg.c)
           } else {
-          const resp = eval(msg.c) // eslint-disable-line no-eval
-          global.logger.info(resp)
+          const resp = eval(msg.c) // TODO: replace eval with more OP codes for each use
           send({
             op: '2002', // REQUEST_REPLY
             c: resp,

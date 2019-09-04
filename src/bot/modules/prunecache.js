@@ -33,7 +33,6 @@ module.exports = {
         })
 
       if (res.statusCode === 200 && res.body.result.id) {
-        console.log('succ  setting value')
         res = `[${log.count} members](https://paste.lemonmc.com/${res.body.result.id}/${res.body.result.hash})`
       } else {
         console.error(res)

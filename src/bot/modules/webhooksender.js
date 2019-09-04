@@ -6,7 +6,12 @@ module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
   if (!pkg.embed.color) pkg.embed.color = 3553599
   const guild = global.bot.guilds.get(pkg.guildID)
-  if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+  if (!guild) {
+    console.error('Invalid guild ID sent in package!', pkg.guildID, pkg, pkg.embed)
+    global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID}`)
+    return
+  }
+  if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks'] || !guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
 
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {

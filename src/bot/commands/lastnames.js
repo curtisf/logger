@@ -36,7 +36,7 @@ module.exports = {
         const userDoc = await getUser(userID)
         const user = message.channel.guild.members.get(userID)
         const m = await message.channel.createMessage({ embed: {
-          'description': `${userDoc.names.length} stored names. <@${userDoc.id}>, type **${process.env.GLOBAL_BOT_PREFIX}clearmynames** to delete them.`,
+          'description': `${userDoc.names.length} stored names. <@${userDoc.id}>, type **${process.env.GLOBAL_BOT_PREFIX}clearmydata** to delete them.`,
           'url': 'https://whatezlife.com/lastnames',
           'color': 3553599,
           'timestamp': new Date(),
@@ -58,12 +58,12 @@ module.exports = {
         } })
         await setTimeout(() => {
           m.delete()
-        }, 20000)
+        }, 20000) // don't let last names of a user linger
       }
     } else {
       const userDoc = await getUser(message.author.id)
       const m = await message.channel.createMessage({ embed: {
-        'description': `${userDoc.names.length} stored names for you. Type **${process.env.GLOBAL_BOT_PREFIX}clearmynames** to delete them.`,
+        'description': `${userDoc.names.length} stored names for you. Type **${process.env.GLOBAL_BOT_PREFIX}clearmydata** to delete them (you cannot kick members so you can only get your own names).`,
         'url': 'https://whatezlife.com/lastnames',
         'color': 3553599,
         'timestamp': new Date(),

@@ -13,11 +13,11 @@ module.exports = {
     let type
     const guildEmojisUpdateEvent = {
       guildID: guild.id,
-      eventName: 'guildEmojisUpdateEvent',
+      eventName: 'guildEmojisUpdate',
       embed: {
         description: `Guild emojis were updated.`,
         fields: [{
-          name: 'Added or removed emoji',
+          name: 'Emoji was manipulated',
           value: ''
         }, {
           name: 'ID',
@@ -29,22 +29,27 @@ module.exports = {
     let emoji
     if (emojis.length > oldEmojis.length) {
       const newEmojis = emojis.filter(function (el) {
-        return oldEmojis.indexOf(el) < 0
+        if (!oldEmojis.find(e => e.id !== el.id)) {
+          return true
+        }
       })
       emoji = newEmojis[0]
+      if (!emoji) {
+        return
+      }
       type = 'added'
       guildEmojisUpdateEvent.embed.thumbnail = {
         'url': `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
       }
-      guildEmojisUpdateEvent.embed.fields[0].value = 'Added emoji'
+      guildEmojisUpdateEvent.embed.fields[0].name = 'Added emoji'
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
     } else if (oldEmojis.length > emojis.length) {
       const removedEmojis = oldEmojis.filter(function (el) {
-        return emojis.indexOf(el) < 0
+        if (!emojis.find(e => e.id === el.id)) return true
       })
       emoji = removedEmojis[0]
       type = 'removed'
-      guildEmojisUpdateEvent.embed.fields[0].value = 'Removed emoji'
+      guildEmojisUpdateEvent.embed.fields[0].name = 'Removed emoji'
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
     } else {
       type = 'updated'
@@ -56,6 +61,10 @@ module.exports = {
       const log = logs.entries[0]
       const user = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
+        guildEmojisUpdateEvent.embed.author = {
+          name: `${user.username}#${user.discriminator}`,
+          icon_url: user.avatarURL
+        }
         guildEmojisUpdateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nEmoji = ${emoji.id}\`\`\``
         await send(guildEmojisUpdateEvent)
       } else {

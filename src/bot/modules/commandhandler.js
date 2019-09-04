@@ -1,13 +1,6 @@
 module.exports = async message => {
   if (message.author.bot || !message.member) return
-  if (global.bot.guildPrefixes[message.channel.guild.id] && global.bot.guildPrefixes[message.channel.guild.id].length !== 0) {
-    // premium logic
-    /*
-        let cmd = msg.content.substring(prefix.length).split(' ')[0].toLowerCase()
-    let splitSuffix = msg.content.substr(Config.core.prefix.length).split(' ')
-    let suffix = splitSuffix.slice(1, splitSuffix.length).join(' ')
-    */
-  } else if (message.content.startsWith(process.env.GLOBAL_BOT_PREFIX)) {
+  if (message.content.startsWith(process.env.GLOBAL_BOT_PREFIX)) {
     const cmd = message.content.substring(process.env.GLOBAL_BOT_PREFIX.length).split(' ')[0].toLowerCase()
     const splitSuffix = message.content.substr(process.env.GLOBAL_BOT_PREFIX).split(' ')
     const suffix = splitSuffix.slice(1, splitSuffix.length).join(' ')

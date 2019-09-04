@@ -29,7 +29,7 @@ module.exports = {
         const logs = await guild.getAuditLogs(1, null, 32).catch(() => {return})
         const log = logs.entries[0]
         const perp = logs.users[0]
-        if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+        if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
           if (log.reason) guildRoleDeleteEvent.embed.fields[1].value = log.reason
           guildRoleDeleteEvent.embed.fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
           guildRoleDeleteEvent.embed.author = {

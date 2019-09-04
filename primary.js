@@ -7,14 +7,14 @@ require('dotenv').config()
 async function init () {
   let totalShards
   sa.get('https://discordapp.com/api/gateway/bot').set('Authorization', `Bot ${process.env.BOT_TOKEN}`).then(b => {
-    totalShards = b.body.shards
+    totalShards = b.body.shards // get recommended shard count
     let shardsPerWorker
     const coreCount = require('os').cpus().length
     if (coreCount > totalShards) shardsPerWorker = 1
     else shardsPerWorker = Math.ceil(totalShards / coreCount)
     const workerCount = Math.ceil(totalShards, shardsPerWorker)
     global.webhook.generic(`Shard manager is booting up. Discord recommends ${totalShards} shards. With the core count being ${coreCount}, there will be ${shardsPerWorker} shards per worker, and ${workerCount} workers.`)
-    console.log(`TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nshards per worker: ${shardsPerWorker}\nworker count: ${workerCount}`)
+    console.log(`TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nShards per worker: ${shardsPerWorker}\nWorker count: ${workerCount}`)
     for (let i = 0; i < workerCount; i++) {
       const shardStart = i * shardsPerWorker
       let shardEnd = ((i + 1) * shardsPerWorker) - 1

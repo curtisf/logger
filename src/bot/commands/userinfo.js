@@ -1,5 +1,3 @@
-const webhookCache = require('../modules/webhookcache')
-
 const notablePermissions = [
   'kickMembers',
   'banMembers',
@@ -36,7 +34,6 @@ module.exports = {
     if (perms.length === 0) {
       perms.push('None')
     }
-    const userDoc = await
     fields.push({
       name: 'Name',
       value: `**${member.username}#${member.discriminator}** ${member.nick ? `(**${member.nick}**)` : ''} (${member.id})`

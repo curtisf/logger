@@ -7,15 +7,14 @@ module.exports = {
   name: 'messageDelete',
   type: 'on',
   handle: async message => {
-    if (!message.channel.guild) return // TODO: do the same for message update
+    if (!message.channel.guild) return
     const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
     if (!guildSettings) await cacheGuild(message.channel.guild.id)
     if (global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) return
     let cachedMessage = await getMessage(message.id)
-    if (!cachedMessage) return // later, add some new logic
+    if (!cachedMessage) return
     await deleteMessage(message.id)
     const cachedUser = global.bot.users.get(cachedMessage.author_id)
-    // TODO: Add logic to check who deleted the message from audit logs for premium
     const member = message.channel.guild.members.get(cachedMessage.author_id)
     let messageDeleteEvent = {
       guildID: message.channel.guild.id,

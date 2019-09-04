@@ -4,7 +4,6 @@ const raven = require('raven')
 const Raven = require('raven')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
-const getCacheInfo = require('./utils/getCacheInfo')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
 
@@ -32,12 +31,11 @@ async function init () {
   })
 
   global.bot.editStatus('dnd', {
-    name: `logger test bootup.`
+    name: 'Bot is booting'
   })
 
   global.bot.commands = {}
   global.bot.ignoredChannels = []
-  global.bot.guildPrefixes = {}
   global.bot.guildSettingsCache = {}
 
   indexCommands() // yes, block the thread while we read commands.
@@ -47,9 +45,6 @@ async function init () {
   on.forEach(async event => global.bot.on(event.name, await event.handle))
   once.forEach(async event => global.bot.once(event.name, await event.handle))
 
-  const [ignoredChannels, guildPrefixes] = await getCacheInfo()
-  global.bot.ignoredChannels = ignoredChannels
-  global.bot.guildPrefixes = guildPrefixes
 
   await global.bot.connect() // wait for everything to be cached
 

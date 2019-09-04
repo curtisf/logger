@@ -4,10 +4,11 @@ const clearEventByID = require('../../db/interfaces/postgres/update').clearEvent
 module.exports = {
   func: async message => {
     await webhookCache.deleteWebhook(message.channel.id)
-    await clearEventByID(message.channel.guild.id, message.channel.id)
+    await clearEventByID(message.channel.guild.id, message.channel.id) // any event logging to this channel id will be wiped
     try {
       const split = str.split('|')
       await global.bot.deleteWebhook(split[0], split[1], `Clearing logging configs from this channel - ${message.author.username}#${message.author.discriminator}`)
+      // remove the webhook to clean up
     } catch (_) {}
     await message.channel.createMessage({
       embed: {

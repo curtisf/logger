@@ -8,7 +8,7 @@ const CHANNEL_TYPE_MAP = {
 module.exports = {
   name: 'channelUpdate',
   type: 'on',
-  handle: async (channel, oldChannel) => {
+  handle: async (channel, oldChannel) => { // ignore updates of dm and group channels
     if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     if (channel.position !== oldChannel.position) return
     const channelUpdateEvent = {
@@ -77,7 +77,7 @@ module.exports = {
         name: overwriteName,
         value: ''
       }
-      differentPerms.forEach(perm => {
+      differentPerms.forEach(perm => { // This is black magic, but tl;dr it determines whether a perm was set to grant/deny/inherit
         if (newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
           if (newOverwrite.json[perm] === true && oldOverwrite.json[perm] === false) {
             field.value += `\n+ ${perm}`

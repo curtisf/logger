@@ -8,7 +8,7 @@ const CHANNEL_TYPE_MAP = {
 module.exports = {
   name: 'channelCreate',
   type: 'on',
-  handle: async newChannel => {
+  handle: async newChannel => { // If it's a DM or group channel, ignore the creation
     if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newChannel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
@@ -30,7 +30,6 @@ module.exports = {
       }
     }
     if (newChannel.permissionOverwrites.size !== 0) {
-      let nameToInfo = {}
       newChannel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
           const role = newChannel.guild.roles.find(r => r.id === overwrite.id)

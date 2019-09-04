@@ -53,7 +53,7 @@ module.exports = {
     }
   },
   name: 'setchannel',
-  description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageCreate, messageDelete, messageUpdate`,
+  description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
   perm: 'manageWebhooks',
   category: 'Logging'
 }

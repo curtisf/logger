@@ -2,7 +2,7 @@ const ignoreChannel = require('../../db/interfaces/postgres/update').ignoreChann
 
 module.exports = {
   func: async message => {
-    let disabled = await ignoreChannel(message.channel.guild.id, message.channel.id)
+    let disabled = await ignoreChannel(message.channel.guild.id, message.channel.id) // return a boolean representing whether a channel is ignored or not
     const respStr = `Toggled logging events targeting <#${message.channel.id}> (${message.channel.name}). I am now ${disabled ? 'ignoring' : 'logging'} events from this channel`
     message.channel.createMessage({ embed: {
       'description': respStr,

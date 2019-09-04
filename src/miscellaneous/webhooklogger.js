@@ -1,6 +1,6 @@
 const sa = require('superagent')
 
-require('dotenv').config() // to stop a race condition
+require('dotenv').config()
 let globalHookErrors = 0
 
 setInterval(() => {
@@ -12,8 +12,8 @@ function fatal (message) {
     sa
       .post(process.env.DISCORD_WEBHOOK_URL)
       .send({
-        avatar_url: 'https://cdn.discordapp.com/avatars/298822483060981760/c5f04275e99defe458fc7ebbef0d5e72.jpg?size=128',
-        username: 'Logger Webhook Notification',
+        avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
+        username: `Fatal Error LoggerBot Webhook Notification`,
         embeds: [{
           title: 'Fatal',
           description: message,
@@ -31,8 +31,8 @@ function error (message) {
     sa
       .post(process.env.DISCORD_WEBHOOK_URL)
       .send({
-        avatar_url: 'https://cdn.discordapp.com/avatars/298822483060981760/c5f04275e99defe458fc7ebbef0d5e72.jpg?size=128',
-        username: 'Logger Webhook Notification',
+        avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
+        username: `Error LoggerBot Webhook Notification`,
         embeds: [{
           title: 'Error',
           description: message,
@@ -50,8 +50,8 @@ function warn (message) {
     sa
       .post(process.env.DISCORD_WEBHOOK_URL)
       .send({
-        avatar_url: 'https://cdn.discordapp.com/avatars/298822483060981760/c5f04275e99defe458fc7ebbef0d5e72.jpg?size=128',
-        username: 'Logger Webhook Notification',
+        avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
+        username: `Warning LoggerBot Webhook Notification`,
         embeds: [{
           title: 'Warning',
           description: message,
@@ -69,8 +69,8 @@ function generic (message) {
     sa
       .post(process.env.DISCORD_WEBHOOK_URL)
       .send({
-        avatar_url: 'https://cdn.discordapp.com/avatars/298822483060981760/c5f04275e99defe458fc7ebbef0d5e72.jpg?size=128',
-        username: 'Logger Webhook Notification',
+        avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
+        username: `Generic LoggerBot Webhook Notification`,
         embeds: [{
           title: 'Generic',
           description: message,
@@ -88,9 +88,9 @@ function custom (message) {
     sa
       .post(process.env.DISCORD_WEBHOOK_URL)
       .send({
-        avatar_url: message.avatar_url || 'https://cdn.discordapp.com/avatars/298822483060981760/c5f04275e99defe458fc7ebbef0d5e72.jpg?size=128',
+        avatar_url: message.avatar_url || 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
         embeds: [{
-          title: message.title || 'Logger Custom Notification',
+          title: message.title || 'Custom Notification',
           color: message.color || 6052351,
           description: message.description || 'No message description provided.'
         }],

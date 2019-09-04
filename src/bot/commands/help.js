@@ -4,7 +4,7 @@ module.exports = {
     try {
       DMC = await message.author.getDMChannel()
     } catch (e) {
-      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`)
+      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`).catch(() => {return})
     }
     const embed = {
       'description': 'Below, you can see my commands listed by name and description. If it has arguments you can pass, an example will be included.',
@@ -24,21 +24,24 @@ module.exports = {
       'fields': []
     }
     Object.values(global.bot.commands).forEach(command => {
-      embed.fields.push({
-        name: command.name,
-        value: command.description
-      })
+      if (!command.hidden) {
+        embed.fields.push({
+          name: command.name,
+          value: command.description
+        })
+      }
     })
     embed.fields.push({
-      name: 'Changes',
-      value: 'Version 3 is in active testing at the moment. What changed? The bot was rewritten from scratch with a push for future viability and a dynamic framework. View my commands above for anything new. Look at what patreons get below. Why is nothing working?? The bot now needs manage webhook permissions as to abate the huge ratelimits from sending messages.'
-    }, {
+      name: 'Open Source',
+      value: 'I am OSS at https://github.com/caf203/loggerv3'
+    },
+    {
       name: 'Support',
       value: 'If something is going horribly wrong, go ahead and join [my support server](https://discord.gg/ed7Gaa3)'
     },
     {
       name: 'Patreon',
-      value: 'If you like me and want to support my owner (or want coolio Patreon features like seeing WHO DELETES MESSAGES), check out [my Patreon page](https://patreon.com/logger)'
+      value: 'If you like me and want to support my owner (or want cool patron bot features), check out [my Patreon page](https://patreon.com/logger)\nSome of what Patrons get: image logging, see who deletes messages, ignore users, see archive and bulk delete logs in a prettified manner, archive up to 10,000 messages, messages are saved longer'
     })
     await DMC.createMessage({
       embed: embed

@@ -14,9 +14,10 @@ class GenericCommand {
     this.aliases = data.aliases || []
     this.args = data.args || []
     this.noDM = data.noDM || true
-    this.perm = data.perm // Give it an object with the perm name and boolean value.
+    this.perm = data.perm
     this.type = data.type || 'any'
     this.category = data.category || 'Uncategorized'
+    this.hidden = data.hidden ? true : false
 
     global.bot.commands[data.name] = this
   }
