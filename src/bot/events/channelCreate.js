@@ -43,6 +43,7 @@ module.exports = {
     }
     await setTimeout(async () => {
       const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {return})
+      if (!logs) return
       const log = logs.entries[0]
       const user = logs.users[0]
       const member = newChannel.guild.members.get(user.id)

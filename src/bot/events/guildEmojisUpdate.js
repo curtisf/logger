@@ -58,6 +58,7 @@ module.exports = {
     await setTimeout(async () => {
       const num = AUDIT_ID[type]
       const logs = await guild.getAuditLogs(1, null, num).catch(() => {return})
+      if (!logs) return
       const log = logs.entries[0]
       const user = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off

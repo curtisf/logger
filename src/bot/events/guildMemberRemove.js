@@ -43,6 +43,7 @@ module.exports = {
         eventName: 'guildMemberRemove'
       }
       let logs = await guild.getAuditLogs(1, null, 20).catch(() => {return})
+      if (!logs) return
       let log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         const dbUser = await getUser(member.id)

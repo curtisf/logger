@@ -13,7 +13,8 @@ module.exports = {
   handle: async (newGuild, oldGuild) => {
     if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newGuild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     let fields = []
-    newGuild.getAuditLogs(1, null, 1).then((log) => { // Ported from logger v2
+    newGuild.getAuditLogs(1, null, 1).then((log) => {
+      if (!log) return
       const user = log.users[0]
       const member = newGuild.members.get(user.id)
       let arr

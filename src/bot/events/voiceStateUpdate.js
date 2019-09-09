@@ -34,6 +34,7 @@ module.exports = {
     else if (!oldState.deaf && state.deaf) voiceStateUpdateEvent.embed.description += 'deafened'
     await setTimeout(async () => {
       const logs = await member.guild.getAuditLogs(1, null, 24).catch(() => {return})
+      if (!logs) return
       const log = logs.entries[0]
       const user = logs.users[0]
       if (!log) return
