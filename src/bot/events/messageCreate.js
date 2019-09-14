@@ -12,6 +12,7 @@ module.exports = {
     const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
     if (!guildSettings) await cacheGuild(message.channel.guild.id)
     if (!global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) {
+      if (!global.bot.guildSettingsCache[message.channel.guild.id].isLogBots() && message.author.bot) return
       await cacheMessage(message)
     }
   }
