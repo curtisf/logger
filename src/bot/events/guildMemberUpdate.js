@@ -51,6 +51,7 @@ module.exports = {
             } else if (removed.length !== 0) {
               roleColor = guild.roles.find(r => r.id === removed[0].id).color
             }
+            // Add a + or - emoji when roles are manipulated for a user, stringify it, and assign a field value to it.
             guildMemberUpdate.embed.fields[0].value = `${added.map(role => `➕ **${role.name}** (${role.id})`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}** (${role.id})`).join('\n')}`
             guildMemberUpdate.embed.color = roleColor
             guildMemberUpdate.embed.footer = {

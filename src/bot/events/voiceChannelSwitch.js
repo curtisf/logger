@@ -4,6 +4,7 @@ module.exports = {
   name: 'voiceChannelSwitch',
   type: 'on',
   handle: async (member, channel, oldChannel) => {
+    // to any people reading this, Discord does not tell you who moves another person. That's why there's no audit log check.
     await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelSwitch',
@@ -14,10 +15,10 @@ module.exports = {
         },
         description: `**${member.username}#${member.discriminator}** ${member.nick ? `(${member.nick})` : ''} moved from <#${oldChannel.id}> (${oldChannel.name}) to <#${channel.id}> (${channel.name}).`,
         fields: [{
-          name: 'New Channel',
+          name: 'Current channel they are in',
           value: `<#${channel.id}> (${channel.name})`
         }, {
-          name: 'Old Channel',
+          name: 'Previously occupied channel',
           value: `<#${oldChannel.id}> (${oldChannel.name})`
         }, {
           name: 'ID',

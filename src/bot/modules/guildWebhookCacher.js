@@ -3,7 +3,7 @@ const clearEventByID = require('../../db/interfaces/postgres/update').clearEvent
 
 module.exports = async guildID => {
   const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
-  if (!perms['manageWebhooks']) return
+  if (!perms['manageWebhooks']) return // if the bot can't manage webhooks, then exit because what else can it do
   const eventObj = global.bot.guildSettingsCache[guildID].getEventLogRaw()
   const keys = Object.keys(eventObj)
   let idsToCache = []
