@@ -17,7 +17,7 @@ module.exports = {
       embed: {
         author: {
           name: 'Unknown User',
-          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
+          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg' // TODO: use a static asset url that's mine
         },
         description: `${CHANNEL_TYPE_MAP[channel.type]} was updated (${channel.name})`,
         fields: [{
@@ -80,15 +80,15 @@ module.exports = {
       differentPerms.forEach(perm => { // This is black magic, but tl;dr it determines whether a perm was set to grant/deny/inherit
         if (newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
           if (newOverwrite.json[perm] === true && oldOverwrite.json[perm] === false) {
-            field.value += `\n+ ${perm}`
+            field.value += `\nALLOW ${perm}`
           } else if (newOverwrite.json[perm] === false && oldOverwrite.json[perm] === true) {
-            field.value += `\n− ${perm}`
+            field.value += `\nDENY ${perm}`
           }
         } else if (newOverwrite.json.hasOwnProperty(perm) && !oldOverwrite.json.hasOwnProperty(perm)) {
           if (newOverwrite.json[perm]) {
-            field.value += `\n+ ${perm}`
+            field.value += `\nALLOW ${perm}`
           } else {
-            field.value += `\n− ${perm}`
+            field.value += `\nDENY ${perm}`
           }
         } else if (!newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
           field.value += `\n⚖️ neutral/inherit ${perm}`
