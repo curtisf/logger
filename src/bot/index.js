@@ -17,7 +17,7 @@ if (process.env.SENTRY_URI) {
 }
 
 async function init () {
-  global.logger.info('Shard booting')
+  global.logger.info('Shard init')
   global.redis = require('../db/clients/redis')
   global.bot = new Eris(process.env.BOT_TOKEN, {
     firstShardID: cluster.worker.shardStart,
