@@ -38,7 +38,7 @@ module.exports = {
             icon_url: user.avatarURL
           },
           description: `The guild was updated`,
-          fields: fields,
+          fields: fields.length !== 0 ? fields : [{name: 'Changes', value: 'Unknown'}],
           color: 3553599
         }
       })
