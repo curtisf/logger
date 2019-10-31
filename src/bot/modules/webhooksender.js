@@ -45,7 +45,7 @@ module.exports = async pkg => {
       embeds: [pkg.embed]
     }).catch(async e => {
       global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-      if (e.code === 10015) { // Webhook doesn't exist anymore.
+      if (e.code == '10015') { // Webhook doesn't exist anymore.
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
         return await guildWebhookCacher(pkg.guildID)
       } else {
