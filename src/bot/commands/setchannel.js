@@ -36,10 +36,6 @@ module.exports = {
     if (!webhookPerm) return await message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.')
     let events = suffix.split(', ')
     events = cleanArray(events)
-    const hookStr = await webhookCache.getWebhook(message.channel.id)
-    try {
-      global.bot.executeWebhook()
-    } catch (_) {}
     if (events.length === 0 && suffix) {
       message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
     } else if (events.length === 0 && !suffix) {

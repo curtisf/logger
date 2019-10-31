@@ -11,7 +11,7 @@ async function init () {
     let shardsPerWorker
     const coreCount = require('os').cpus().length
     if (coreCount > totalShards) shardsPerWorker = 1
-    else shardsPerWorker = Math.ceil(totalShards / coreCount)
+    else shardsPerWorker = Math.ceil(totalShards / coreCount) + 1
     const workerCount = Math.ceil(totalShards, shardsPerWorker)
     global.webhook.generic(`Shard manager is booting up. Discord recommends ${totalShards} shards. With the core count being ${coreCount}, there will be ${shardsPerWorker} shards per worker, and ${workerCount} workers.`)
     console.log(`TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nShards per worker: ${shardsPerWorker}\nWorker count: ${workerCount}`)

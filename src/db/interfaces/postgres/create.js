@@ -1,6 +1,7 @@
 const pool = require('../../clients/postgres')
 const aes = require('../../aes')
 const cacheGuild = require('../../../bot/utils/cacheGuild')
+const batchHandler = require('../../messageBatcher')
 let arr = []
 arr[0] = 'placeholder'
 arr = JSON.stringify(arr)
@@ -49,10 +50,8 @@ async function createUserDocument (userID) {
 
 async function cacheMessage (message) {
   message.content = aes.encrypt(message.content ? message.content : 'None')
-  if (message.attachment_b64) {
-    message.attachment_b64 = aes.encrypt(message.attachment_b64)
-  } else message.attachment_b64 = ''
-  return await pool.query('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES ($1, $2, $3, $4, NOW())', [message.id, message.author.id, message.content, message.attachment_b64])
+  message.attachment_b64 = ''
+  batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
 }
 
 exports.cacheMessage = cacheMessage

@@ -1,5 +1,6 @@
 const send = require('../modules/webhooksender')
-const getMessage = require('../../db/interfaces/postgres/read').getMessageById
+const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessageById
+const getMessageFromBatch = require('../../db/messageBatcher').getMessage
 const deleteMessage = require('../../db/interfaces/postgres/delete').deleteMessage
 const cacheGuild = require('../utils/cacheGuild')
 
@@ -11,7 +12,10 @@ module.exports = {
     const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
     if (!guildSettings) await cacheGuild(message.channel.guild.id)
     if (global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) return
-    let cachedMessage = await getMessage(message.id)
+    let cachedMessage = await getMessageFromBatch(message.id)
+    if (!cachedMessage) {
+      cachedMessage = await getMessageFromDB(message.id)
+    }
     if (!cachedMessage) return
     await deleteMessage(message.id)
     const cachedUser = global.bot.users.get(cachedMessage.author_id)

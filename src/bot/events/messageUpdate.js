@@ -1,6 +1,7 @@
 const send = require('../modules/webhooksender')
 const updateMessageByID = require('../../db/interfaces/postgres/update').updateMessageByID
-const getMessage = require('../../db/interfaces/postgres/read').getMessageById
+const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessageById
+const getMessageFromBatch = require('../../db/messageBatcher').getMessage
 
 module.exports = {
   name: 'messageUpdate',
@@ -9,7 +10,10 @@ module.exports = {
     if (!newMessage.channel.guild || !newMessage.author) return
     if (newMessage.author.id === global.bot.user.id) return
     const member = newMessage.channel.guild.members.get(newMessage.author.id)
-    oldMessage = await getMessage(newMessage.id)
+    oldMessage = await getMessageFromBatch(newMessage.id)
+    if (!oldMessage) {
+      oldMessage = await getMessageFromDB(newMessage.id)
+    }
     if (!oldMessage) return
     if (newMessage.author.bot) {
       if (global.bot.global.guildSettingsCache[newMessage.channel.guild.id].isLogBots()) await processMessage(newMessage, oldMessage)
