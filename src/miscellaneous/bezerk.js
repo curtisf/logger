@@ -53,7 +53,7 @@ function start () {
             msg.c = msg.c.replace('recache ', '')
             cacheGuild(msg.c)
           } else {
-          const resp = JSON.stringify(eval(msg.c)) // TODO: replace eval with more OP codes for each use
+          const resp = eval(msg.c) // TODO: replace eval with more OP codes for each use
           send({
             op: '2002', // REQUEST_REPLY
             c: resp,
