@@ -23,15 +23,14 @@ function connect() {
     global.bot.connect()
     global.bot.once('ready', () => {
       lock.unlock().catch(function(err) {
-        global.logger.fatal('FATAL error while unlocking loggerinit on shards ' + cluster.worker.rangeForShard)
+        global.logger.error('Error while unlocking loggerinit on shards ' + cluster.worker.rangeForShard)
     })
     })
 }).catch(e => {
-    global.logger.startup(`Shards ${cluster.worker.rangeForShard} were unable to obtain a lock and will try again in 15 seconds.`)
-    setTimeout(() => {
-        connect()
-    }, 15000)
-})
+  setTimeout(() => {
+    connect()
+  }, 15000)
+}) // throw out not being able to obtain a lock.
 }
 
 async function init () {

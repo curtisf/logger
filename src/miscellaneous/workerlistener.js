@@ -6,7 +6,7 @@ let statsObj = {}
 
 if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUBMISSION_INTERVAL))) {
   setInterval(async () => {
-    if (statsObj.commandUsage) {      
+    if (statsObj.commandUsage) {
       for (const eventName in statsObj.eventUsage) {
         if (statsObj.eventUsage[eventName] > 0) {
           try {
@@ -78,11 +78,7 @@ module.exports = async worker => {
   })
 
   worker.on('message', message => {
-    if (!message.type) {
-      console.error('Received an invalid message from a worker! It was missing a type.')
-      worker.kill() // The worker is in an unclean state. Exit now.
-      return
-    } else if (message.type === 'stats') {
+    if (message.type && message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
         return
@@ -94,7 +90,7 @@ module.exports = async worker => {
           statsObj.eventUsage[eventName] += message.eventUsage[eventName]
         }
         for (const miscItem in message.miscUsage) {
-          statsObj.miscUsage += message.eventUsage[miscItem]
+          statsObj.miscUsage[miscItem] += message.miscUsage[miscItem]
         }
       }
     }

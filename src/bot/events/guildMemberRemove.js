@@ -21,8 +21,9 @@ module.exports = {
     }
     const rolesField = {
       name: 'Roles',
-      value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ')
+      value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ') // No idea why the below line is needed
     }
+    if (!rolesField.value) rolesField.value = 'None'
     if (!member.username) { // If they don't have a username, then either the lib is dying or it is a lurker
       return await send({
         guildID: guild.id,
