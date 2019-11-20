@@ -23,7 +23,7 @@ function connect() {
     global.bot.connect()
     global.bot.once('ready', () => {
       lock.unlock().catch(function(err) {
-        global.logger.error('Error while unlocking loggerinit on shards ' + cluster.worker.rangeForShard)
+        global.logger.warn('Error while unlocking loggerinit on shards ' + cluster.worker.rangeForShard)
     })
     })
 }).catch(e => {

@@ -1,12 +1,14 @@
 const webhookCache = require('./webhookcache')
 const clearEventByID = require('../../db/interfaces/postgres/update').clearEventByID
 const statAggregator = require('./statAggregator')
+const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = async guildID => {
   const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
   if (!perms['manageWebhooks']) {
     return 
   }// if the bot can't manage webhooks, then exit because what else can it do
+  await cacheGuild(guildID) // to flush out any cache malfeasances
   const eventObj = global.bot.guildSettingsCache[guildID].getEventLogRaw()
   const keys = Object.keys(eventObj)
   let idsToCache = []
@@ -18,6 +20,7 @@ module.exports = async guildID => {
     if (temp.indexOf(id) < 0) temp.push(id) // Make sure no duplicate ids are present
   })
   idsToCache = temp
+  if (idsToCache.length === 0) return
   const webhooks = await global.bot.guilds.get(guildID).getWebhooks()
   statAggregator.incrementMisc('fetchWebhooks')
   idsToCache.forEach(channelID => {
