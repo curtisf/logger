@@ -22,3 +22,20 @@ exports.ALL_EVENTS = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildEmojisUpdate']
+
+exports.EVENTS_USING_AUDITLOGS = [
+  'channelCreate',
+  'channelUpdate',
+  'channelDelete',
+  'guildBanAdd',
+  'guildBanRemove',
+  'guildRoleCreate',
+  'guildRoleDelete',
+  'guildRoleUpdate',
+  'guildUpdate',
+  'messageDeleteBulk',
+  'guildMemberKick',
+  'guildMemberRemove',
+  'guildMemberUpdate',
+  'voiceStateUpdate',
+  'guildEmojisUpdate']

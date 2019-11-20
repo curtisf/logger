@@ -15,8 +15,8 @@ module.exports = {
             name: 'Name',
             value: role.name
           }, {
-            name: 'Reason',
-            value: 'None.'
+            name: 'Type',
+            value: 'User'
           }, {
             name: 'ID',
             value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Unknown\`\`\``
@@ -25,11 +25,14 @@ module.exports = {
       }
       if (!guild.members.find(m => m.username === role.name)) { // if this isn't an auto role
       await setTimeout(async () => {
+        if (role.managed && guild.members.find(m => m.username === role.name)) {
+          guildRoleCreateEvent.embed.fields[1].value = 'Bot'
+        }
         const logs = await guild.getAuditLogs(1, null, 30).catch(() => {return})
         if (!logs) return
         const log = logs.entries[0]
         const perp = logs.users[0]
-        if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+        if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
           if (log.reason) guildRoleCreateEvent.embed.fields[1].value = log.reason
           guildRoleCreateEvent.embed.fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
           guildRoleCreateEvent.embed.author = {

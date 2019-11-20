@@ -34,7 +34,6 @@ const eventLogs = {
 }
 
 async function createGuild (guild) {
-  console.log(`Creating a guild document for guild ${guild.name} with ${guild.memberCount} members.`)
   try {
     await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots) VALUES ($1, $2, $3, $4, $5, $6)', [guild.id, guild.ownerID, [], [], eventLogs, false]) // Regenerate the document if a user kicks and reinvites the bot.
     await cacheGuild(guild.id)
@@ -42,7 +41,6 @@ async function createGuild (guild) {
 }
 
 async function createUserDocument (userID) {
-  console.log(`Creating a user document for ${userID}`)
   try {
     await pool.query('INSERT INTO users (id, names) VALUES ($1, $2)', [userID, placeholder])
   } catch (e) {}

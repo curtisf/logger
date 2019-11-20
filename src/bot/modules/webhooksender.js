@@ -1,6 +1,8 @@
+const EVENTS_USING_AUDITLOGS = require('../utils/constants').EVENTS_USING_AUDITLOGS
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
+const statAggregator = require('./statAggregator')
 
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
@@ -12,7 +14,6 @@ module.exports = async pkg => {
     return
   }
   if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks'] || !guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
-
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
     await cacheGuild(pkg.guildID)
@@ -37,7 +38,9 @@ module.exports = async pkg => {
         icon_url: global.bot.user.avatarURL
       }
     }
-    if (!pkg.embed.timestamp) pkg.embed.timestamp = new Date()
+    if (!pkg.embed.timestamp) {
+      pkg.embed.timestamp = new Date()
+    }
     global.bot.executeWebhook(webhookID, webhookToken, {
       file: pkg.file ? pkg.file : '',
       username: global.bot.user.username,
@@ -52,5 +55,9 @@ module.exports = async pkg => {
         console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
       }
     })
+    statAggregator.incrementEvent(pkg.eventName)
+    if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
+      statAggregator.incrementMisc('fetchAuditLogs')
+    }
   }
 }
