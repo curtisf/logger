@@ -27,10 +27,8 @@ module.exports = async pkg => {
     webhookToken = split[1]
   }
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
-    await guildWebhookCacher(pkg.guildID)
-    return await setTimeout(() => {
-      module.exports(pkg)
-    }, 2000)
+    await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
+    return
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
@@ -47,10 +45,11 @@ module.exports = async pkg => {
       avatarURL: global.bot.user.avatarURL,
       embeds: [pkg.embed]
     }).catch(async e => {
+      global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       if (e.code == '10015') { // Webhook doesn't exist anymore.
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
-        return await guildWebhookCacher(pkg.guildID)
+        return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
       } else {
         console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
       }

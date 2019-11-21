@@ -6,16 +6,11 @@ module.exports = {
     if (!message.channel.guild.members.get(global.bot.user.id).permission.json['sendMessages']) {
       return
     }
-    await webhookCache.deleteWebhook(message.channel.id)
     await clearEventByID(message.channel.guild.id, message.channel.id) // any event logging to this channel id will be wiped
-    try {
-      const split = str.split('|')
-      await global.bot.deleteWebhook(split[0], split[1], `Clearing logging configs from this channel - ${message.author.username}#${message.author.discriminator}`)
-      // remove the webhook to clean up
-    } catch (_) {}
+    
     await message.channel.createMessage({
       embed: {
-        'title': 'Any events associated with this channel along with the webhook has been undone.',
+        'title': 'Any events associated with this channel have been undone.',
         'color': 16711680,
         'timestamp': new Date(),
         'footer': {

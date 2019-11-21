@@ -72,8 +72,8 @@ async function clearEventByID (guildID, channelID) {
       eventLogs[event] = ''
     }
   })
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
 async function setAllEventsOneId (guildID, channelID) {
