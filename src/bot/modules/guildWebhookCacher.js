@@ -52,10 +52,13 @@ module.exports = async (guildID, channelID) => {
       global.bot.guilds.get(guildID).leave()
       global.webhook.warn(`Leaving guild ${guildID} (${global.bot.guilds.get(guildID).name}, ${global.bot.guilds.get(guildID).memberCount}) because of an error: ${e.message}`)
     })
-  }
-  if (newHook && newHook.id) {
-    global.logger.info(`Webhook made in ${guildID} for ${channelID}`)
-  await webhookCache.setWebhook(channelID, newHook.id, newHook.token)
-  await cacheGuild(guildID)
+    if (newHook && newHook.id) {
+      global.logger.info(`Webhook made in ${guildID} for ${channelID}`)
+    await webhookCache.setWebhook(channelID, newHook.id, newHook.token)
+    await cacheGuild(guildID)
+    } else {
+      console.log(newHook)
+      global.logger.warn('Webhook "created" is invalid, please inspect')
+    }
   }
 }
