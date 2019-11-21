@@ -23,6 +23,14 @@ module.exports = async guildID => {
   if (idsToCache.length === 0) return
   const webhooks = await global.bot.guilds.get(guildID).getWebhooks()
   statAggregator.incrementMisc('fetchWebhooks')
+  idsToCache.forEach(async id => {
+    let channel = global.bot.getChannel(id)
+    if (!channel) { // if the channel doesn't exist, clear it
+      global.bot.guildSettingsCache[guildID].clearEventByID(id)
+      idsToCache.splice(idsToCache.indexOf(id), 1)
+      await clearEventByID(guildID, id)
+    }
+  })
   idsToCache.forEach(channelID => {
     for (let i = 0; i < webhooks.length; i++) {
       if (webhooks[i].token && webhooks[i].channel_id === channelID) { // check for token because channel subscriptions count as webhooks
@@ -30,9 +38,6 @@ module.exports = async guildID => {
         webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)
       }
     }
-  })
-  idsToCache.forEach(id => {
-    let c = global.bot.getChannel(id)
   })
   if (idsToCache.length !== 0) {
     // Someone set a channel for the bot to log to, and there's no webhook. Try to autocreate and if not, delete the channelID from the guild document and settings.
@@ -64,4 +69,5 @@ module.exports = async guildID => {
       }
     })
   }
+  await cacheGuild(guildID)
 }

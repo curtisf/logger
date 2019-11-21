@@ -28,7 +28,6 @@ module.exports = async pkg => {
   }
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
     await guildWebhookCacher(pkg.guildID)
-    await cacheGuild(pkg.guildID)
     return await setTimeout(() => {
       module.exports(pkg)
     }, 2000)
