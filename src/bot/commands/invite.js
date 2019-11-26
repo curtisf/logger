@@ -1,7 +1,7 @@
 module.exports = {
   func: async message => {
     message.channel.createMessage({ embed: {
-      'description': `Invite me using [this link](https://discordapp.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot&permissions=536988833). My configuration dashboard is [here](https://whatezlife.com).`,
+      'description': `Invite me using [this link](https://discordapp.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot&permissions=536988833). My configuration dashboard is [here](https://logger.bot).`,
       'color': 3553599,
       'timestamp': new Date(),
       'footer': {

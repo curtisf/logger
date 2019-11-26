@@ -39,7 +39,7 @@ module.exports = {
       value: `**${member.username}#${member.discriminator}** ${member.nick ? `(**${member.nick}**)` : ''} (${member.id})`
     }, {
       name: 'Join Date',
-      value: `**${new Date(member.joinedAt)}**`
+      value: `**${new Date(member.joinedAt)}** (${Math.round((new Date().getTime() - member.joinedAt) / (1000*60*60*24))} days)`
     }, {
       name: 'Creation Date',
       value: `**${new Date(member.createdAt).toString().substr(0, 21)}**`
