@@ -17,7 +17,7 @@ module.exports = {
         await message.channel.createMessage({ embed: {
           'title': `${userID} isn't a valid user id (or isn't in this server)`,
           'description': `Provide a user id as a mention or just the id after this command`,
-          'url': 'https://whatezlife.com/lastnames',
+          'url': 'https://logger.bot/lastnames',
           'color': 3553599,
           'timestamp': new Date(),
           'footer': {
@@ -37,7 +37,7 @@ module.exports = {
         const user = message.channel.guild.members.get(userID)
         const m = await message.channel.createMessage({ embed: {
           'description': `${userDoc.names.length} stored names. <@${userDoc.id}>, type **${process.env.GLOBAL_BOT_PREFIX}clearmydata** to delete them.`,
-          'url': 'https://whatezlife.com/lastnames',
+          'url': 'https://logger.bot/lastnames',
           'color': 3553599,
           'timestamp': new Date(),
           'footer': {
@@ -64,7 +64,7 @@ module.exports = {
       const userDoc = await getUser(message.author.id)
       const m = await message.channel.createMessage({ embed: {
         'description': `${userDoc.names.length} stored names for you. Type **${process.env.GLOBAL_BOT_PREFIX}clearmydata** to delete them (you cannot kick members so you can only get your own names).`,
-        'url': 'https://whatezlife.com/lastnames',
+        'url': 'https://logger.bot/lastnames',
         'color': 3553599,
         'timestamp': new Date(),
         'footer': {

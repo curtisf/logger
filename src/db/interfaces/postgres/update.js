@@ -3,6 +3,8 @@ const getDoc = require('./read').getGuild
 const getMessageById = require('./read').getMessageById
 const getUser = require('./read').getUser
 const cacheGuild = require('../../../bot/utils/cacheGuild')
+const getMessageFromBatch = require('../../messageBatcher').getMessage
+const updateBatchMessage = require('../../messageBatcher').updateMessage
 const aes = require('../../aes')
 
 const eventList = [
@@ -70,8 +72,8 @@ async function clearEventByID (guildID, channelID) {
       eventLogs[event] = ''
     }
   })
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
 async function setAllEventsOneId (guildID, channelID) {
@@ -137,7 +139,12 @@ async function updateNames (userID, name) {
 }
 
 async function updateMessageByID (id, content) {
-  return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content ? content : 'EMPTY STRING'), id]) // gotta encrypt something
+  const batchMessage = await getMessageFromBatch(id)
+  if (!batchMessage) {
+    return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content ? content : 'EMPTY STRING'), id])
+  } else {
+    updateBatchMessage(id, content)
+  }
 }
 
 exports.updateNames = updateNames

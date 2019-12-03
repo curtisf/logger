@@ -4,7 +4,7 @@ module.exports = {
       embed: {
         'title': 'Configuration dashboard',
         'description': `Hey, I'm ${global.bot.user.username}! My **only** purpose is to, at your command, log everything to your configured channels. Click "configuration dashboard" to login to my dashboard and configure me!`,
-        'url': 'https://whatezlife.com',
+        'url': 'https://logger.bot',
         'color': 3553599,
         'timestamp': new Date(),
         'footer': {

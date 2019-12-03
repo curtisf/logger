@@ -23,7 +23,7 @@ module.exports = {
     })
   },
   name: 'archive',
-  description: 'Archives up to the last 1000 messages in a channel. Example: archive 100 | archive 1000. Patreon bot only: fetch 10,000 messages!',
+  description: 'Makes a log of up to the last 1000 messages in a channel. Example: archive 100 | archive 1000. Patreon bot only: fetch 10,000 messages!',
   category: 'Utility',
   perm: 'manageMessages'
 }

@@ -33,7 +33,11 @@ module.exports = {
     })
     await setTimeout(async () => {
       const logs = await guild.getAuditLogs(1, null, 31).catch(() => {return})
+      if (!logs) return
       const log = logs.entries[0]
+      if (!log) {
+        return await send(guildRoleUpdateEvent) // just send the embed and stop there.
+      }
       const perp = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
         guildRoleUpdateEvent.embed.fields.push({

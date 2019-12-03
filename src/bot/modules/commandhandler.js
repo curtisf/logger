@@ -1,3 +1,5 @@
+const statAggregator = require('./statAggregator')
+
 module.exports = async message => {
   if (message.author.bot || !message.member) return
   if (message.content.startsWith(process.env.GLOBAL_BOT_PREFIX)) {
@@ -31,5 +33,6 @@ function processCommand (message, commandName, suffix) {
     return
   }
   global.logger.info(`${message.author.username}#${message.author.discriminator} (${message.author.id}) in ${message.channel.id} sent ${commandName} with the args "${suffix}". The guild is called "${message.channel.guild.name}", owned by ${message.channel.guild.ownerID} and has ${message.channel.guild.members.size} members.`)
+  statAggregator.incrementCommand(command.name)
   command.func(message, suffix)
 }
