@@ -24,6 +24,8 @@ module.exports = {
         arr = Object.keys(log.entries[0].after)
       }
       arr.forEach((key) => {
+        // Audit logs use icon_hash but eris guild uses icon
+        if (key === 'icon_hash') key = 'icon'
         if (oldGuild[key] !== newGuild[key] || checkExempt.includes(key)) { // if both guilds have the property and they don't equal eachother
           let data = handle(key, log)
           fields.push(data)
@@ -112,8 +114,8 @@ module.exports = {
             value: `► Now: **${after}**\n► Was: **${before}**`
           }
         case 'icon':
-          before = 'Not Available'
-          after = newGuild.icon ? `[This](\`https://cdn.discordapp.com/icons/${newGuild.id}/${newGuild.icon}.jpg\`)` : 'None'
+          before = oldGuild.icon ? `[This](https://cdn.discordapp.com/icons/${newGuild.id}/${oldGuild.icon}.jpg)` : 'None'
+          after = newGuild.icon ? `[This](https://cdn.discordapp.com/icons/${newGuild.id}/${newGuild.icon}.jpg)` : 'None'
           return {
             name: 'Icon',
             value: `► Now: **${after}**\n► Was: **${before}**`
