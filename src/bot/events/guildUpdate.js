@@ -132,6 +132,13 @@ module.exports = {
             name: 'Splash Image ⚠ WARNING: This isn\'t changed very often',
             value: `► Now: **${after}**\n► Was: **${before}**`
           }
+        case 'banner':
+          before = oldGuild.banner ? `[This](${oldGuild.bannerURL})` : 'None'
+          after = newGuild.banner ? `[This](${newGuild.bannerURL})` : 'None'
+          return {
+            name: 'Banner',
+            value: `► Now: **${after}**\n► Was: **${before}**`
+          }
       }
     }
   }
