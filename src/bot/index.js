@@ -45,7 +45,7 @@ async function init () {
     messageLimit: 0,
     autoreconnect: true,
     getAllUsers: true,
-    ratelimiterOffset: 200
+    ratelimiterOffset: 400
   })
 
   global.bot.on('ratelimit', console.error)

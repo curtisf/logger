@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelUpdate',
   type: 'on',
   handle: async (channel, oldChannel) => { // ignore updates of dm and group channels
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !channel.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     if (channel.position !== oldChannel.position) return
     const channelUpdateEvent = {
       guildID: channel.guild.id,
@@ -73,7 +73,7 @@ module.exports = {
         overwriteName += role.name
         if (role.color) channelUpdateEvent.embed.color = role.color
       }
-      let field = {
+      const field = {
         name: overwriteName,
         value: ''
       }
@@ -96,21 +96,19 @@ module.exports = {
       })
       if (field.value) channelUpdateEvent.embed.fields.push(field)
     })
-    await setTimeout(async () => {
-      const logs = await channel.guild.getAuditLogs(1, null, auditLogId).catch(() => {return})
-      if (!logs) return
-      const log = logs.entries[0]
-      if (!log) return
-      const user = logs.users[0]
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
-        channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
-        channelUpdateEvent.embed.author.icon_url = user.avatarURL
-        channelUpdateEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
-        await send(channelUpdateEvent)
-      } else {
-        await send(channelUpdateEvent)
-      }
-    }, 1000)
+    const logs = await channel.guild.getAuditLogs(1, null, auditLogId).catch(() => {})
+    if (!logs) return
+    const log = logs.entries[0]
+    if (!log) return
+    const user = logs.users[0]
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
+      channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
+      channelUpdateEvent.embed.author.icon_url = user.avatarURL
+      channelUpdateEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+      await send(channelUpdateEvent)
+    } else {
+      await send(channelUpdateEvent)
+    }
   }
 }
 

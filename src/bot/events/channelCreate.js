@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelCreate',
   type: 'on',
   handle: async newChannel => { // If it's a DM or group channel, ignore the creation
-    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newChannel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !newChannel.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
@@ -41,20 +41,19 @@ module.exports = {
         }
       })
     }
-    await setTimeout(async () => {
-      const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {return})
-      if (!logs) return
-      const log = logs.entries[0]
-      const user = logs.users[0]
-      const member = newChannel.guild.members.get(user.id)
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
-        channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
-        channelCreateEvent.embed.author.icon_url = user.avatarURL
-        channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
-        await send(channelCreateEvent)
-      } else {
-        await send(channelCreateEvent)
-      }
-    }, 1000)
+    const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {})
+    if (!logs) return
+    const log = logs.entries[0]
+    if (!log) return
+    const user = logs.users[0]
+    const member = newChannel.guild.members.get(user.id)
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
+      channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
+      channelCreateEvent.embed.author.icon_url = user.avatarURL
+      channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
+      await send(channelCreateEvent)
+    } else {
+      await send(channelCreateEvent)
+    }
   }
 }

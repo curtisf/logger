@@ -23,7 +23,7 @@
     "chalk": "^2.4.2",
     "cluster": "^0.7.7",
     "dotenv": "^8.1.0",
-    "eris": "github:abalabahaha/eris#pull/548/head",
+    "eris": "github:caf203/eris#dev",
     "ioredis": "^4.14.1",
     "os": "^0.1.1",
     "path": "^0.12.7",
