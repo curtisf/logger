@@ -48,6 +48,8 @@ async function init () {
     ratelimiterOffset: 200
   })
 
+  global.bot.on('ratelimit', console.error)
+
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
   })
