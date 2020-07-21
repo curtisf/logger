@@ -42,7 +42,7 @@ async function paste(messages, guildID) {
     .set('Content-Type', 'text/plain')
     .send(pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.')
     .end((err, res) => {
-      if (!err && res.statusCode === 200 && res.body.key) {
+      if (!err && res.body && res.statusCode === 200 && res.body.key) {
         messageDeleteBulkEvent.embed.fields.push({
           name: 'Link',
           value: `https://haste.lemonmc.com/${res.body.key}.txt`
