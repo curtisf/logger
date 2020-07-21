@@ -1,13 +1,11 @@
 const send = require('../modules/webhooksender')
 const cacheGuild = require('../utils/cacheGuild')
-const statAggregator = require('../modules/statAggregator')
 
 module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
   handle: async (guild, member, oldMember) => {
     if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
-    statAggregator.incrementEvent('guildMemberUpdate') // log all occurrences of member updates
     const guildMemberUpdate = {
       guildID: guild.id,
       eventName: 'guildMemberUpdate',

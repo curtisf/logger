@@ -4,7 +4,8 @@ const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 const statAggregator = require('./statAggregator')
 
-const doNotAggregate = ['guildMemberUpdate', 'voiceStateUpdate', 'voiceChannelJoin', 'voiceChannelLeave', 'voiceChannelSwitch']
+const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch']
+// these three events could possibly be an audit log fetch in the future, so they must be recorded together
 
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')

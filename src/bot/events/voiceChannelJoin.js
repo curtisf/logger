@@ -1,11 +1,9 @@
 const send = require('../modules/webhooksender')
-const statAggregator = require('../modules/statAggregator')
 
 module.exports = {
   name: 'voiceChannelJoin',
   type: 'on',
   handle: async (member, channel) => {
-    statAggregator.incrementEvent('voiceStateUpdate') // voice channel join is abstracted voice state update
     await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelJoin',
