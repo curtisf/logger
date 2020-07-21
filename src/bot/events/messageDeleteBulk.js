@@ -49,7 +49,7 @@ async function paste(messages, guildID) {
         })
         send(messageDeleteBulkEvent)
       } else {
-        global.logger.error(err, res.body)
+        global.logger.error(err, res.body ? res.body : 'No error body!')
         global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
       }
     })
