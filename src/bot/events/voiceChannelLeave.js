@@ -1,10 +1,12 @@
 const send = require('../modules/webhooksender')
+const statAggregator = require('../modules/statAggregator')
 
 module.exports = {
   name: 'voiceChannelLeave',
   type: 'on',
   handle: async (member, channel) => {
     if (member) {
+      statAggregator.incrementEvent('voiceStateUpdate') // voice channel leave is abstracted voice state update
       await send({
         guildID: channel.guild.id,
         eventName: 'voiceChannelLeave',

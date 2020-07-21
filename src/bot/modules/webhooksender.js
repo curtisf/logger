@@ -4,6 +4,8 @@ const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 const statAggregator = require('./statAggregator')
 
+const doNotAggregate = ['guildMemberUpdate', 'voiceStateUpdate', 'voiceChannelJoin', 'voiceChannelLeave', 'voiceChannelSwitch']
+
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
   if (!pkg.embed.color) pkg.embed.color = 3553599
@@ -54,9 +56,11 @@ module.exports = async pkg => {
         console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
       }
     })
-    statAggregator.incrementEvent(pkg.eventName)
     if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
       statAggregator.incrementMisc('fetchAuditLogs')
+    }
+    if (!doNotAggregate.includes(pkg.eventName)) {
+      statAggregator.incrementEvent(pkg.eventName)
     }
   }
 }
