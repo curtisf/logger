@@ -19,27 +19,27 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "aes256": "^1.0.4",
-    "bluebird": "^3.7.0",
-    "chalk": "^2.4.2",
+    "bluebird": "^3.7.2",
+    "chalk": "^4.1.0",
     "cluster": "^0.7.7",
-    "dotenv": "^8.1.0",
-    "eris": "github:caf203/eris#dev",
-    "ioredis": "^4.14.1",
+    "dotenv": "^8.2.0",
+    "eris": "github:curtisf/eris#dev",
+    "ioredis": "^4.17.3",
     "os": "^0.1.1",
     "path": "^0.12.7",
-    "pg": "^7.12.1",
+    "pg": "^8.3.0",
     "pg-format": "^1.0.4",
     "raven": "^2.6.4",
-    "redis": "^2.8.0",
+    "redis": "^3.0.2",
     "redlock": "^4.1.0",
     "rethinkdbdash": "^2.3.31",
-    "standard": "^14.3.1",
-    "superagent": "^5.1.0",
-    "util": "^0.12.1",
-    "ws": "^7.1.2",
+    "standard": "^14.3.4",
+    "superagent": "^5.3.1",
+    "util": "^0.12.3",
+    "ws": "^7.3.1",
     "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
+    "eslint": "^7.5.0"
   }
 }
