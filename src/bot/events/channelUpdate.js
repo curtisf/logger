@@ -2,7 +2,8 @@ const send = require('../modules/webhooksender')
 const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
-  4: 'Category'
+  4: 'Category',
+  5: 'Announcement'
 }
 
 module.exports = {
@@ -19,7 +20,7 @@ module.exports = {
           name: 'Unknown User',
           icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg' // TODO: use a static asset url that's mine
         },
-        description: `${CHANNEL_TYPE_MAP[channel.type]} was updated (${channel.name})`,
+        description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} was updated (${channel.name})`,
         fields: [{
           name: 'Name',
           value: channel.name
