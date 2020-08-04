@@ -2,7 +2,8 @@ const send = require('../modules/webhooksender')
 const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
-  4: 'Category'
+  4: 'Category',
+  5: 'Shop Channel'
 }
 
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
           name: 'Unknown User',
           icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
         },
-        description: `${CHANNEL_TYPE_MAP[newChannel.type]} created <#${newChannel.id}>`,
+        description: `${CHANNEL_TYPE_MAP[newChannel.type] ? CHANNEL_TYPE_MAP[newChannel.type] : 'Unknown Channel Type'} created <#${newChannel.id}>`,
         fields: [{
           name: 'Name',
           value: newChannel.name
