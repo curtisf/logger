@@ -61,6 +61,9 @@ module.exports = {
         fields: [{
           name: 'User Information',
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
+        }, {
+          name: 'Joined At',
+          value: `${new Date(member.joinedAt).toString()} (${(new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24} days, ${(new Date().getTime() - member.joinedAt) / 1000 / 60 / 60} hours)`
         }, rolesField, {
           name: 'Reason',
           value: log.reason ? log.reason : 'None provided'
@@ -100,6 +103,9 @@ module.exports = {
             name: 'User Information',
             value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
           }, rolesField, {
+            name: 'Joined At',
+            value: `${new Date(member.joinedAt).toString()} (${((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24).toFixed(0)} days, ${((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60).toFixed(0)} hours)`
+          }, {
             name: 'ID',
             value: `\`\`\`ini\nUser = ${member.id}\`\`\``
           }]

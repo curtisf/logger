@@ -5,7 +5,8 @@ module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
   handle: async (guild, member, oldMember) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (!member) return // usually happens when the bot is starting
+    if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     const guildMemberUpdate = {
       guildID: guild.id,
       eventName: 'guildMemberUpdate',
@@ -24,10 +25,10 @@ module.exports = {
     if (member.roles.length !== oldMember.roles.length || member.roles.filter(r => !oldMember.roles.includes(r)).length !== 0) {
       guild.getAuditLogs(1, null, 25).then(async (log) => {
         if (!log.entries[0]) return
-        let auditEntryDate = new Date((log.entries[0].id / 4194304) + 1420070400000)
+        const auditEntryDate = new Date((log.entries[0].id / 4194304) + 1420070400000)
         if (new Date().getTime() - auditEntryDate.getTime() < 3000) {
           log.entries[0].guild = []
-          let user = log.entries[0].user
+          const user = log.entries[0].user
           if (!global.bot.guildSettingsCache[guild.id]) {
             await cacheGuild(guild.id)
           }
@@ -37,8 +38,8 @@ module.exports = {
             await processRoleChange()
           }
           async function processRoleChange () {
-            let added = []
-            let removed = []
+            const added = []
+            const removed = []
             let roleColor
             if (log.entries[0].after.$add) {
               if (log.entries[0].after.$add.length !== 0) log.entries[0].after.$add.forEach(r => added.push(r))
@@ -65,7 +66,7 @@ module.exports = {
             await send(guildMemberUpdate)
           }
         }
-      }).catch(() => {return})
+      }).catch(() => {})
     } else if (member.nick !== oldMember.nick) {
       guildMemberUpdate.eventName = 'guildMemberNickUpdate'
       guildMemberUpdate.embed.fields[0] = ({
@@ -86,7 +87,7 @@ module.exports = {
 }
 
 function arrayCompare (base, toCompare) {
-  let baseArr = base.filter(i => { return toCompare.indexOf(i) < 0 })
-  let comparedArr = toCompare.filter(i => { return base.indexOf(i) < 0 })
+  const baseArr = base.filter(i => { return toCompare.indexOf(i) < 0 })
+  const comparedArr = toCompare.filter(i => { return base.indexOf(i) < 0 })
   return baseArr.concat(comparedArr)
 }
