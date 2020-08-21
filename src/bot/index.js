@@ -1,4 +1,4 @@
-const Eris = require('eris')
+const Eris = require('../../../eris') // my local fork, will fix package.json later
 const cluster = require('cluster')
 const raven = require('raven')
 const Raven = require('raven')
@@ -37,15 +37,14 @@ async function init () {
   global.logger.info('Shard init')
   global.redis = require('../db/clients/redis')
   global.bot = new Eris(process.env.BOT_TOKEN, {
-    firstShardID: cluster.worker.shardStart,
+    firstShardID: cluster.worker.shardStart, // TODO: k8s
     lastShardID: cluster.worker.shardEnd,
     maxShards: cluster.worker.totalShards,
-    disableEvents: { TYPING_START: true },
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    getAllUsers: true,
-    ratelimiterOffset: 400
+    ratelimiterOffset: 400,
+    intents: 719
   })
 
   global.bot.on('ratelimit', console.error)
