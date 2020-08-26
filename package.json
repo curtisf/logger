@@ -2,7 +2,14 @@
   "name": "loggerv3",
   "version": "3.1.0",
   "description": "Logger version 3, serving over 30,000 Discord servers",
-  "main": "index.js",
+  "bin": "./startbot.js",
+  "pkg": {
+    "assets": [
+      "src/**/*",
+      "src/**/**/*",
+      "*"
+    ]
+  },
   "scripts": {
     "test": "standard",
     "lint": "node_modules/.bin/eslint . --ext .js"
@@ -19,27 +26,30 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "aes256": "^1.0.4",
-    "bluebird": "^3.7.0",
-    "chalk": "^2.4.2",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "chalk": "^4.1.0",
     "cluster": "^0.7.7",
-    "dotenv": "^8.1.0",
-    "eris": "github:abalabahaha/eris#pull/548/head",
-    "ioredis": "^4.14.1",
+    "dotenv": "^8.2.0",
+    "eris": "^0.13.3",
+    "express": "^4.17.1",
+    "ioredis": "^4.17.3",
     "os": "^0.1.1",
     "path": "^0.12.7",
-    "pg": "^7.12.1",
-    "pg-format": "^1.0.4",
+    "pg": "^8.3.2",
+    "pug": "^3.0.0",
     "raven": "^2.6.4",
-    "redis": "^2.8.0",
-    "redlock": "^4.1.0",
-    "rethinkdbdash": "^2.3.31",
-    "standard": "^14.3.1",
-    "superagent": "^5.1.0",
-    "util": "^0.12.1",
-    "ws": "^7.1.2",
+    "redis": "^3.0.2",
+    "signale": "^1.4.0",
+    "sqlite3": "^5.0.0",
+    "standard": "^14.3.4",
+    "superagent": "^6.0.0",
+    "util": "^0.12.3",
+    "ws": "^7.3.1",
     "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
+    "electron": "^9.2.1",
+    "eslint": "^7.7.0"
   }
 }

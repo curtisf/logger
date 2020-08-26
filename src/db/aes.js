@@ -1,6 +1,6 @@
 require('dotenv').config()
 
 const AES = require('aes256')
-const cipher = AES.createCipher(process.env.AES_KEY)
+const cipher = AES.createCipher(global.envInfo.AES_KEY)
 
 module.exports = cipher

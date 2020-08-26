@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+    <head>
+        <title>Local LoggerBot Selfhost Dashboard</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    </head>
+    <body onload="fetchInitialPage()">
+        <center>
+        <div class="tile is-ancestor">
+            <div class="tile is-8 is-horizontal is-parent">
+              <div class="tile is-child box">
+                <figure class="image is-4by3">
+                    <img src="https://bulma.io/images/placeholders/640x480.png">
+                  </figure>
+                <p class="title">Server One</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.</p>
+              </div>
+              <div class="tile is-child box">
+                <figure class="image is-4by3">
+                    <img src="https://bulma.io/images/placeholders/640x480.png">
+                  </figure>
+                <p class="title">Server Two</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.</p>
+              </div>
+            </div>
+            </div>
+        </center>
+        <script>
+            async function fetchInitialPage() {
+                let activeServers = []
+                try {
+                    const resp = await fetch('http://localhost:8082/api/getallservers')
+                    const data = await resp.json()
+                    console.log('returned data', data)
+                } catch (e) {
+                    console.error(e)
+                    alert('Error fetching bot servers.')
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -10,10 +10,10 @@ setInterval(() => {
 function fatal (message) {
   if (globalHookErrors < 5) {
     sa
-      .post(process.env.DISCORD_WEBHOOK_URL)
+      .post(global.envInfo.DISCORD_WEBHOOK_URL)
       .send({
         avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
-        username: `Fatal Error LoggerBot Webhook Notification`,
+        username: 'Fatal Error LoggerBot Webhook Notification',
         embeds: [{
           title: 'Fatal',
           description: message,
@@ -29,10 +29,10 @@ function fatal (message) {
 function error (message) {
   if (globalHookErrors < 5) {
     sa
-      .post(process.env.DISCORD_WEBHOOK_URL)
+      .post(global.envInfo.DISCORD_WEBHOOK_URL)
       .send({
         avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
-        username: `Error LoggerBot Webhook Notification`,
+        username: 'Error LoggerBot Webhook Notification',
         embeds: [{
           title: 'Error',
           description: message,
@@ -48,10 +48,10 @@ function error (message) {
 function warn (message) {
   if (globalHookErrors < 5) {
     sa
-      .post(process.env.DISCORD_WEBHOOK_URL)
+      .post(global.envInfo.DISCORD_WEBHOOK_URL)
       .send({
         avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
-        username: `Warning LoggerBot Webhook Notification`,
+        username: 'Warning LoggerBot Webhook Notification',
         embeds: [{
           title: 'Warning',
           description: message,
@@ -67,10 +67,10 @@ function warn (message) {
 function generic (message) {
   if (globalHookErrors < 5) {
     sa
-      .post(process.env.DISCORD_WEBHOOK_URL)
+      .post(global.envInfo.DISCORD_WEBHOOK_URL)
       .send({
         avatar_url: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
-        username: `Generic LoggerBot Webhook Notification`,
+        username: 'Generic LoggerBot Webhook Notification',
         embeds: [{
           title: 'Generic',
           description: message,
@@ -86,7 +86,7 @@ function generic (message) {
 function custom (message) {
   if (globalHookErrors < 5) {
     sa
-      .post(process.env.DISCORD_WEBHOOK_URL)
+      .post(global.envInfo.DISCORD_WEBHOOK_URL)
       .send({
         avatar_url: message.avatar_url || 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png',
         embeds: [{
@@ -108,8 +108,8 @@ exports.generic = generic
 exports.fatal = fatal
 exports.custom = custom
 
-if (!process.env.DISCORD_WEBHOOK_URL) {
-  global.logger.warn('Discord webhook url not specified, disabling webhook notifier.')
+if (!global.envInfo.DISCORD_WEBHOOK_URL) {
+  console.warn('Discord webhook url not specified, disabling webhook notifier.')
   exports.error = () => { }
   exports.warn = () => { }
   exports.generic = () => { }

@@ -3,8 +3,8 @@
  * From https://github.com/thesharks/wildbeast
  */
 
-const uri = process.env.BEZERK_URI
-const secret = process.env.BEZERK_SECRET
+const uri = global.envInfo.BEZERK_URI
+const secret = global.envInfo.BEZERK_SECRET
 const WS = require('ws')
 const cacheGuild = require('../bot/utils/cacheGuild')
 
@@ -39,7 +39,7 @@ function start () {
       }
       case '1002': { // IDENTIFY_REPLY
         if (msg.c.success === true) {
-          global.logger.info(`Bezerk connection fully open.`)
+          global.logger.info('Bezerk connection fully open.')
           global.logger.info('Successfully connected to Bezerk.')
         } else {
           global.logger.warn('Bezerk rejected authentication! Not reconnecting.')
@@ -53,13 +53,13 @@ function start () {
             msg.c = msg.c.replace('recache ', '')
             cacheGuild(msg.c)
           } else {
-          const resp = eval(msg.c) // TODO: replace eval with more OP codes for each use
-          send({
-            op: '2002', // REQUEST_REPLY
-            c: resp,
-            uuid: msg.uuid
-          })
-        }
+            const resp = eval(msg.c) // TODO: replace eval with more OP codes for each use
+            send({
+              op: '2002', // REQUEST_REPLY
+              c: resp,
+              uuid: msg.uuid
+            })
+          }
         } catch (e) {
           send({
             op: '5000', // CANNOT_COMPLY

@@ -109,6 +109,8 @@ work under this License, and how to view a copy of this License.  If
 the interface presents a list of user commands or options, such as a
 menu, a prominent item in the list meets this criterion.
 
+  Discord refers to the chat platform hosted and operated by Discord Inc
+
   1. Source Code.
 
   The "source code" for a work means the preferred form of the work
@@ -617,6 +619,10 @@ reviewing courts shall apply local law that most closely approximates
 an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
+
+  18. Limitations of use
+
+  You may NOT use the provided software if the Discord bot account this code will be using is verified or in over 100 Discord servers. To put it simply, if you are running this software yourself, the account it's using may not be verified or in over 100 Discord servers.
 
                      END OF TERMS AND CONDITIONS
 

@@ -1,4 +1,3 @@
-const cluster = require('cluster')
 const webhookLogger = require('./webhooklogger')
 const Zabbix = require('zabbix-promise')
 const workerCrashes = {}
@@ -17,7 +16,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
               value: statsObj.eventUsage[eventName] === 0 ? 1 : statsObj.eventUsage[eventName]
             })
           } catch (error) {
-            global.logger.error(`event send error: ${eventName}`)
+            console.error(`event send error: ${eventName}`)
           }
         }
       }
@@ -51,7 +50,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
           }
         }
       }
-      
+
       statsObj = {}
     }
   }, parseInt(process.env.STAT_SUBMISSION_INTERVAL) + 250) // add 1/4 second deadband to allow the shards to respond
@@ -81,7 +80,6 @@ module.exports = async worker => {
     if (message.type && message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
-        return
       } else {
         for (const commandName in message.commandUsage) {
           statsObj.commandUsage[commandName] += message.commandUsage[commandName]
@@ -106,7 +104,6 @@ module.exports = async worker => {
     } else {
       global.logger.error(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
       global.webhook.fatal(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
-      const nw = cluster.fork()
       Object.assign(nw, {
         type: 'startup',
         processType: 'bot',

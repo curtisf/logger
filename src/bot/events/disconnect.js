@@ -5,9 +5,8 @@ module.exports = {
   name: 'disconnect',
   type: 'on',
   handle: () => {
-    statAggregator.incrementMisc('disconnect')
+    global.signale.pause('Disconnected from Discord, trying to reconnect')
     reconnects++
-    global.logger.error(`Worker instance hosting ${cluster.worker.rangeForShard} on id ${cluster.worker.id} disconnected from the gateway. ${reconnects} out of 10.`)
     if (reconnects >= 10) {
       global.bot.disconnect(true) // Disconnect the bot but don't destroy member caches
     }

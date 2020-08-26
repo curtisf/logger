@@ -1,14 +1,15 @@
+const runQuery = require('../../db/interfaces/sqlite')
+
 module.exports = {
   getCachedInvites: async (guildID) => {
-    let invites = await global.redis.get(`invites-${guildID}`)
-    if (!invites) return []
-    return JSON.parse(invites)
+    const invites = await runQuery('SELECT * FROM invites WHERE guild_id=$1', [guildID])
+    if (invites.rows.length === 0) return []
+    return invites
   },
   cacheInvites: async (guildID, invitesArray) => {
-    await global.redis.del(`invites-${guildID}`)
-    await global.redis.set(`invites-${guildID}`, JSON.stringify(invitesArray), 'EX', 10800000)
+    await runQuery('INSERT INTO invites SET invites_array=$1 WHERE guild_id=$2', [invitesArray.map(JSON.stringify), guildID])
   },
   deleteInvites: async (guildID) => {
-    await global.redis.del(`invites-${guildID}`)
+    await runQuery('DELETE FROM invites WHERE guild_id=$1', [guildID])
   }
 }

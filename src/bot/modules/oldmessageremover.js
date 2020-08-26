@@ -1,8 +1,8 @@
-const pool = require('../../db/clients/postgres')
+const { runQuery } = require('../../db/interfaces/sqlite')
 
 module.exports = {
-  removeMessagesOlderThanDays: async (days) => {
-    const result = await pool.query(`DELETE FROM messages WHERE ts < now() - interval '${days} days'`)
-    return result.rowCount
+  removeMessagesOlderThanDays: async () => {
+    const result = await runQuery("DELETE FROM messages WHERE ts <= date('now', '-7 day')")
+    return result.rows.length
   }
 }

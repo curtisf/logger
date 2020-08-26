@@ -4,8 +4,8 @@ class GuildSettings {
   constructor (data) {
     if (data.disabled) return
     if (!data.ownerID && !data.owner_id) {
-      global.logger.info(JSON.stringify(data))
-      global.logger.fatal('A guild settings doc is missing an ownerID!', data)
+      console.info(JSON.stringify(data))
+      console.error('A guild settings doc is missing an ownerID!', data)
     }
     this.id = data.id
     this.ignoredChannels = data.ignoredChannels || data.ignored_channels

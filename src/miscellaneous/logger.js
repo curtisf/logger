@@ -1,6 +1,6 @@
 const chalk = require('chalk')
 const raven = require('raven')
-raven.config(process.env.RAVEN_URI, { parseUser: false })
+raven.config(global.envInfo.RAVEN_URI, { parseUser: false })
 
 module.exports = {
   startup: info => console.log(`${chalk.white.bgGreen('STARTUP')} ${info}`),

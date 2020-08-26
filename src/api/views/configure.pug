@@ -1,0 +1,472 @@
+doctype html
+html(lang='en')
+  head
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    // Meta, title, CSS, favicons, etc.
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Logger Dashboard
+    // Bootstrap
+    link(href='/vendors/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+    // Font Awesome
+    link(href='/vendors/font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    // NProgress
+    link(href='/vendors/nprogress/nprogress.css', rel='stylesheet')
+    // iCheck
+    link(href='/vendors/iCheck/skins/flat/green.css', rel='stylesheet')
+    // bootstrap-progressbar
+    link(href='/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css', rel='stylesheet')
+    // JQVMap
+    link(href='/vendors/jqvmap/dist/jqvmap.min.css', rel='stylesheet')
+    // bootstrap-daterangepicker
+    link(href='/vendors/bootstrap-daterangepicker/daterangepicker.css', rel='stylesheet')
+    // Custom Theme Style
+    link(href='/build/css/custom.min.css', rel='stylesheet')
+    link(href='/vendors/jsoneditor/jsoneditor.css', rel='stylesheet')
+    script(src='/vendors/jsoneditor/jsoneditor.js')
+    #popup.modal-dialog.modal-sm(style="position: absolute; z-index: 1000000; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')#close
+            span(aria-hidden='true')#close ×
+          h4.modal-title Configuration Response
+        .modal-body
+          p#message-content
+            | Oof
+        .modal-footer#close
+          button.btn.btn-default(type='button', data-dismiss='popup', onclick="hidePopup()")#close Close
+  body(onload="fetchInitialPage()").nav-md
+    .container.body
+      .main_container
+        .col-md-3.left_col
+          .left_col.scroll-view
+            .navbar.nav_title(style='border: 0;')
+              a.site_title(href='/')
+                img(src='/images/loggericon.png', width='64px', height='64px')#botavatar
+                span#botname.scale-bot-title  Logger
+            .clearfix
+            // menu profile quick info
+            // /menu profile quick info
+            br
+            // sidebar menu
+            #sidebar-menu.main_menu_side.hidden-print.main_menu
+              .menu_section
+                h3 General
+                ul.nav.side-menu
+                  li
+                    a(href='/')
+                      i.fa.fa-mouse-pointer
+                      |  Server Selector
+                  li
+                    a(href='https://discordapp.com/oauth2/authorize?client_id=298822483060981760&scope=bot&permissions=536988833', target='_blank').botinvite
+                      i.fa.fa-envelope
+                      |  Invite
+                  li
+                    a(href='https://www.patreon.com/logger', target='_blank')
+                      i.fa.fa-hand-peace-o
+                      |  Patreon
+                  li
+                    a(href='https://discord.gg/ed7Gaa3', target='_blank')
+                      i.fa.fa-life-ring
+                      |  Discord Server
+            // /sidebar menu
+            // /menu footer buttons
+            .sidebar-footer.hidden-small
+              a(data-toggle='tooltip', data-placement='top', title='Logout', href='/logout', style="width: 100%")
+                span.glyphicon.glyphicon-off(aria-hidden='true')
+            // /menu footer buttons
+        // top navigation
+        .top_nav
+          .nav_menu
+            nav
+              .nav.toggle
+                a#menu_toggle
+                  i.fa.fa-bars
+              ul.nav.navbar-nav.navbar-right
+                li
+                  ul.dropdown-menu.dropdown-usermenu.pull-right
+                    li
+                      a(href='https://discord.gg/ed7Gaa3') Help
+                    li
+                      a(href='/logout')
+                        i.fa.fa-sign-out.pull-right
+                        |  Log Out
+                li
+                    a(href='https://discordapp.com/oauth2/authorize?client_id=298822483060981760&scope=bot&permissions=536988833', target='_blank').botinvite
+                      i.fa.fa-envelope
+                      |  Invite
+                li
+                  a(href='https://www.patreon.com/logger', target='_blank')
+                    i.fa.fa-hand-peace-o
+                    |  Patreon
+                li
+                  a(href='https://discord.gg/ed7Gaa3', target='_blank')
+                    i.fa.fa-life-ring
+                    |  Discord Server
+        .right_col(role='main')
+          h1.text-center Configuring #{guildName}:
+          br
+          div(style='width: 400px; height: 400px;')#jsoneditor
+          .col-md-6.col-xs-12
+            .x_panel
+              .x_title
+                h2
+                  | Channels To Log To 
+                ul.nav.navbar-right.panel_toolbox
+                  li.pull-right
+                    a.collapse-link
+                      i.fa.fa-chevron-up
+                .clearfix
+              .x_content
+                form.form-horizontal.form-label-left(onsubmit="return false")#dataform
+                  .form-group
+                    input(type="hidden", name='guildID', value='#{guildID}', readonly)
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 channelCreate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='channelCreate')
+                        option(value='', selected) None
+                        - if (selectedChannels.channelCreate && selectedChannels.channelCreate.id) {
+                            option(value=`${selectedChannels.channelCreate.id}`, selected) #{selectedChannels.channelCreate.name ? selectedChannels.channelCreate.name : selectedChannels.channelCreate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 channelUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='channelUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.channelUpdate && selectedChannels.channelUpdate.id) {
+                            option(value=`${selectedChannels.channelUpdate.id}`, selected) #{selectedChannels.channelUpdate.name ? selectedChannels.channelUpdate.name : selectedChannels.channelUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 channelDelete
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='channelDelete')
+                        option(value='', selected) None
+                        - if (selectedChannels.channelDelete && selectedChannels.channelDelete.id) {
+                            option(value=`${selectedChannels.channelDelete.id}`, selected) #{selectedChannels.channelDelete.name ? selectedChannels.channelDelete.name : selectedChannels.channelDelete.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildBanAdd
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildBanAdd')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildBanAdd && selectedChannels.guildBanAdd.id) {
+                            option(value=`${selectedChannels.guildBanAdd.id}`, selected) #{selectedChannels.guildBanAdd.name ? selectedChannels.guildBanAdd.name : selectedChannels.guildBanAdd.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildBanRemove
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildBanRemove')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildBanRemove && selectedChannels.guildBanRemove.id) {
+                            option(value=`${selectedChannels.guildBanRemove.id}`, selected) #{selectedChannels.guildBanRemove.name ? selectedChannels.guildBanRemove.name : selectedChannels.guildBanRemove.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildRoleCreate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildRoleCreate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildRoleCreate && selectedChannels.guildRoleCreate.id) {
+                            option(value=`${selectedChannels.guildRoleCreate.id}`, selected) #{selectedChannels.guildRoleCreate.name ? selectedChannels.guildRoleCreate.name : selectedChannels.guildRoleCreate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildRoleDelete
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildRoleDelete')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildRoleDelete && selectedChannels.guildRoleDelete.id) {
+                            option(value=`${selectedChannels.guildRoleDelete.id}`, selected) #{selectedChannels.guildRoleDelete.name ? selectedChannels.guildRoleDelete.name : selectedChannels.guildRoleDelete.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildRoleUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildRoleUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildRoleUpdate && selectedChannels.guildRoleUpdate.id) {
+                            option(value=`${selectedChannels.guildRoleUpdate.id}`, selected) #{selectedChannels.guildRoleUpdate.name ? selectedChannels.guildRoleUpdate.name : selectedChannels.guildRoleUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildUpdate && selectedChannels.guildUpdate.id) {
+                            option(value=`${selectedChannels.guildUpdate.id}`, selected) #{selectedChannels.guildUpdate.name ? selectedChannels.guildUpdate.name : selectedChannels.guildUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 messageDelete
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='messageDelete')
+                        option(value='', selected) None
+                        - if (selectedChannels.messageDelete && selectedChannels.messageDelete.id) {
+                            option(value=`${selectedChannels.messageDelete.id}`, selected) #{selectedChannels.messageDelete.name ? selectedChannels.messageDelete.name : selectedChannels.messageDelete.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 messageDeleteBulk
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='messageDeleteBulk')
+                        option(value='', selected) None
+                        - if (selectedChannels.messageDeleteBulk && selectedChannels.messageDeleteBulk.id) {
+                            option(value=`${selectedChannels.messageDeleteBulk.id}`, selected) #{selectedChannels.messageDeleteBulk.name ? selectedChannels.messageDeleteBulk.name : selectedChannels.messageDeleteBulk.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 messageReactionRemoveAll
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='messageReactionRemoveAll')
+                        option(value='', selected) None
+                        - if (selectedChannels.messageReactionRemoveAll && selectedChannels.messageReactionRemoveAll.id) {
+                            option(value=`${selectedChannels.messageReactionRemoveAll.id}`, selected) #{selectedChannels.messageReactionRemoveAll.name ? selectedChannels.messageReactionRemoveAll.name : selectedChannels.messageReactionRemoveAll.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 messageUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='messageUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.messageUpdate && selectedChannels.messageUpdate.id) {
+                            option(value=`${selectedChannels.messageUpdate.id}`, selected) #{selectedChannels.messageUpdate.name ? selectedChannels.messageUpdate.name : selectedChannels.messageUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildMemberAdd
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildMemberAdd')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildMemberAdd && selectedChannels.guildMemberAdd.id) {
+                            option(value=`${selectedChannels.guildMemberAdd.id}`, selected) #{selectedChannels.guildMemberAdd.name ? selectedChannels.guildMemberAdd.name : selectedChannels.guildMemberAdd.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildMemberKick
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildMemberKick')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildMemberKick && selectedChannels.guildMemberKick.id) {
+                            option(value=`${selectedChannels.guildMemberKick.id}`, selected) #{selectedChannels.guildMemberKick.name ? selectedChannels.guildMemberKick.name : selectedChannels.guildMemberKick.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildMemberNickUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildMemberNickUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildMemberNickUpdate && selectedChannels.guildMemberNickUpdate.id) {
+                            option(value=`${selectedChannels.guildMemberNickUpdate.id}`, selected) #{selectedChannels.guildMemberNickUpdate.name ? selectedChannels.guildMemberNickUpdate.name : selectedChannels.guildMemberNickUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildMemberRemove
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildMemberRemove')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildMemberRemove && selectedChannels.guildMemberRemove.id) {
+                            option(value=`${selectedChannels.guildMemberRemove.id}`, selected) #{selectedChannels.guildMemberRemove.name ? selectedChannels.guildMemberRemove.name : selectedChannels.guildMemberRemove.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildMemberUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildMemberUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildMemberUpdate && selectedChannels.guildMemberUpdate.id) {
+                            option(value=`${selectedChannels.guildMemberUpdate.id}`, selected) #{selectedChannels.guildMemberUpdate.name ? selectedChannels.guildMemberUpdate.name : selectedChannels.guildMemberUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 voiceChannelLeave
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='voiceChannelLeave')
+                        option(value='', selected) None
+                        - if (selectedChannels.voiceChannelLeave && selectedChannels.voiceChannelLeave.id) {
+                            option(value=`${selectedChannels.voiceChannelLeave.id}`, selected) #{selectedChannels.voiceChannelLeave.name ? selectedChannels.voiceChannelLeave.name : selectedChannels.voiceChannelLeave.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 voiceChannelJoin
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='voiceChannelJoin')
+                        option(value='', selected) None
+                        - if (selectedChannels.voiceChannelJoin && selectedChannels.voiceChannelJoin.id) {
+                            option(value=`${selectedChannels.voiceChannelJoin.id}`, selected) #{selectedChannels.voiceChannelJoin.name ? selectedChannels.voiceChannelJoin.name : selectedChannels.voiceChannelJoin.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 voiceStateUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='voiceStateUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.voiceStateUpdate && selectedChannels.voiceStateUpdate.id) {
+                            option(value=`${selectedChannels.voiceStateUpdate.id}`, selected) #{selectedChannels.voiceStateUpdate.name ? selectedChannels.voiceStateUpdate.name : selectedChannels.voiceStateUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 voiceChannelSwitch
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='voiceChannelSwitch')
+                        option(value='', selected) None
+                        - if (selectedChannels.voiceChannelSwitch && selectedChannels.voiceChannelSwitch.id) {
+                            option(value=`${selectedChannels.voiceChannelSwitch.id}`, selected) #{selectedChannels.voiceChannelSwitch.name ? selectedChannels.voiceChannelSwitch.name : selectedChannels.voiceChannelSwitch.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                    label.control-label.col-md-5.col-sm-5.col-xs-12 guildEmojisUpdate
+                    .col-md-9.col-sm-9.col-xs-12
+                      select.select2_single.form-control(tabindex='-1', name='guildEmojisUpdate')
+                        option(value='', selected) None
+                        - if (selectedChannels.guildEmojisUpdate && selectedChannels.guildEmojisUpdate.id) {
+                            option(value=`${selectedChannels.guildEmojisUpdate.id}`, selected) #{selectedChannels.guildEmojisUpdate.name ? selectedChannels.guildEmojisUpdate.name : selectedChannels.guildEmojisUpdate.id}
+                        - }
+                        - for(let x = 0; x < channels.length; x++) {
+                            option(value=`${channels[x].id}`) #{channels[x].name}
+                        - }
+                  .ln_solid
+                  .form-group
+                    .col-md-9.col-sm-9.col-xs-12.col-md-offset-3.text-center
+                      button.btn.btn-primary(type='reset') Reset
+                      button.btn.btn-success(type='submit')#submitchannels Submit
+        footer
+          .pull-left
+            a(href='/privacypolicy') Privacy Policy
+          .pull-right
+            | Gentelella 
+            a(href='https://colorlib.com') Colorlib            
+          .clearfix
+    script(src='/vendors/jquery/dist/jquery.min.js')
+    script(src='/vendors/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/vendors/nprogress/nprogress.js')
+    script(src='/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js')
+    script(src='/vendors/iCheck/icheck.min.js')
+    script(src='/build/js/custom.min.js')
+    script(src='/js/jquery.serializejson.js')
+    script.
+        const container = document.getElementById("jsoneditor")
+        const options = {onChangeText: jsonText => {
+            const json = JSON.parse(jsonText)
+            console.log('updated json', json)
+          $.ajax({
+                type:'POST',
+                url:'http://localhost:8082/api/savechannels',
+                data: {guildID: '#{guildID}', events: json},
+                error:function (msg) {
+                  alert('There was an error while syncing dashboard changes with the bot! View console for more information.')
+                  console.error(msg)
+                }
+            })
+        }, mode: 'text'}
+        const editor = new JSONEditor(container, options)
+
+        // set json
+        const initialJson = {
+            "loading": "true"
+        }
+        editor.set(initialJson)
+
+        async function fetchInitialPage() {
+                let activeServers = []
+                try {
+                    const resp = await fetch('http://localhost:8082/api/server/#{guildID}')
+                    const data = await resp.json()
+                    editor.set(data)
+                    console.log('returned data', data)
+                } catch (e) {
+                    console.error(e)
+                    alert('Error fetching bot servers.')
+                }
+                try {
+                    const resp = await fetch('http://localhost:8082/api/botinfo')
+                    const data = await resp.json()
+                    console.log('returned data', data)
+                    console.log('setting to ', data.username)
+                    document.getElementById('botname').innerHTML = data.username
+                    document.getElementById('botavatar').src = data.avatarURL
+                    const botInvs = document.getElementsByClassName('botinvite')
+                    for (let i = 0; i < botInvs.length; i++) {
+                      botInvs[i].href = `https://discord.com/oauth2/authorize?client_id=${data.id}&scope=bot&permissions=536988833`
+                    }
+                } catch (e) {
+                    console.error(e)
+                    alert('Error fetching bot servers.')
+                }
+            }
+
+            function getFormData($form){
+              var unindexed_array = $form.serializeArray();
+              var indexed_array = {};
+
+              $.map(unindexed_array, function(n, i){
+                  indexed_array[n['name']] = n['value'];
+              });
+
+              return indexed_array;
+            }
+
+            $("#submitchannels").click(function () {
+              console.log('click')
+              console.log($("#dataform"))
+              const formData = getFormData($("#dataform"))
+              delete formData.guildID
+          $.ajax({
+                type:'POST',
+                url:'http://localhost:8082/api/savechannels',
+                data: {guildID: '#{guildID}', events: formData},
+                error:function (msg) {
+                  alert('There was an error while syncing dashboard changes with the bot! View console for more information.')
+                  console.error(msg)
+                },
+                success: function() {
+                  message.innerHTML = 'Your changes have been saved.'
+                  modal.style.display = 'block'
+                }
+            })
+        })
+
+        // get json
+        const updatedJson = editor.get()
+        let modal = document.getElementById('popup')
+        let span = document.getElementById('close')
+        let message = document.getElementById('message-content')
+        let btn = document.getElementById('submitB')
+        modal.style.display = "none";
+        function hidePopup() {
+          modal.style.display = "none"
+        }
+        span.onclick = hidePopup
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                hidePopup()
+            }
+        }
+

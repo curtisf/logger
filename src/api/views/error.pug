@@ -1,0 +1,28 @@
+doctype html
+html(lang='en')
+  head
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    // Meta, title, CSS, favicons, etc.
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Uh oh!
+    link(href='/vendors/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/vendors/font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    link(href='/vendors/nprogress/nprogress.css', rel='stylesheet')
+    link(href='/build/css/custom.min.css', rel='stylesheet')
+  body.nav-md
+    .container.body
+      .main_container
+        .col-md-12
+          .col-middle
+            .text-center.text-center
+              h1.error-number #{code}
+              h2 That's an error!
+              p
+                | #{message}
+                a(href='/')  Home
+    script(src='/vendors/jquery/dist/jquery.min.js')
+    script(src='/vendors/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/vendors/nprogress/nprogress.js')
+    script(src='/build/js/custom.min.js')

@@ -1,7 +1,7 @@
 const webhookCache = require('../modules/webhookcache')
-const clearEventByID = require('../../db/interfaces/postgres/update').clearEventByID
-const setEventLogs = require('../../db/interfaces/postgres/update').setEventsLogId
-const setAllOneID = require('../../db/interfaces/postgres/update').setAllEventsOneId
+const clearEventByID = require('../../db/interfaces/sqlite').clearEventByID
+const setEventLogs = require('../../db/interfaces/sqlite').setEventsLogId
+const setAllOneID = require('../../db/interfaces/sqlite').setAllEventsOneId
 const cacheGuild = require('../utils/cacheGuild')
 
 const eventList = [
@@ -32,12 +32,12 @@ const eventList = [
 
 module.exports = {
   func: async (message, suffix) => {
-    const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json['manageWebhooks']
+    const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json.manageWebhooks
     if (!webhookPerm) return await message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.')
     let events = suffix.split(', ')
     events = cleanArray(events)
     if (events.length === 0 && suffix) {
-      message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
+      message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${global.envInfo.GLOBAL_BOT_PREFIX}help to see what is valid.`)
     } else if (events.length === 0 && !suffix) {
       await setAllOneID(message.channel.guild.id, message.channel.id)
       await cacheGuild(message.channel.guild.id)
@@ -49,7 +49,7 @@ module.exports = {
     }
   },
   name: 'setchannel',
-  description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
+  description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${global.envInfo.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
   perm: 'manageWebhooks',
   category: 'Logging'
 }

@@ -1,15 +1,15 @@
-const statAggregator = require('./statAggregator')
+const runQuery = require('../../db/interfaces/sqlite').runQuery
 
 module.exports = {
   setWebhook: (channelID, webhookID, webhookToken) => {
-    statAggregator.incrementRedisSet()
-    return global.redis.set(`webhook-${channelID}`, `${webhookID}|${webhookToken}`, 'EX', 10800000)
+    runQuery('INSERT INTO webhooks ( channel_id, webhook_id, webhook_token) VALUES ($1, $2, $3)', [channelID, webhookID, webhookToken])
   },
-  getWebhook: channelID => {
-    statAggregator.incrementRedisGet()
-    return global.redis.get(`webhook-${channelID}`)
+  getWebhook: async channelID => {
+    const webhookDoc = await runQuery('SELECT * FROM webhooks WHERE channel_id=$1', [channelID])
+    if (webhookDoc.rows.length === 0) return null
+    return `${webhookDoc.rows[0].webhook_id}|${webhookDoc.rows[0].webhook_token}`
   },
   deleteWebhook: channelID => {
-    return global.redis.del(`webhook-${channelID}`)
+    runQuery('DELETE FROM webhooks WHERE channel_id=$1', [channelID])
   }
 }

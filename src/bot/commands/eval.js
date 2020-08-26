@@ -10,7 +10,7 @@ module.exports = {
       if (str.length > 1900) {
         str = `${str.substr(0, 1897)}...`
       }
-      str = str.replace(new RegExp(process.env.BOT_TOKEN, 'gi'), '( ͡° ͜ʖ ͡°)')
+      str = str.replace(new RegExp(global.envInfo.BOT_TOKEN, 'gi'), '( ͡° ͜ʖ ͡°)')
       message.channel.createMessage('```xl\n' + str + '\n```').then(ms => {
         if (returned !== undefined && returned !== null && typeof returned.then === 'function') {
           returned.then(() => {

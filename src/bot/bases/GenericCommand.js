@@ -1,10 +1,10 @@
 class GenericCommand {
   constructor (data) {
     if (data.disabled) return
-    if (!data.name) global.logger.fatal('A command is missing a name! Verify all commands are properly structured and try again.')
-    else if (!data.func) global.logger.fatal(`Command ${data.name} doesn't have a function to execute!`)
+    if (!data.name) console.error('A command is missing a name! Verify all commands are properly structured and try again.')
+    else if (!data.func) console.error(`Command ${data.name} doesn't have a function to execute!`)
     else if (!data.description) {
-      global.logger.error(`Command ${data.name} is missing a description.`)
+      console.error(`Command ${data.name} is missing a description.`)
       data.description = 'None provided'
     }
 
@@ -17,7 +17,7 @@ class GenericCommand {
     this.perm = data.perm
     this.type = data.type || 'any'
     this.category = data.category || 'Uncategorized'
-    this.hidden = data.hidden ? true : false
+    this.hidden = !!data.hidden
 
     global.bot.commands[data.name] = this
   }

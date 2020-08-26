@@ -1,12 +1,12 @@
 const sa = require('superagent')
-const getMessageById = require('../../db/interfaces/postgres/read').getMessageById
+const getMessageById = require('../../db/interfaces/sqlite').getMessageById
 const send = require('../modules/webhooksender')
 
 module.exports = {
   name: 'messageDeleteBulk',
   type: 'on',
   handle: async messages => {
-    let dbMessages = []
+    const dbMessages = []
     await messages.forEach(async (m, i) => {
       const message = await getMessageById(m.id)
       if (message) dbMessages.push(message)
@@ -15,7 +15,7 @@ module.exports = {
   }
 }
 
-async function paste(messages, guildID) {
+async function paste (messages, guildID) {
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',
@@ -34,23 +34,17 @@ async function paste(messages, guildID) {
         avatarURL: 'http://www.clker.com/cliparts/C/8/4/G/W/o/transparent-red-circle-hi.png'
       }
     }
-    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts)}: ${m.content} |  | `
+    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | ${new Date(m.ts).toString()}: ${m.content}`
   }).join('\r\n')
-  sa
-    .post(process.env.PASTE_CREATE_ENDPOINT)
-    .set('Authorization', process.env.PASTE_CREATE_TOKEN)
-    .set('Content-Type', 'text/plain')
-    .send(pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.')
-    .end((err, res) => {
-      if (!err && res.statusCode === 200 && res.body.key) {
-        messageDeleteBulkEvent.embed.fields.push({
-          name: 'Link',
-          value: `https://haste.lemonmc.com/${res.body.key}.txt`
-        })
-        send(messageDeleteBulkEvent)
-      } else {
-        global.logger.error(err, res.body)
-        global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
-      }
-    })
+  const uploadBuffer = Buffer.alloc(pasteString.length)
+  uploadBuffer.write(pasteString)
+  messageDeleteBulkEvent.embed.fields.push({
+    name: 'Link',
+    value: 'Look at the file attached to this embed'
+  })
+  messageDeleteBulkEvent.file = {
+    name: 'messages-deleted.txt',
+    file: uploadBuffer
+  }
+  send(messageDeleteBulkEvent)
 }

@@ -9,7 +9,7 @@ module.exports = {
   name: 'channelDelete',
   type: 'on',
   handle: async channel => {
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !channel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !channel.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
@@ -36,15 +36,6 @@ module.exports = {
         color: 3553599
       }
     }
-    let lastCachedMessage = await global.redis.get(channel.lastMessageID)
-    if (lastCachedMessage) {
-      lastCachedMessage = JSON.parse(lastCachedMessage)
-      const user = global.bot.users.get(lastCachedMessage.userID)
-      channelDeleteEvent.embed.fields.push({
-        name: 'Last message',
-        value: `Author: **${user.username}#${user.discriminator}**\n${lastCachedMessage.content}`
-      })
-    }
     if (channel.permissionOverwrites.size !== 0) {
       channel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
@@ -58,7 +49,7 @@ module.exports = {
       })
     }
     await setTimeout(async () => {
-      const logs = await channel.guild.getAuditLogs(1, null, 12).catch(() => {return})
+      const logs = await channel.guild.getAuditLogs(1, null, 12).catch(() => {})
       if (!logs) return
       const log = logs.entries[0]
       const user = logs.users[0]

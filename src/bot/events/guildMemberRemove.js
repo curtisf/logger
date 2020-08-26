@@ -1,18 +1,18 @@
 const send = require('../modules/webhooksender')
 const prunecache = require('../modules/prunecache')
-const getUser = require('../../db/interfaces/postgres/read').getUser
+const getUser = require('../../db/interfaces/sqlite').getUser
 
 module.exports = {
   name: 'guildMemberRemove',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     if (!member.createdAt) {
       member.id = 'Unknown'
       member.username = 'Unknown'
       member.discriminator = 'Unknown'
     }
-    let roles = []
+    const roles = []
     if (member.roles) {
       member.roles.forEach(roleID => {
         const role = guild.roles.find(r => r.id === roleID)
@@ -43,12 +43,12 @@ module.exports = {
         guildID: guild.id,
         eventName: 'guildMemberRemove'
       }
-      let logs = await guild.getAuditLogs(1, null, 20).catch(() => {return})
+      const logs = await guild.getAuditLogs(1, null, 20).catch(() => {})
       if (!logs) return
-      let log = logs.entries[0]
+      const log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         const dbUser = await getUser(member.id)
-        let user = logs.users.find(u => u.id !== member.id)
+        const user = logs.users.find(u => u.id !== member.id)
         event.eventName = 'guildMemberKick'
         event.embed = {
           author: {
@@ -85,8 +85,7 @@ module.exports = {
       } else {
         const purgeLogs = await guild.getAuditLogs(1, null, 21)
         purgeLogEntry = purgeLogs.entries[0]
-        let user = purgeLogs.users[0]
-        const dbUser = await getUser(member.id)
+        const user = purgeLogs.users[0]
         if (!purgeLogEntry || Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) > 30000) {
           event.embed = {
             author: {
@@ -102,15 +101,6 @@ module.exports = {
               name: 'ID',
               value: `\`\`\`ini\nUser = ${member.id}\`\`\``
             }]
-          }
-          if (dbUser.names.includes('placeholder')) {
-            dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
-          }
-          if (dbUser.names.length !== 0) {
-            event.embed.fields.push({
-              name: 'Last Names',
-              value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
-            })
           }
           return send(event)
         } else if (Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) < 30000) { // 30 seconds

@@ -1,6 +1,6 @@
 const send = require('../modules/webhooksender')
-const updateMessageByID = require('../../db/interfaces/postgres/update').updateMessageByID
-const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessageById
+const updateMessageByID = require('../../db/interfaces/sqlite').updateMessageByID
+const getMessageFromDB = require('../../db/interfaces/sqlite').getMessageById
 const getMessageFromBatch = require('../../db/messageBatcher').getMessage
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
     } else if (newMessage.content !== oldMessage.content) {
       await processMessage(newMessage, oldMessage)
     }
-    async function processMessage(newMessage, oldMessage) {
+    async function processMessage (newMessage, oldMessage) {
       const messageUpdateEvent = {
         guildID: newMessage.channel.guild.id,
         eventName: 'messageUpdate',

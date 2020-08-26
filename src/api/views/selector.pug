@@ -1,0 +1,129 @@
+doctype html
+html(lang='en')
+  head
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    // Meta, title, CSS, favicons, etc.
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Logger Dashboard
+    link(href='/vendors/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/vendors/font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    link(href='/vendors/nprogress/nprogress.css', rel='stylesheet')
+    link(href='/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css', rel='stylesheet')
+    link(href='/build/css/custom.min.css', rel='stylesheet')
+  body(onload="fetchInitialPage()").nav-md
+    .container.body
+      .main_container
+        .col-md-3.left_col
+          .left_col.scroll-view
+            .navbar.nav_title(style='border: 0;')
+              a.site_title(href='/')
+                img(src='/images/loggericon.png', width='64px', height='64px')#botavatar
+                span#botname.scale-bot-title  Logger
+            .clearfix
+            // menu profile quick info
+            // /menu profile quick info
+            br
+            // sidebar menu
+            #sidebar-menu.main_menu_side.hidden-print.main_menu
+              .menu_section
+                h3 General
+                ul.nav.side-menu
+                  li
+                    a(href='/')
+                      i.fa.fa-mouse-pointer
+                      |  Server Selector
+                  li
+                    a(href='https://discordapp.com/oauth2/authorize?client_id=298822483060981760&scope=bot&permissions=536988833', target='_blank').botinvite
+                      i.fa.fa-envelope
+                      |  Invite
+                  li
+                    a(href='https://www.patreon.com/logger', target='_blank')
+                      i.fa.fa-hand-peace-o
+                      |  Patreon
+                  li
+                    a(href='https://discord.gg/ed7Gaa3', target='_blank')
+                      i.fa.fa-life-ring
+                      |  Discord Server
+            // /sidebar menu
+            // /menu footer buttons
+            .sidebar-footer.hidden-small
+              a(data-toggle='tooltip', data-placement='top', title='Logout', href='/logout', style="width: 100%")
+                span.glyphicon.glyphicon-off(aria-hidden='true')
+            // /menu footer buttons
+        // top navigation
+        .top_nav
+          .nav_menu
+            nav
+              .nav.toggle
+                a#menu_toggle
+                  i.fa.fa-bars
+              ul.nav.navbar-nav.navbar-right
+                li
+                  ul.dropdown-menu.dropdown-usermenu.pull-right
+                    li
+                      a(href='https://discord.gg/ed7Gaa3') Help
+                    li
+                      a(href='/logout')
+                        i.fa.fa-sign-out.pull-right
+                        |  Log Out
+                li
+                  a(href='https://discordapp.com/oauth2/authorize?client_id=298822483060981760&scope=bot&permissions=536988833', target='_blank').botinvite
+                    i.fa.fa-envelope
+                    |  Invite
+                li
+                  a(href='https://www.patreon.com/logger', target='_blank')
+                    i.fa.fa-hand-peace-o
+                    |  Patreon
+                li
+                  a(href='https://discord.gg/ed7Gaa3', target='_blank')
+                    i.fa.fa-life-ring
+                    |  Discord Server
+        // /top navigation
+        // page content
+        .right_col(role='main').text-center
+          h1.text-center Servers that you can configure:
+          br
+          for guild in guilds
+            .col-md-3.pagination-centered.text-center
+              .image.view.view-first.center-block
+                a(href='/configure/' + guild.id)
+                  img(style='width: 100%; display: block;', src=guild.iconURL, alt='image').img-responsive.img-rounded
+              .caption
+                p
+                  strong #{guild.name}
+          small Missing servers? Use this #[a(href='').botinvite invite link] to invite me.
+        footer
+          .pull-left
+            a(href='/privacypolicy') Privacy Policy
+          .pull-right
+            | Gentelella 
+            a(href='https://colorlib.com') Colorlib            
+          .clearfix
+    script(src='/vendors/jquery/dist/jquery.min.js')
+    script(src='/vendors/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/vendors/nprogress/nprogress.js')
+    script(src='/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js')
+    script(src='/build/js/custom.min.js')
+    script.
+        async function fetchInitialPage() {
+                try {
+                    const resp = await fetch('http://localhost:8082/api/botinfo')
+                    const data = await resp.json()
+                    console.log('returned data', data)
+                    console.log('setting to ', data.username)
+                    document.getElementById('botname').innerHTML = data.username
+                    document.getElementById('botavatar').src = data.avatarURL
+                    const botInvs = document.getElementsByClassName('botinvite')
+                    for (let i = 0; i < botInvs.length; i++) {
+                      botInvs[i].href = `https://discord.com/oauth2/authorize?client_id=${data.id}&scope=bot&permissions=536988833`
+                    }
+                } catch (e) {
+                    console.error(e)
+                    alert('Error fetching bot servers.')
+                }
+            }
+            
+            
+  

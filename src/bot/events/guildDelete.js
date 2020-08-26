@@ -1,4 +1,4 @@
-const deleteGuild = require('../../db/interfaces/postgres/delete').deleteGuild
+const deleteGuild = require('../../db/interfaces/sqlite').deleteGuild
 const statAggregator = require('../modules/statAggregator')
 
 module.exports = {

@@ -1,45 +1,62 @@
 const Eris = require('eris')
-const cluster = require('cluster')
 const raven = require('raven')
 const Raven = require('raven')
-const redisLock = require('../db/interfaces/redis/redislock')
+global.signale = require('signale')
+const fs = require('fs')
+const path = require('path')
+const { CONFIG_TXT_EXAMPLE } = require('./utils/constants')
+const dotenv = require('dotenv')
+const requiredConfigElements = ['BOT_TOKEN', 'GLOBAL_BOT_PREFIX', 'CREATOR_IDS', 'I_HAVE_READ_THE_LICENSE']
+precheckReqs().then(() => {
+  init()
+})
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
 
-require('dotenv').config()
-Raven.config(process.env.RAVEN_URI).install()
-
-if (process.env.SENTRY_URI) {
-  raven.config(process.env.SENTRY_URI).install()
-} else {
-  global.logger.warn('No Sentry URI provided. Error logging will be restricted to messages only.')
+function connect () {
+  bot.connect()
 }
 
-function connect() {
-  redisLock.lock('loggerinit', process.env.REDIS_LOCK_TTL).then(function(lock) {
-    global.logger.startup(`Shards ${cluster.worker.rangeForShard} have obtained a lock and are connecting now. Configured Redis TTL is ${process.env.REDIS_LOCK_TTL}ms.`)
-    global.bot.connect()
-    global.bot.once('ready', () => {
-      lock.unlock().catch(function(err) {
-        global.logger.warn('Error while unlocking loggerinit on shards ' + cluster.worker.rangeForShard)
+function precheckReqs () {
+  return new Promise((resolve, reject) => {
+    global.signale.start('Starting bot...')
+    if (process.execPath.includes('nodejs')) return // not packaged
+    let rawConfig
+    try {
+      rawConfig = fs.readFileSync(path.join(path.dirname(process.execPath), 'config.txt'))
+      // rawConfig = fs.readFileSync(path.resolve(__dirname, '../../../config.txt'))
+    } catch (e) {
+      console.error('Could not find config, generating it for you. Fill it out!')
+      global.signale.error('Could not find config.txt, one has been generated. Fill it out and restart the bot!')
+      fs.closeSync(fs.openSync(path.join(path.dirname(process.execPath), 'config.txt'), 'w'))
+      fs.writeFileSync(path.join(path.dirname(process.execPath), 'config.txt'), CONFIG_TXT_EXAMPLE)
+      setTimeout(() => {
+        process.exit(1)
+      }, 120000)
+      return
+    }
+    const parsedEnv = dotenv.parse(Buffer.from(rawConfig))
+    global.envInfo = parsedEnv
+    const missing = []
+    requiredConfigElements.forEach(k => {
+      if (!parsedEnv[k]) missing.push(k)
     })
-    })
-}).catch(e => {
-  setTimeout(() => {
-    connect()
-  }, 15000)
-}) // throw out not being able to obtain a lock.
+    if (missing.length !== 0) {
+      global.signale.error('Missing these config.txt values: ' + missing.join(', '))
+      setTimeout(() => {
+        process.exit(1)
+      }, 120000)
+    } else {
+      global.signale.success('config.txt loaded successfully')
+      resolve()
+    }
+  })
 }
 
 async function init () {
-  global.logger.info('Shard init')
-  global.redis = require('../db/clients/redis')
-  global.bot = new Eris(process.env.BOT_TOKEN, {
-    firstShardID: cluster.worker.shardStart,
-    lastShardID: cluster.worker.shardEnd,
-    maxShards: cluster.worker.totalShards,
+  bot = new Eris(global.envInfo.BOT_TOKEN, {
     disableEvents: { TYPING_START: true },
     restMode: true,
     messageLimit: 0,
@@ -47,48 +64,51 @@ async function init () {
     getAllUsers: true
   })
 
-  global.bot.editStatus('dnd', {
+  bot.editStatus('dnd', {
     name: 'Bot is booting'
   })
 
-  global.bot.commands = {}
-  global.bot.ignoredChannels = []
-  global.bot.guildSettingsCache = {}
+  bot.commands = {}
+  bot.ignoredChannels = []
+  bot.guildSettingsCache = {}
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
   const [on, once] = listenerIndexer()
 
-  on.forEach(async event => global.bot.on(event.name, await event.handle))
-  once.forEach(async event => global.bot.once(event.name, await event.handle))
+  on.forEach(async event => bot.on(event.name, await event.handle))
+  once.forEach(async event => bot.once(event.name, await event.handle))
 
-  require('../miscellaneous/bezerk')
+  // require('../miscellaneous/bezerk')
 
-
+  global.signale.note('Connecting to Discord...')
   connect()
- 
-  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(process.env.MESSAGE_HISTORY_DAYS) debating on removing these
-  // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${process.env.MESSAGE_HISTORY_DAYS} day(s).`)
+  deleteMessagesOlderThanDays()
+  if (global.envInfo.ENABLE_API) {
+    global.signale.success('Enabling API for dashboard use')
+    require('../api/index')
+  }
+
+  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(global.envInfo.MESSAGE_HISTORY_DAYS) debating on removing these
+  // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${global.envInfo.MESSAGE_HISTORY_DAYS} day(s).`)
 }
 process.on('exit', (code) => {
-  global.logger.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)
-  require('../db/clients/postgres').end()
+  console.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)
+  // require('../db/clients/postgres').end()
 })
 
 process.on('SIGINT', async () => {
-  global.logger.error('SIGINT caught. Cleaning up and exiting...')
-  require('../db/clients/postgres').end()
+  console.error('SIGINT caught. Cleaning up and exiting...')
+  // require('../db/clients/postgres').end()
   process.exit()
 })
 
 process.on('unhandledRejection', (e) => {
   console.error(e)
-  if (!e.message.includes('[50013]') && !e.message.startsWith('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) Raven.captureException(e.stack, {level: 'error'}) // handle when Discord freaks out
+  if (!e.message.includes('[50013]') && !e.message.startsWith('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
 })
 
 process.on('uncaughtException', (e) => {
   console.error(e)
-  if (!e.message.includes('[50013]')) Raven.captureException(e.stack, {level: 'fatal'})
+  if (!e.message.includes('[50013]')) Raven.captureException(e.stack, { level: 'fatal' })
 })
-
-init()

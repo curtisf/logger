@@ -1,4 +1,4 @@
-const getAllGuilds = require('../../db/interfaces/postgres/read').getAllGuilds
+const getAllGuilds = require('../../db/interfaces/sqlite').getAllGuilds
 const GuildSettings = require('../bases/GuildSettings')
 
 module.exports = async () => {
