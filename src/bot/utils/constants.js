@@ -44,7 +44,8 @@ exports.CONFIG_TXT_EXAMPLE = `BOT_TOKEN=get one from discord developers page
   GLOBAL_BOT_PREFIX=logger
   CREATOR_IDS=212445217763229699
   AES_KEY=youraeskey
-  ENABLE_API=true`
+  ENABLE_API=true
+  I_HAVE_READ_THE_LICENSE=`
 
 exports.DEFAULT_EVENT_MAP = {
   channelCreate: '',
