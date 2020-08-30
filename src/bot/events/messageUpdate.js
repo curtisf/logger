@@ -41,10 +41,10 @@ module.exports = {
       const nowChunks = []
       const beforeChunks = []
       if (newMessage.content) {
-        newMessage.content = escape(newMessage.content.replace(/~/g, '\\~'))
-        if (newMessage.content.length > 1024) {
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
+        newMessage.content = escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])
+        if (newMessage.content.length > 1000) {
+          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
+          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, newMessage.content.length))
         } else {
           nowChunks.push(newMessage.content)
         }
@@ -52,9 +52,9 @@ module.exports = {
         nowChunks.push('None')
       }
       if (oldMessage.content) {
-        if (oldMessage.content.length > 1024) {
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, oldMessage.content.length))
+        if (oldMessage.content.length > 1000) {
+          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
+          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, oldMessage.content.length))
         } else {
           beforeChunks.push(oldMessage.content)
         }

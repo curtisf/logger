@@ -51,7 +51,7 @@ async function cacheMessage (message) {
   if (!message.content) {
     message.content = aes.encrypt('None')
   } else {
-    message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~')))
+    message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~'), ['angle brackets']))
   }
   message.attachment_b64 = ''
   batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
