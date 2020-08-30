@@ -2,6 +2,7 @@ const send = require('../modules/webhooksender')
 const updateMessageByID = require('../../db/interfaces/postgres/update').updateMessageByID
 const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessageById
 const getMessageFromBatch = require('../../db/messageBatcher').getMessage
+const escape = require('markdown-escape')
 
 module.exports = {
   name: 'messageUpdate',
@@ -20,7 +21,7 @@ module.exports = {
     } else if (newMessage.content !== oldMessage.content) {
       await processMessage(newMessage, oldMessage)
     }
-    async function processMessage(newMessage, oldMessage) {
+    async function processMessage (newMessage, oldMessage) {
       const messageUpdateEvent = {
         guildID: newMessage.channel.guild.id,
         eventName: 'messageUpdate',
@@ -40,6 +41,8 @@ module.exports = {
       const nowChunks = []
       const beforeChunks = []
       if (newMessage.content) {
+        newMessage.content = escape(newMessage.content)
+        newMessage.content = newMessage.content.replace(/~/g, '\\~')
         if (newMessage.content.length > 1024) {
           nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
           nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
@@ -68,15 +71,15 @@ module.exports = {
       beforeChunks.forEach((chunk, i) => {
         messageUpdateEvent.embed.fields.push({
           name: i === 0 ? 'Previous' : 'Previous Continued',
-          value: chunk
+          value: chunk // previous is already escaped, don't escape again
         })
       })
       messageUpdateEvent.embed.fields.push({
         name: 'ID',
         value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
       })
-      await send(messageUpdateEvent)
       await updateMessageByID(newMessage.id, newMessage.content)
+      await send(messageUpdateEvent)
     }
   }
 }

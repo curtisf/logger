@@ -3,6 +3,7 @@ const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessage
 const getMessageFromBatch = require('../../db/messageBatcher').getMessage
 const deleteMessage = require('../../db/interfaces/postgres/delete').deleteMessage
 const cacheGuild = require('../utils/cacheGuild')
+const escape = require('markdown-escape')
 
 module.exports = {
   name: 'messageDelete',
@@ -20,7 +21,7 @@ module.exports = {
     await deleteMessage(message.id)
     const cachedUser = global.bot.users.get(cachedMessage.author_id)
     const member = message.channel.guild.members.get(cachedMessage.author_id)
-    let messageDeleteEvent = {
+    const messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
@@ -45,10 +46,10 @@ module.exports = {
       messageChunks.push('None')
     }
     messageChunks.forEach((chunk, i) => {
-        messageDeleteEvent.embed.fields.push({
-          name: i === 0 ? 'Content' : 'Continued',
-          value: chunk
-        })
+      messageDeleteEvent.embed.fields.push({
+        name: i === 0 ? 'Content' : 'Continued',
+        value: chunk
+      })
     })
     messageDeleteEvent.embed.fields.push({
       name: 'ID',

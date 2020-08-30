@@ -2,35 +2,36 @@ const pool = require('../../clients/postgres')
 const aes = require('../../aes')
 const cacheGuild = require('../../../bot/utils/cacheGuild')
 const batchHandler = require('../../messageBatcher')
+const escape = require('markdown-escape')
 let arr = []
 arr[0] = 'placeholder'
 arr = JSON.stringify(arr)
 const placeholder = aes.encrypt(arr)
 
 const eventLogs = {
-  'channelCreate': '',
-  'channelUpdate': '',
-  'channelDelete': '',
-  'guildBanAdd': '',
-  'guildBanRemove': '',
-  'guildRoleCreate': '',
-  'guildRoleDelete': '',
-  'guildRoleUpdate': '',
-  'guildUpdate': '',
-  'messageDelete': '',
-  'messageDeleteBulk': '',
-  'messageReactionRemoveAll': '',
-  'messageUpdate': '',
-  'guildMemberAdd': '',
-  'guildMemberKick': '',
-  'guildMemberRemove': '',
-  'guildMemberUpdate': '',
-  'voiceChannelLeave': '',
-  'voiceChannelJoin': '',
-  'voiceStateUpdate': '',
-  'voiceChannelSwitch': '',
-  'guildEmojisUpdate': '',
-  'guildMemberNickUpdate': ''
+  channelCreate: '',
+  channelUpdate: '',
+  channelDelete: '',
+  guildBanAdd: '',
+  guildBanRemove: '',
+  guildRoleCreate: '',
+  guildRoleDelete: '',
+  guildRoleUpdate: '',
+  guildUpdate: '',
+  messageDelete: '',
+  messageDeleteBulk: '',
+  messageReactionRemoveAll: '',
+  messageUpdate: '',
+  guildMemberAdd: '',
+  guildMemberKick: '',
+  guildMemberRemove: '',
+  guildMemberUpdate: '',
+  voiceChannelLeave: '',
+  voiceChannelJoin: '',
+  voiceStateUpdate: '',
+  voiceChannelSwitch: '',
+  guildEmojisUpdate: '',
+  guildMemberNickUpdate: ''
 }
 
 async function createGuild (guild) {
@@ -47,7 +48,11 @@ async function createUserDocument (userID) {
 }
 
 async function cacheMessage (message) {
-  message.content = aes.encrypt(message.content ? message.content : 'None')
+  if (!message.content) {
+    message.content = 'None'
+  } else {
+    message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~')))
+  }
   message.attachment_b64 = ''
   batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
 }

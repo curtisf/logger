@@ -25,6 +25,7 @@
     "dotenv": "^8.2.0",
     "eris": "github:curtisf/eris#dev",
     "ioredis": "^4.17.3",
+    "markdown-escape": "^1.1.0",
     "os": "^0.1.1",
     "path": "^0.12.7",
     "pg": "^8.3.0",
