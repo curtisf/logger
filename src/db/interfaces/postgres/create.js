@@ -49,7 +49,7 @@ async function createUserDocument (userID) {
 
 async function cacheMessage (message) {
   if (!message.content) {
-    message.content = 'None'
+    message.content = aes.encrypt('None')
   } else {
     message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~')))
   }
