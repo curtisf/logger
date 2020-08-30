@@ -41,8 +41,7 @@ module.exports = {
       const nowChunks = []
       const beforeChunks = []
       if (newMessage.content) {
-        newMessage.content = escape(newMessage.content)
-        newMessage.content = newMessage.content.replace(/~/g, '\\~')
+        newMessage.content = escape(newMessage.content.replace(/~/g, '\\~'))
         if (newMessage.content.length > 1024) {
           nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
           nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
