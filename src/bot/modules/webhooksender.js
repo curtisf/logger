@@ -16,7 +16,7 @@ module.exports = async pkg => {
     global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
-  if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks'] || !guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+  if (!guild.members.get(global.bot.user.id).permission.json.manageWebhooks || !guild.members.get(global.bot.user.id).permission.json.viewAuditLogs) return
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
     await cacheGuild(pkg.guildID)
@@ -31,7 +31,6 @@ module.exports = async pkg => {
   }
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
     await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
-    return
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
@@ -46,7 +45,12 @@ module.exports = async pkg => {
       file: pkg.file ? pkg.file : '',
       username: global.bot.user.username,
       avatarURL: global.bot.user.avatarURL,
-      embeds: [pkg.embed]
+      embeds: [pkg.embed],
+      allowedMentions: { // even though this is an embed and cannot ping, why not
+        everyone: false,
+        roles: false,
+        users: false
+      }
     }).catch(async e => {
       global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
