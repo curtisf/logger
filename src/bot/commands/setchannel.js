@@ -57,14 +57,15 @@ module.exports = {
 function cleanArray (events) {
   const tempEvents = []
   events.forEach(event => {
-    if (eventList.includes(event)) isGood = true
-    eventList.forEach(validEvent => {
-      const lowerEvent = validEvent.toLowerCase()
-      const upperEvent = validEvent.toUpperCase()
-      if (event === lowerEvent || event === upperEvent || event === validEvent) {
-        tempEvents.push(validEvent)
-      }
-    })
+    if (eventList.includes(event)) {
+      eventList.forEach(validEvent => {
+        const lowerEvent = validEvent.toLowerCase()
+        const upperEvent = validEvent.toUpperCase()
+        if (event === lowerEvent || event === upperEvent || event === validEvent) {
+          tempEvents.push(validEvent)
+        }
+      })
+    }
   })
   return tempEvents
 }

@@ -31,40 +31,33 @@ module.exports = {
         }
       }
     })
+    if (guildRoleUpdateEvent.embed.fields.length === 0) return // dunno what changed
     const logs = await guild.getAuditLogs(1, null, 31).catch(() => {})
     if (!logs) return
-    const log = logs.entries[0]
+    const log = logs.entries.find(e => e.targetID === role.id)
     if (!log) {
       return await send(guildRoleUpdateEvent) // just send the embed and stop there.
     }
-    const perp = logs.users[0]
-    if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
-      guildRoleUpdateEvent.embed.fields.push({
-        name: 'ID',
-        value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
-      })
-      guildRoleUpdateEvent.embed.author = {
-        name: `${perp.username}#${perp.discriminator}`,
-        icon_url: perp.avatarURL
-      }
-      if (guildRoleUpdateEvent.embed.fields.length === 1) return
-      await send(guildRoleUpdateEvent)
-    } else {
-      guildRoleUpdateEvent.embed.fields.push({
-        name: 'ID',
-        value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Unknown\`\`\``
-      })
-      if (guildRoleUpdateEvent.embed.fields.length === 1) return
-      await send(guildRoleUpdateEvent)
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
+    const perp = log.user
+    guildRoleUpdateEvent.embed.fields.push({
+      name: 'ID',
+      value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
+    })
+    guildRoleUpdateEvent.embed.author = {
+      name: `${perp.username}#${perp.discriminator}`,
+      icon_url: perp.avatarURL
     }
+    if (guildRoleUpdateEvent.embed.fields.length === 1) return
+    await send(guildRoleUpdateEvent)
   }
 }
 
 function intToHex (num) {
   num >>>= 0
   const b = num & 0xFF
-      const g = (num & 0xFF00) >>> 8
-      const r = (num & 0xFF0000) >>> 16
+  const g = (num & 0xFF00) >>> 8
+  const r = (num & 0xFF0000) >>> 16
   return rgbToHex(r, g, b)
 }
 

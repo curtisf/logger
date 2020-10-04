@@ -17,7 +17,7 @@ module.exports = {
       embed: {
         author: {
           name: 'Unknown User',
-          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
+          icon_url: 'https://logger.bot/staticfiles/red-x.png'
         },
         description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} deleted (${channel.name})`,
         fields: [{
@@ -58,14 +58,14 @@ module.exports = {
         }
       })
     }
-    const logs = await channel.guild.getAuditLogs(1, null, 12).catch(() => {})
+    const logs = await channel.guild.getAuditLogs(5, null, 12).catch(() => {})
     if (!logs) return
-    const log = logs.entries[0]
+    const log = logs.entries.find(e => e.targetID === channel.id)
     if (!log) return
-    const user = logs.users[0]
+    const user = log.user
     const member = channel.guild.members.get(user.id)
     if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
+      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
       channelDeleteEvent.embed.author.icon_url = user.avatarURL
       channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
       await send(channelDeleteEvent)

@@ -6,7 +6,7 @@ const AUDIT_ID = {
 }
 
 module.exports = {
-  name: 'guildEmojisUpdate',
+  name: 'guildEmojisUpdateDisabled',
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
     if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return

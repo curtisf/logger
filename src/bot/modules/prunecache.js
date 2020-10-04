@@ -12,8 +12,8 @@ module.exports = {
         perp
       }
       setTimeout(async () => {
-        this.send(logID) 
-}, 10000)
+        this.send(logID)
+      }, 10000)
     }
     this.cache[logID].list += `\n${member.username}#${member.discriminator} (${member.id})`
     this.cache[logID].count++

@@ -1,6 +1,6 @@
 module.exports = {
   getCachedInvites: async (guildID) => {
-    let invites = await global.redis.get(`invites-${guildID}`)
+    const invites = await global.redis.get(`invites-${guildID}`)
     if (!invites) return []
     return JSON.parse(invites)
   },

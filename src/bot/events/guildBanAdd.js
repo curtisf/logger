@@ -27,21 +27,18 @@ module.exports = {
         color: 3553599
       }
     }
-    const logs = await guild.getAuditLogs(1, null, 22).catch(() => {})
+    const logs = await guild.getAuditLogs(5, null, 22).catch(() => {})
     if (!logs) return
-    const log = logs.entries[0]
+    const log = logs.entries.find(e => e.targetID === user.id)
     if (!log) return
-    const perp = logs.users.find(u => u.id !== user.id)
-    if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-      if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
-      guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
-      guildBanAddEvent.embed.footer = {
-        text: `${perp.username}#${perp.discriminator}`,
-        icon_url: perp.avatarURL
-      }
-      await send(guildBanAddEvent)
-    } else {
-      await send(guildBanAddEvent)
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
+    const perp = log.user
+    if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
+    guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
+    guildBanAddEvent.embed.footer = {
+      text: `${perp.username}#${perp.discriminator}`,
+      icon_url: perp.avatarURL
     }
+    await send(guildBanAddEvent)
   }
 }

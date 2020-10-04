@@ -17,7 +17,7 @@ module.exports = {
       embed: {
         author: {
           name: 'Unknown User',
-          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
+          icon_url: 'https://logger.bot/staticfiles/red-x.png'
         },
         description: `${CHANNEL_TYPE_MAP[newChannel.type] ? CHANNEL_TYPE_MAP[newChannel.type] : 'Unsupported channel type'} created <#${newChannel.id}>`,
         fields: [{
@@ -42,19 +42,16 @@ module.exports = {
         }
       })
     }
-    const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {})
+    const logs = await newChannel.guild.getAuditLogs(5, null, 10).catch(() => {})
     if (!logs) return
-    const log = logs.entries[0]
+    const log = logs.entries.find(e => e.targetID === newChannel.id)
     if (!log) return
-    const user = logs.users[0]
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
+    const user = log.user
     const member = newChannel.guild.members.get(user.id)
-    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
-      channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
-      channelCreateEvent.embed.author.icon_url = user.avatarURL
-      channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
-      await send(channelCreateEvent)
-    } else {
-      await send(channelCreateEvent)
-    }
+    channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+    channelCreateEvent.embed.author.icon_url = user.avatarURL
+    channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
+    await send(channelCreateEvent)
   }
 }

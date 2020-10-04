@@ -2,6 +2,9 @@ const send = require('../modules/webhooksender')
 const updateMessageByID = require('../../db/interfaces/postgres/update').updateMessageByID
 const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessageById
 const getMessageFromBatch = require('../../db/messageBatcher').getMessage
+const escape = require('markdown-escape')
+
+// markdown-escape is a single exported function, I probably don't need it as a node module lol
 
 module.exports = {
   name: 'messageUpdate',
@@ -9,7 +12,7 @@ module.exports = {
   handle: async (newMessage, oldMessage) => {
     if (!newMessage.channel.guild || !newMessage.author) return
     if (newMessage.author.id === global.bot.user.id) return
-    const member = newMessage.channel.guild.members.get(newMessage.author.id)
+    const member = newMessage.channel.guild.members.get(newMessage.author.id) // this member "should" be in cache at all times
     oldMessage = await getMessageFromBatch(newMessage.id)
     if (!oldMessage) {
       oldMessage = await getMessageFromDB(newMessage.id)
@@ -20,16 +23,16 @@ module.exports = {
     } else if (newMessage.content !== oldMessage.content) {
       await processMessage(newMessage, oldMessage)
     }
-    async function processMessage(newMessage, oldMessage) {
+    async function processMessage (newMessage, oldMessage) {
       const messageUpdateEvent = {
         guildID: newMessage.channel.guild.id,
         eventName: 'messageUpdate',
         embed: {
           author: {
-            name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
+            name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`,
             icon_url: newMessage.author.avatarURL
           },
-          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
+          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member && member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
           fields: [{
             name: 'Channel',
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})\n[Go To Message](https://discordapp.com/channels/${newMessage.channel.guild.id}/${newMessage.channel.id}/${newMessage.id})`
@@ -40,9 +43,10 @@ module.exports = {
       const nowChunks = []
       const beforeChunks = []
       if (newMessage.content) {
-        if (newMessage.content.length > 1024) {
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
+        newMessage.content = escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])
+        if (newMessage.content.length > 1000) {
+          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
+          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, newMessage.content.length))
         } else {
           nowChunks.push(newMessage.content)
         }
@@ -50,9 +54,9 @@ module.exports = {
         nowChunks.push('None')
       }
       if (oldMessage.content) {
-        if (oldMessage.content.length > 1024) {
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, oldMessage.content.length))
+        if (oldMessage.content.length > 1000) {
+          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
+          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, oldMessage.content.length))
         } else {
           beforeChunks.push(oldMessage.content)
         }
@@ -68,15 +72,15 @@ module.exports = {
       beforeChunks.forEach((chunk, i) => {
         messageUpdateEvent.embed.fields.push({
           name: i === 0 ? 'Previous' : 'Previous Continued',
-          value: chunk
+          value: chunk // previous is already escaped, don't escape again
         })
       })
       messageUpdateEvent.embed.fields.push({
         name: 'ID',
         value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
       })
-      await send(messageUpdateEvent)
       await updateMessageByID(newMessage.id, newMessage.content)
+      await send(messageUpdateEvent)
     }
   }
 }
