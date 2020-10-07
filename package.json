@@ -28,19 +28,19 @@
     "markdown-escape": "^1.1.0",
     "os": "^0.1.1",
     "path": "^0.12.7",
-    "pg": "^8.3.0",
+    "pg": "^8.3.3",
     "pg-format": "^1.0.4",
     "raven": "^2.6.4",
     "redis": "^3.0.2",
     "redlock": "^4.1.0",
     "rethinkdbdash": "^2.3.31",
     "standard": "^14.3.4",
-    "superagent": "^5.3.1",
+    "superagent": "^6.1.0",
     "util": "^0.12.3",
     "ws": "^7.3.1",
     "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^7.5.0"
+    "eslint": "^7.9.0"
   }
 }

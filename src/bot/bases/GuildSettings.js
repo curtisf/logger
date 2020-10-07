@@ -10,7 +10,7 @@ class GuildSettings {
     this.id = data.id
     this.ignoredChannels = data.ignoredChannels || data.ignored_channels
     this.logBots = data.logBots || data.log_bots
-    this.event_logs = data.event_logs // TODO: make a guild doc transformer that converts old docs to new
+    this.event_logs = data.event_logs
     this.allLog = data.logchannel
     this.ownerID = data.ownerID || data.owner_id
     this.disabledEvents = data.disabledEvents || data.disabled_events

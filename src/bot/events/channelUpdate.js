@@ -18,7 +18,7 @@ module.exports = {
       embed: {
         author: {
           name: 'Unknown User',
-          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg' // TODO: use a static asset url that's mine
+          icon_url: 'https://logger.bot/staticfiles/red-x.png'
         },
         description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} was updated (${channel.name})`,
         fields: [{
@@ -68,7 +68,9 @@ module.exports = {
       let overwriteName = newOverwrite.type + ' '
       if (newOverwrite.type === 'member') {
         const member = channel.guild.members.get(newOverwrite.id)
-        overwriteName += member.username + member.nick ? `(${member.mention})` : ''
+        if (member) {
+          overwriteName += member.username + member.nick ? `(${member.mention})` : ''
+        }
       } else {
         const role = channel.guild.roles.find(r => r.id === newOverwrite.id)
         overwriteName += role.name
@@ -95,13 +97,16 @@ module.exports = {
           field.value += `\n⚖️ neutral/inherit ${perm}`
         }
       })
-      if (field.value) channelUpdateEvent.embed.fields.push(field)
+      if (field.value) {
+        if (newOverwrite.type === 'member') field.value = `<@${newOverwrite.id}>` + field.value
+        channelUpdateEvent.embed.fields.push(field)
+      }
     })
-    const logs = await channel.guild.getAuditLogs(1, null, auditLogId).catch(() => {})
+    const logs = await channel.guild.getAuditLogs(5, null, auditLogId).catch(() => {})
     if (!logs) return
-    const log = logs.entries[0]
+    const log = logs.entries.find(e => e.targetID === channel.id)
     if (!log) return
-    const user = logs.users[0]
+    const user = log.user
     if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
       channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
       channelUpdateEvent.embed.author.icon_url = user.avatarURL

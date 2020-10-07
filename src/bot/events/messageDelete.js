@@ -19,15 +19,23 @@ module.exports = {
     }
     if (!cachedMessage) return
     await deleteMessage(message.id)
-    const cachedUser = global.bot.users.get(cachedMessage.author_id)
+    let cachedUser = global.bot.users.get(cachedMessage.author_id)
+    if (!cachedUser) {
+      try {
+        cachedUser = await message.channel.guild.getRESTMember(cachedMessage.author_id)
+        message.channel.guild.members.add(cachedUser, global.bot)
+      } catch (_) {
+        // either the member does not exist or the person left and others are deleting their messages
+      }
+    }
     const member = message.channel.guild.members.get(cachedMessage.author_id)
     const messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
         author: {
-          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${member && member.nick ? `(${member.nick})` : ''}` : 'User not in cache',
-          icon_url: cachedUser ? cachedUser.avatarURL : 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
+          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${cachedUser && cachedUser.nick ? `(${member.nick})` : ''}` : 'User not member of server',
+          icon_url: cachedUser ? cachedUser.avatarURL : 'https://logger.bot/staticfiles/red-x.png'
         },
         description: `Message deleted in <#${message.channel.id}>`,
         fields: [],
@@ -36,9 +44,9 @@ module.exports = {
     }
     const messageChunks = []
     if (cachedMessage.content) {
-      if (cachedMessage.content.length > 1024) {
-        messageChunks.push(cachedMessage.content.substring(0, 1023))
-        messageChunks.push(cachedMessage.content.substring(1024, cachedMessage.content.length))
+      if (cachedMessage.content.length > 1000) {
+        messageChunks.push(cachedMessage.content.substring(0, 1000))
+        messageChunks.push(cachedMessage.content.substring(1001, cachedMessage.content.length))
       } else {
         messageChunks.push(cachedMessage.content)
       }

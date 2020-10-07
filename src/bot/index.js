@@ -1,4 +1,4 @@
-const Eris = require('eris')
+const Eris = require('eris') // my local fork, will fix package.json later
 const cluster = require('cluster')
 const raven = require('raven')
 const Raven = require('raven')
@@ -6,13 +6,12 @@ const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
-const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
+const eventMiddleware = require('./modules/eventmiddleware')
 
 require('dotenv').config()
-Raven.config(process.env.RAVEN_URI).install()
 
 if (process.env.SENTRY_URI) {
-  raven.config(process.env.SENTRY_URI).install()
+  Raven.config(process.env.SENTRY_URI).install()
 } else {
   global.logger.warn('No Sentry URI provided. Error logging will be restricted to messages only.')
 }
@@ -37,15 +36,19 @@ async function init () {
   global.logger.info('Shard init')
   global.redis = require('../db/clients/redis')
   global.bot = new Eris(process.env.BOT_TOKEN, {
-    firstShardID: cluster.worker.shardStart,
+    firstShardID: cluster.worker.shardStart, // TODO: k8s
     lastShardID: cluster.worker.shardEnd,
     maxShards: cluster.worker.totalShards,
-    disableEvents: { TYPING_START: true },
+    allowedMentions: {
+      everyone: false,
+      roles: false,
+      users: false
+    },
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    getAllUsers: true,
-    ratelimiterOffset: 400
+    ratelimiterOffset: 400,
+    intents: 719
   })
 
   global.bot.on('ratelimit', console.error)
@@ -62,8 +65,11 @@ async function init () {
   await cacheGuildInfo()
   const [on, once] = listenerIndexer()
 
-  on.forEach(async event => global.bot.on(event.name, await event.handle))
-  once.forEach(async event => global.bot.once(event.name, await event.handle))
+  // on.forEach(async event => global.bot.on(event.name, await event.handle))
+  // once.forEach(async event => global.bot.once(event.name, await event.handle))
+
+  on.forEach(async event => eventMiddleware(event, 'on'))
+  once.forEach(async event => eventMiddleware(event, 'once'))
 
   require('../miscellaneous/bezerk')
 

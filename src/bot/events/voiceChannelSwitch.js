@@ -5,8 +5,6 @@ module.exports = {
   name: 'voiceChannelSwitch',
   type: 'on',
   handle: async (member, channel, oldChannel) => {
-    // to any people reading this, Discord does not tell you who moves another person. That's why there's no audit log check.
-    // UPDATE: leaving the above because it's historic:tm:
     statAggregator.incrementEvent('voiceStateUpdate')
     await send({
       guildID: channel.guild.id,

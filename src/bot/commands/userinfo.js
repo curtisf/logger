@@ -16,8 +16,9 @@ module.exports = {
     let member
     if (message.mentions.length !== 0) member = message.channel.guild.members.get(message.mentions[0].id)
     if (!member) member = message.member
-    let fields = []
-    let perms = []
+    const fields = []
+    const perms = []
+    // TODO: change integer colors to hex for reading comprehension
     let color = 12552203 // away color
     if (member.status === 'online') {
       color = 8383059
@@ -39,7 +40,7 @@ module.exports = {
       value: `**${member.username}#${member.discriminator}** ${member.nick ? `(**${member.nick}**)` : ''} (${member.id})`
     }, {
       name: 'Join Date',
-      value: `**${new Date(member.joinedAt)}** (${Math.round((new Date().getTime() - member.joinedAt) / (1000*60*60*24))} days)`
+      value: `**${new Date(member.joinedAt)}** (${Math.round((new Date().getTime() - member.joinedAt) / (1000 * 60 * 60 * 24))} days)`
     }, {
       name: 'Creation Date',
       value: `**${new Date(member.createdAt).toString().substr(0, 21)}**`

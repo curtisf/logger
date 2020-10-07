@@ -27,12 +27,12 @@ module.exports = {
       if (role.managed && guild.members.find(m => m.username === role.name)) {
         guildRoleCreateEvent.embed.fields[1].value = 'Bot'
       }
-      const logs = await guild.getAuditLogs(1, null, 30).catch(() => {})
+      const logs = await guild.getAuditLogs(5, null, 30).catch(() => {})
       if (!logs) return
-      const log = logs.entries[0]
+      const log = logs.entries.find(e => e.targetID === role.id)
       if (!log) return
-      const perp = logs.users[0]
-      if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+      const perp = log.user
+      if (log && (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime()) < 3000) {
         if (log.reason) guildRoleCreateEvent.embed.fields[1].value = log.reason
         guildRoleCreateEvent.embed.fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
         guildRoleCreateEvent.embed.author = {
