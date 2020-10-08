@@ -42,7 +42,9 @@ const eventStatistics = {
   voiceChannelJoin: 0,
   voiceChannelLeave: 0,
   voiceChannelSwitch: 0,
-  voiceStateUpdate: 0
+  voiceStateUpdate: 0,
+  'rest-hit': 0,
+  'ratelimit-hit': 0
 }
 
 const miscStatistics = {

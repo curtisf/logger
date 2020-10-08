@@ -28,7 +28,7 @@ module.exports = {
       arr.forEach((key) => {
         if (oldGuild[key] !== newGuild[key] || checkExempt.includes(key)) { // if both guilds have the property and they don't equal eachother
           const data = handle(key, log)
-          fields.push(data)
+          if (data) fields.push(data)
         }
       })
       send({

@@ -7,6 +7,7 @@ const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const eventMiddleware = require('./modules/eventmiddleware')
+const statAggregator = require('./modules/statAggregator')
 
 require('dotenv').config()
 
@@ -70,6 +71,14 @@ async function init () {
 
   on.forEach(async event => eventMiddleware(event, 'on'))
   once.forEach(async event => eventMiddleware(event, 'once'))
+
+  global.bot.on('rest-hit', () => {
+    statAggregator.incrementEvent('rest-hit')
+  })
+
+  global.bot.on('ratelimit-hit', () => {
+    statAggregator.incrementEvent('ratelimit-hit')
+  })
 
   require('../miscellaneous/bezerk')
 

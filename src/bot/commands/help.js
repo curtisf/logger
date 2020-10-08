@@ -51,10 +51,14 @@ module.exports = {
       name: 'Patreon',
       value: 'If you like me and want to support my owner (or want cool patron bot features), check out [my Patreon page](https://patreon.com/logger)\nSome of what Patrons get: image logging, see who deletes messages, ignore users, see archive and bulk delete logs in a prettified manner, archive up to 10,000 messages, messages are saved longer'
     })
-    await DMC.createMessage({
-      embed: embed
-    })
-    await message.addReaction('📜')
+    try {
+      await DMC.createMessage({
+        embed: embed
+      })
+      await message.addReaction('📜')
+    } catch (_) {
+      message.addReaction('❌')
+    }
   },
   name: 'help',
   description: 'DM you with this help message!',
