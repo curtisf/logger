@@ -29,7 +29,6 @@ module.exports = {
     }
     const logs = await guild.getAuditLogs(5, null, 22).catch(() => {})
     if (!logs) return
-    console.log(logs)
     const log = logs.entries.find(e => e.targetID === user.id)
     if (!log) return
     if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
