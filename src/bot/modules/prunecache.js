@@ -8,7 +8,7 @@ module.exports = {
       this.cache[logID] = {
         count: 0,
         guild,
-        list: `${new Date((logID / 4194304) + 1420070400000).toString()}\n`,
+        list: `${new Date((logID / 4194304) + 1420070400000).toUTCString()}\n`,
         perp
       }
       setTimeout(async () => {

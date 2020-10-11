@@ -9,7 +9,7 @@ module.exports = {
     if (!member.roles) {
       member = new User({ id: member.id, ...member.user }, global.bot)
     }
-    if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const roles = []
     if (member.roles) {
       member.roles.forEach(roleID => {
@@ -53,12 +53,12 @@ module.exports = {
       if (member.roles) {
         event.embed.fields.push(rolesField, {
           name: 'Joined At',
-          value: `${new Date(member.joinedAt).toString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+          value: `${new Date(member.joinedAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
         })
       }
       event.embed.fields.push({
         name: 'Created At',
-        value: `${new Date(member.createdAt).toString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
+        value: `${new Date(member.createdAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
       }, {
         name: 'Reason',
         value: log.reason ? log.reason : 'None provided'
@@ -84,12 +84,12 @@ module.exports = {
       if (member.roles) {
         event.embed.fields.push(rolesField, {
           name: 'Joined At',
-          value: `${new Date(member.joinedAt).toString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+          value: `${new Date(member.joinedAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
         })
       }
       event.embed.fields.push({
         name: 'Created At',
-        value: `${new Date(member.createdAt).toString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60)).toFixed(0)} hours old)`
+        value: `${new Date(member.createdAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60)).toFixed(0)} hours old)`
       }, {
         name: 'ID',
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``

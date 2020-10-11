@@ -27,8 +27,8 @@ module.exports = {
     } else if (member.status === 'dnd') {
       color = 16396122
     }
-    Object.keys(member.permission.json).forEach((perm) => {
-      if (member.permission.json[perm] === true && notablePermissions.indexOf(perm) !== -1) {
+    Object.keys(member.permissions.json).forEach((perm) => {
+      if (member.permissions.json[perm] === true && notablePermissions.indexOf(perm) !== -1) {
         perms.push(perm)
       }
     })
@@ -43,7 +43,7 @@ module.exports = {
       value: `**${new Date(member.joinedAt)}** (${Math.round((new Date().getTime() - member.joinedAt) / (1000 * 60 * 60 * 24))} days)`
     }, {
       name: 'Creation Date',
-      value: `**${new Date(member.createdAt).toString().substr(0, 21)}**`
+      value: `**${new Date(member.createdAt).toUTCString()}**`
     }, {
       name: 'Roles',
       value: `${member.roles.length !== 0 ? member.roles.map(r => `\`${message.channel.guild.roles.get(r).name}\``).join(', ') : 'None'}`

@@ -4,7 +4,7 @@ const statAggregator = require('./statAggregator')
 const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = async (guildID, channelID) => {
-  const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
+  const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permissions.json
   if (!perms.manageWebhooks) {
     return
   }

@@ -16,7 +16,7 @@ module.exports = async pkg => {
     global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
-  if (!guild.members.get(global.bot.user.id).permission.json.manageWebhooks || !guild.members.get(global.bot.user.id).permission.json.viewAuditLogs) return
+  if (!guild.members.get(global.bot.user.id).permissions.json.manageWebhooks || !guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs) return
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
     await cacheGuild(pkg.guildID)

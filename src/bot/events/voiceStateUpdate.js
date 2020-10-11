@@ -5,7 +5,7 @@ module.exports = {
   name: 'voiceStateUpdate',
   type: 'on',
   handle: async (member, oldState) => {
-    if (!member.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !member.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (!member.guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !member.guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     statAggregator.incrementEvent('voiceStateUpdate')
     const state = member.voiceState
     const channel = member.guild.channels.get(state.channelID)

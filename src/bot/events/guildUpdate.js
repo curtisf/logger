@@ -11,7 +11,7 @@ module.exports = {
   name: 'guildUpdate',
   type: 'on',
   handle: async (newGuild, oldGuild) => {
-    if (!newGuild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !newGuild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (!newGuild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !newGuild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => {
       if (!log || !log.entries) return // this could be null coalesced but why not make it backwards compatible

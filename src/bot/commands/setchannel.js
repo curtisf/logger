@@ -33,7 +33,10 @@ const eventList = [
 module.exports = {
   func: async (message, suffix) => {
     const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json.manageWebhooks
-    if (!webhookPerm) return await message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.')
+    if (!webhookPerm) {
+      message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.').catch(_ => {})
+      message.addReaction('❌').catch(_ => {})
+    }
     let events = suffix.split(', ')
     events = cleanArray(events)
     if (events.length === 0 && suffix) {

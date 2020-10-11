@@ -10,8 +10,9 @@ module.exports = {
   name: 'channelUpdate',
   type: 'on',
   handle: async (channel, oldChannel) => { // ignore updates of dm and group channels
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !channel.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !channel.guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     if (channel.position !== oldChannel.position) return
+    if (global.bot.guildSettingsCache[channel.guild.id].isChannelIgnored(channel.id)) return
     const channelUpdateEvent = {
       guildID: channel.guild.id,
       eventName: 'channelUpdate',
@@ -26,7 +27,7 @@ module.exports = {
           value: channel.name
         }, {
           name: 'Creation date',
-          value: new Date((channel.id / 4194304) + 1420070400000).toString()
+          value: new Date((channel.id / 4194304) + 1420070400000).toUTCString()
         },
         {
           name: 'Position',

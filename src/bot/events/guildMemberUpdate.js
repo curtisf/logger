@@ -6,7 +6,7 @@ module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
   handle: async (guild, member, oldMember) => {
-    if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const guildMemberUpdate = {
       guildID: guild.id,
       eventName: 'guildMemberUpdate',

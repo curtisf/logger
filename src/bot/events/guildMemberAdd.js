@@ -7,7 +7,7 @@ module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json.manageGuild) return
+    if (!guild.members.get(global.bot.user.id).permissions.json.manageGuild) return
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
@@ -22,7 +22,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: new Date().toString()
+          value: new Date().toUTCString()
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,

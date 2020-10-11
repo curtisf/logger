@@ -3,7 +3,7 @@ const clearEventByID = require('../../db/interfaces/postgres/update').clearEvent
 
 module.exports = {
   func: async message => {
-    if (!message.channel.guild.members.get(global.bot.user.id).permission.json.sendMessages) {
+    if (!message.channel.guild.members.get(global.bot.user.id).permissions.json.sendMessages) {
       return
     }
     await clearEventByID(message.channel.guild.id, message.channel.id) // any event logging to this channel id will be wiped

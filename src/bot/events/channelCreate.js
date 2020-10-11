@@ -10,7 +10,7 @@ module.exports = {
   name: 'channelCreate',
   type: 'on',
   handle: async newChannel => { // If it's a DM or group channel, ignore the creation
-    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !newChannel.guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
+    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !newChannel.guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
