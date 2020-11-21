@@ -1,13 +1,13 @@
 const send = require('../modules/webhooksender')
 const inviteCache = require('../modules/invitecache')
-const getUser = require('../../db/interfaces/postgres/read').getUser
+
+// I hate this code so, so, so much. Everyday it continues to run in the bot makes me angrier.
 
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['manageGuild']) return
-    const dbUser = await getUser(member.id)
+    if (!guild.members.get(global.bot.user.id).permissions.json.manageGuild) return
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
@@ -22,7 +22,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: new Date().toString()
+          value: new Date().toUTCString()
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,
@@ -42,7 +42,7 @@ module.exports = {
     let guildInvites
     try {
       guildInvites = await guild.getInvites()
-      let cachedInvites = await inviteCache.getCachedInvites(guild.id)
+      const cachedInvites = await inviteCache.getCachedInvites(guild.id)
       guildInvites = guildInvites.map(invite => `${invite.code}|${invite.hasOwnProperty('uses') ? invite.uses : 'Infinite'}`)
       const usedInviteStr = compareInvites(guildInvites, cachedInvites)
       if (!usedInviteStr) {
@@ -81,20 +81,11 @@ module.exports = {
       name: 'ID',
       value: `\`\`\`ini\nMember = ${member.id}\nGuild = ${guild.id}\`\`\``
     })
-    if (dbUser.names.includes('placeholder')) {
-      dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
-    }
-    if (dbUser.names.length !== 0) {
-      GMAEvent.embed.fields.push({
-        name: 'Last Names',
-        value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
-      })
-    }
     await send(GMAEvent)
   }
 }
 
-function compareInvites(current, saved) {
+function compareInvites (current, saved) {
   let i = 0
   for (i = 0; i < current.length; i++) {
     if (current[i] !== saved[i]) return current[i]

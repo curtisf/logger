@@ -1,6 +1,5 @@
 const pool = require('../../clients/postgres')
 const createGuild = require('./create').createGuild
-const createUserDocument = require('./create').createUserDocument
 const aes = require('../../aes')
 
 async function getAllGuilds () {
@@ -17,22 +16,6 @@ async function getGuild (guildID) {
     }
   }
   return doc.rows[0]
-}
-
-async function getUsers () {
-  const doc = await pool.query('SELECT * FROM users;')
-  doc.rows = doc.rows.map(async (u) => await decryptUserDoc(u))
-  return doc.rows
-}
-
-async function getUser (userID) {
-  const doc = await pool.query('SELECT * FROM users WHERE id=$1', [userID])
-  if (doc.rows.length === 0) {
-    await createUserDocument(userID)
-    return exports.getUser(userID)
-  }
-  const decryptedDoc = await decryptUserDoc(doc.rows[0])
-  return decryptedDoc
 }
 
 async function getMessagesByAuthor (userID) {
@@ -70,8 +53,6 @@ async function getAllMessages () {
 
 exports.getMessageById = getMessageById
 exports.getMessagesByAuthor = getMessagesByAuthor
-exports.getUser = getUser
 exports.getAllGuilds = getAllGuilds
 exports.getGuild = getGuild
-exports.getUsers = getUsers
 exports.getAllMessages = getAllMessages

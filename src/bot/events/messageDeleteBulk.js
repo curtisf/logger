@@ -6,7 +6,7 @@ module.exports = {
   name: 'messageDeleteBulk',
   type: 'on',
   handle: async messages => {
-    let dbMessages = []
+    const dbMessages = []
     await messages.forEach(async (m, i) => {
       const message = await getMessageById(m.id)
       if (message) dbMessages.push(message)
@@ -15,7 +15,7 @@ module.exports = {
   }
 }
 
-async function paste(messages, guildID) {
+async function paste (messages, guildID) {
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',
@@ -36,21 +36,23 @@ async function paste(messages, guildID) {
     }
     return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts)}: ${m.content} |  | `
   }).join('\r\n')
-  sa
-    .post(process.env.PASTE_CREATE_ENDPOINT)
-    .set('Authorization', process.env.PASTE_CREATE_TOKEN)
-    .set('Content-Type', 'text/plain')
-    .send(pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.')
-    .end((err, res) => {
-      if (!err && res.statusCode === 200 && res.body.key) {
-        messageDeleteBulkEvent.embed.fields.push({
-          name: 'Link',
-          value: `https://haste.lemonmc.com/${res.body.key}.txt`
-        })
-        send(messageDeleteBulkEvent)
-      } else {
-        global.logger.error(err, res.body)
-        global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
-      }
-    })
+  if (pasteString) {
+    sa
+      .post(process.env.PASTE_CREATE_ENDPOINT)
+      .set('Authorization', process.env.PASTE_CREATE_TOKEN)
+      .set('Content-Type', 'text/plain')
+      .send(pasteString || 'An error has occurred while fetching pastes. Please contact the bot author.')
+      .end((err, res) => {
+        if (!err && res.body && res.statusCode === 200 && res.body.key) {
+          messageDeleteBulkEvent.embed.fields.push({
+            name: 'Link',
+            value: `https://haste.lemonmc.com/${res.body.key}.txt`
+          })
+          send(messageDeleteBulkEvent)
+        } else {
+          global.logger.error(err, res.body ? res.body : 'No error body!')
+          global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
+        }
+      })
+  }
 }

@@ -11,13 +11,15 @@ module.exports = {
   name: 'guildUpdate',
   type: 'on',
   handle: async (newGuild, oldGuild) => {
-    if (!newGuild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newGuild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
-    let fields = []
+    if (!newGuild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !newGuild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
+    const fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => {
-      if (!log) return
-      const user = log.users[0]
+      if (!log || !log.entries) return // this could be null coalesced but why not make it backwards compatible
+      const user = log.entries[0].user
       const member = newGuild.members.get(user.id)
       let arr
+      // This is the only instance where referring to an audit log by position returned is okay.
+      // Results are returned sorted by id (newer id is a larger number & comes up first)
       if (Object.keys(log.entries[0].before) > Object.keys(log.entries[0].after)) {
         arr = Object.keys(log.entries[0].before)
       } else {
@@ -25,8 +27,8 @@ module.exports = {
       }
       arr.forEach((key) => {
         if (oldGuild[key] !== newGuild[key] || checkExempt.includes(key)) { // if both guilds have the property and they don't equal eachother
-          let data = handle(key, log)
-          fields.push(data)
+          const data = handle(key, log)
+          if (data) fields.push(data)
         }
       })
       send({
@@ -34,15 +36,16 @@ module.exports = {
         eventName: 'guildUpdate',
         embed: {
           author: {
-            name: `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
+            name: `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`,
             icon_url: user.avatarURL
           },
-          description: `The guild was updated`,
-          fields: fields.length !== 0 ? fields : [{name: 'Changes', value: 'Unknown'}],
+          description: 'The guild was updated',
+          fields: fields.length !== 0 ? fields : [{ name: 'Changes', value: 'Unknown' }],
           color: 3553599
         }
       })
-    }).catch(() => {return})
+    }).catch(() => {})
+    // TODO: handle new guild updates, son!
     function handle (name, log) {
       let after = 'None'
       let before = 'None'

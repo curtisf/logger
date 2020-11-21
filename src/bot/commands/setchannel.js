@@ -32,8 +32,11 @@ const eventList = [
 
 module.exports = {
   func: async (message, suffix) => {
-    const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json['manageWebhooks']
-    if (!webhookPerm) return await message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.')
+    const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json.manageWebhooks
+    if (!webhookPerm) {
+      message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.').catch(_ => {})
+      message.addReaction('❌').catch(_ => {})
+    }
     let events = suffix.split(', ')
     events = cleanArray(events)
     if (events.length === 0 && suffix) {
@@ -49,7 +52,7 @@ module.exports = {
     }
   },
   name: 'setchannel',
-  description: `Use this in a log channel to make me log to here. setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
+  description: `Use this in a log channel to make me log to here. [WARNING] it's easier to setup the bot on the dashboard than using this command! setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
   perm: 'manageWebhooks',
   category: 'Logging'
 }
@@ -57,14 +60,15 @@ module.exports = {
 function cleanArray (events) {
   const tempEvents = []
   events.forEach(event => {
-    if (eventList.includes(event)) isGood = true
-    eventList.forEach(validEvent => {
-      const lowerEvent = validEvent.toLowerCase()
-      const upperEvent = validEvent.toUpperCase()
-      if (event === lowerEvent || event === upperEvent || event === validEvent) {
-        tempEvents.push(validEvent)
-      }
-    })
+    if (eventList.includes(event)) {
+      eventList.forEach(validEvent => {
+        const lowerEvent = validEvent.toLowerCase()
+        const upperEvent = validEvent.toUpperCase()
+        if (event === lowerEvent || event === upperEvent || event === validEvent) {
+          tempEvents.push(validEvent)
+        }
+      })
+    }
   })
   return tempEvents
 }

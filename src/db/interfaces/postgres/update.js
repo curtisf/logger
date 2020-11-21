@@ -1,7 +1,7 @@
 const pool = require('../../clients/postgres')
+const escape = require('markdown-escape')
 const getDoc = require('./read').getGuild
 const getMessageById = require('./read').getMessageById
-const getUser = require('./read').getUser
 const cacheGuild = require('../../../bot/utils/cacheGuild')
 const getMessageFromBatch = require('../../messageBatcher').getMessage
 const updateBatchMessage = require('../../messageBatcher').updateMessage
@@ -34,29 +34,29 @@ const eventList = [
 ]
 
 const eventLogs = {
-  'channelCreate': '',
-  'channelUpdate': '',
-  'channelDelete': '',
-  'guildBanAdd': '',
-  'guildBanRemove': '',
-  'guildRoleCreate': '',
-  'guildRoleDelete': '',
-  'guildRoleUpdate': '',
-  'guildUpdate': '',
-  'messageDelete': '',
-  'messageDeleteBulk': '',
-  'messageReactionRemoveAll': '',
-  'messageUpdate': '',
-  'guildMemberAdd': '',
-  'guildMemberKick': '',
-  'guildMemberRemove': '',
-  'guildMemberUpdate': '',
-  'voiceChannelLeave': '',
-  'voiceChannelJoin': '',
-  'voiceStateUpdate': '',
-  'voiceChannelSwitch': '',
-  'guildEmojisUpdate': '',
-  'guildMemberNickUpdate': ''
+  channelCreate: '',
+  channelUpdate: '',
+  channelDelete: '',
+  guildBanAdd: '',
+  guildBanRemove: '',
+  guildRoleCreate: '',
+  guildRoleDelete: '',
+  guildRoleUpdate: '',
+  guildUpdate: '',
+  messageDelete: '',
+  messageDeleteBulk: '',
+  messageReactionRemoveAll: '',
+  messageUpdate: '',
+  guildMemberAdd: '',
+  guildMemberKick: '',
+  guildMemberRemove: '',
+  guildMemberUpdate: '',
+  voiceChannelLeave: '',
+  voiceChannelJoin: '',
+  voiceStateUpdate: '',
+  voiceChannelSwitch: '',
+  guildEmojisUpdate: '',
+  guildMemberNickUpdate: ''
 }
 
 async function clearEventLog (guildID) {
@@ -131,23 +131,15 @@ async function toggleLogBots (guildID) {
   return !doc.log_bots
 }
 
-async function updateNames (userID, name) {
-  const doc = await getUser(userID)
-  doc.names.push(name)
-  doc.names = aes.encrypt(JSON.stringify(doc.names))
-  return await pool.query('UPDATE users SET names=$1 WHERE id=$2', [doc.names, userID])
-}
-
 async function updateMessageByID (id, content) {
   const batchMessage = await getMessageFromBatch(id)
   if (!batchMessage) {
-    return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content ? content : 'EMPTY STRING'), id])
+    return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content || 'EMPTY STRING'), id])
   } else {
     updateBatchMessage(id, content)
   }
 }
 
-exports.updateNames = updateNames
 exports.toggleLogBots = toggleLogBots
 exports.disableEvent = disableEvent
 exports.ignoreChannel = ignoreChannel

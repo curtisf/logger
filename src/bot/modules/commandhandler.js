@@ -13,7 +13,7 @@ module.exports = async message => {
 function processCommand (message, commandName, suffix) {
   const command = Object.keys(global.bot.commands).map(k => global.bot.commands[k]).find(c => c.name === commandName)
   if (!command) return
-  const bp = message.channel.guild.members.get(global.bot.user.id).permission.json
+  const bp = message.channel.guild.members.get(global.bot.user.id).permissions.json
   if (!bp.readMessages || !bp.sendMessages || !bp.manageWebhooks) return
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')
@@ -25,10 +25,10 @@ function processCommand (message, commandName, suffix) {
   } else if (command.type === 'creator' && !process.env.CREATOR_IDS.includes(message.author.id)) {
     message.channel.createMessage('This command is creator only!')
     return
-  } else if (command.type === 'admin' && !(message.member.permission.has('administrator' || message.author.id === message.channel.guild.ownerID))) {
+  } else if (command.type === 'admin' && !(message.member.permissions.has('administrator' || message.author.id === message.channel.guild.ownerID))) {
     message.channel.createMessage('That\'s an admin only command. You need the administrator permission to use it.')
     return
-  } else if (command.perm && !(message.member.permission.has(command.perm) || message.author.id === message.channel.guild.ownerID)) {
+  } else if (command.perm && !(message.member.permissions.has(command.perm) || message.author.id === message.channel.guild.ownerID)) {
     message.channel.createMessage(`This command requires you to be the owner of the server, or have the ${command.perm} permission.`)
     return
   }

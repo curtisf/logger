@@ -51,7 +51,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
           }
         }
       }
-      
+
       statsObj = {}
     }
   }, parseInt(process.env.STAT_SUBMISSION_INTERVAL) + 250) // add 1/4 second deadband to allow the shards to respond
@@ -81,7 +81,7 @@ module.exports = async worker => {
     if (message.type && message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
-        return
+        
       } else {
         for (const commandName in message.commandUsage) {
           statsObj.commandUsage[commandName] += message.commandUsage[commandName]

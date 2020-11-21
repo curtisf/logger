@@ -2,7 +2,7 @@ const sa = require('superagent')
 
 module.exports = {
   func: async (message, suffix) => {
-    if (isNaN(suffix)) return message.channel.createMessage('That isn\'t a valid suffix! Please provide any number between 5 and 1000 (10,000 if Patreon).')
+    if (!suffix || isNaN(suffix)) return message.channel.createMessage('That isn\'t a valid suffix! Please provide any number between 5 and 1000 (10,000 if Patreon).')
     const num = parseInt(suffix)
     if (num < 5 || num > 1000) return message.channel.createMessage('That number is invalid! Please provide any number between 5 and 1000 (10,000 if Patreon)')
     message.channel.getMessages(num).then(messages => {
