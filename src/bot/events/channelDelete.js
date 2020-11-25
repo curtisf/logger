@@ -63,6 +63,7 @@ module.exports = {
     const log = logs.entries.find(e => e.targetID === channel.id)
     if (!log) return
     const user = log.user
+    if (user.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
     const member = channel.guild.members.get(user.id)
     if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
       channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`

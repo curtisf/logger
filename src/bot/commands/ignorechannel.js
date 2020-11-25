@@ -1,9 +1,15 @@
 const ignoreChannel = require('../../db/interfaces/postgres/update').ignoreChannel
 
 module.exports = {
-  func: async message => {
-    const disabled = await ignoreChannel(message.channel.guild.id, message.channel.id) // return a boolean representing whether a channel is ignored or not
-    const respStr = `Toggled logging events targeting <#${message.channel.id}> (${message.channel.name}). I am now ${disabled ? 'ignoring' : 'logging'} events from this channel`
+  func: async (message, suffix) => {
+    let toIgnore = message.channel.id
+    if (suffix && !isNaN(parseInt(suffix))) {
+      const channelToIgnore = message.channel.guild.channels.get(suffix)
+      if (!channelToIgnore || !(channelToIgnore.type === 2 || channelToIgnore.type === 0)) return message.channel.createMessage(`Usage: ${process.env.GLOBAL_BOT_PREFIX}ignorechannel OR ${process.env.GLOBAL_BOT_PREFIX}ignorechannel channelID`)
+      toIgnore = suffix
+    }
+    const disabled = await ignoreChannel(message.channel.guild.id, toIgnore) // return a boolean representing whether a channel is ignored or not
+    const respStr = `Toggled logging events targeting <#${toIgnore}> (${message.channel.guild.channels.get(toIgnore).name}). I am now ${disabled ? 'ignoring' : 'logging'} events from this channel`
     message.channel.createMessage({
       embed: {
         description: respStr,
@@ -21,7 +27,7 @@ module.exports = {
     })
   },
   name: 'ignorechannel',
-  description: 'Ignore any event that originates from the channel this command is used in. Toggleable.',
+  description: 'Ignore any event that originates from the channel this command is used in. Use in the text channel you want to ignore OR provide a channel id (can be a voice channel) as a suffix (ignorechannel channelID).',
   type: 'custom',
   perm: 'manageChannels',
   category: 'Logging'

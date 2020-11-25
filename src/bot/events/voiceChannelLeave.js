@@ -7,6 +7,7 @@ module.exports = {
   handle: async (member, channel) => {
     if (member) {
       statAggregator.incrementEvent('voiceStateUpdate') // voice channel leave is abstracted voice state update
+      if (global.bot.guildSettingsCache[channel.guild.id].isChannelIgnored(channel.id)) return
       await send({
         guildID: channel.guild.id,
         eventName: 'voiceChannelLeave',

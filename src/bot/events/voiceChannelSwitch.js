@@ -6,6 +6,7 @@ module.exports = {
   type: 'on',
   handle: async (member, channel, oldChannel) => {
     statAggregator.incrementEvent('voiceStateUpdate')
+    if (global.bot.guildSettingsCache[channel.guild.id].isChannelIgnored(channel.id)) return
     await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelSwitch',

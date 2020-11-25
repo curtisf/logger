@@ -34,13 +34,14 @@ module.exports = {
           value: channel.position
         }, {
           name: 'ID',
-          value: `\`\`\`ini\nUser = Unknown\nChannel = ${channel.id}\`\`\``
+          value: `\`\`\`ini\nUser = Unknown, no audit log entry\nChannel = ${channel.id}\`\`\``
         }]
       }
     }
-    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `**Now**: ${channel.name}\n\n**Was**: ${oldChannel.name}` })
+    if (channel.name !== oldChannel.name) channelUpdateEvent.embed.fields.push({ name: 'Name', value: `Now: ${channel.name}\nWas: ${oldChannel.name}` })
     if (channel.nsfw !== oldChannel.nsfw) channelUpdateEvent.embed.fields.push({ name: 'NSFW', value: `Now: ${channel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}\nWas: ${oldChannel.nsfw ? 'NSFW warning enabled' : 'NSFW warning disabled'}` })
     if (channel.topic !== oldChannel.topic) channelUpdateEvent.embed.fields.push({ name: 'Topic', value: `Now: ${channel.topic ? channel.topic.substr(0, 400) : 'Empty'}\nWas: ${oldChannel.topic ? oldChannel.topic.substr(0, 400) : 'Empty'}` })
+    if (channel.rateLimitPerUser !== oldChannel.rateLimitPerUser) channelUpdateEvent.embed.fields.push({ name: 'Slowmode', value: `Now: ${channel.rateLimitPerUser ? `${channel.rateLimitPerUser} seconds` : 'no limit'}\nWas: ${oldChannel.rateLimitPerUser ? `${oldChannel.rateLimitPerUser} seconds` : 'no limit'}` })
     if (channel.bitrate && (channel.bitrate !== oldChannel.bitrate)) channelUpdateEvent.embed.fields.push({ name: 'Bitrate', value: `Now: ${channel.bitrate}\nWas: ${oldChannel.bitrate}` })
     let channelOverwrites = channel.permissionOverwrites.map(o => o) // convert to array
     let oldOverwrites = oldChannel.permissionOverwrites.map(o => o)
@@ -55,7 +56,7 @@ module.exports = {
     } else if (oldOverwrites.length > channelOverwrites.length) {
       auditLogId = 15
       oldOverwrites = oldOverwrites.filter(val => !uniques.includes(val))
-    } else if (channel.topic !== oldChannel.topic || channel.nsfw !== oldChannel.nsfw || channel.name !== oldChannel.name) {
+    } else if (channel.topic !== oldChannel.topic || channel.nsfw !== oldChannel.nsfw || channel.name !== oldChannel.name || channel.rateLimitPerUser !== oldChannel.rateLimitPerUser) {
       auditLogId = 11
     } else auditLogId = 14
     channelOverwrites.forEach(newOverwrite => {
@@ -108,6 +109,7 @@ module.exports = {
     const log = logs.entries.find(e => e.targetID === channel.id)
     if (!log) return
     const user = log.user
+    if (user.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
     if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
       channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
       channelUpdateEvent.embed.author.icon_url = user.avatarURL

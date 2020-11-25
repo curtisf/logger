@@ -4,6 +4,7 @@ module.exports = {
   name: 'voiceChannelJoin',
   type: 'on',
   handle: async (member, channel) => {
+    if (global.bot.guildSettingsCache[channel.guild.id].isChannelIgnored(channel.id)) return
     await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelJoin',

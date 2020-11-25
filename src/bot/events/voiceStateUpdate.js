@@ -11,6 +11,7 @@ module.exports = {
     const channel = member.guild.channels.get(state.channelID)
     if (!state.channelID || oldState.channelID) return
     if ((state.selfDeaf !== oldState.selfDeaf) || (state.selfMute !== oldState.selfMute)) return
+    if (global.bot.guildSettingsCache[member.guild.id].isChannelIgnored(state.channelID)) return
     const voiceStateUpdateEvent = {
       guildID: member.guild.id,
       eventName: 'voiceStateUpdate',

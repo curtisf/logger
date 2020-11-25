@@ -64,7 +64,7 @@ module.exports = {
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
     }, {
       name: 'Date',
-      value: new Date(cachedMessage.ts)
+      value: new Date(cachedMessage.ts).toUTCString()
     })
     await send(messageDeleteEvent)
   }

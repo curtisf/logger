@@ -48,6 +48,7 @@ module.exports = {
     if (!log) return
     if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
     const user = log.user
+    if (user.bot && !global.bot.guildSettingsCache[newChannel.guild.id].isLogBots()) return
     const member = newChannel.guild.members.get(user.id)
     channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
     channelCreateEvent.embed.author.icon_url = user.avatarURL
