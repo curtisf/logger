@@ -9,8 +9,6 @@ module.exports = async pkg => {
   if (!pkg.embed.color) pkg.embed.color = 3553599
   const guild = global.bot.guilds.get(pkg.guildID)
   if (!guild) {
-    console.error('Invalid guild ID sent in package!', pkg.guildID, pkg, pkg.embed)
-    global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
   if (!guild.members.get(global.bot.user.id).permission.json.manageWebhooks || !guild.members.get(global.bot.user.id).permission.json.viewAuditLogs) return
@@ -45,7 +43,7 @@ module.exports = async pkg => {
       embeds: [pkg.embed]
     }).catch(async e => {
       console.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-      global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
+      global.signale.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       if (e.code == '10015') { // Webhook doesn't exist anymore.
         // await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
         return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))

@@ -61,7 +61,8 @@ async function init () {
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    getAllUsers: true
+    getAllUsers: true,
+    intents: 719
   })
 
   bot.editStatus('dnd', {
@@ -89,7 +90,7 @@ async function init () {
     require('../api/index')
   }
 
-  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(global.envInfo.MESSAGE_HISTORY_DAYS) debating on removing these
+  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(1l.envInfo.MESSAGE_HISTORY_DAYS) debating on removing these
   // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${global.envInfo.MESSAGE_HISTORY_DAYS} day(s).`)
 }
 process.on('exit', (code) => {
