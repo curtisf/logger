@@ -52,9 +52,9 @@ module.exports = async pkg => {
         users: false
       }
     }).catch(async e => {
-      if (e && e.code && !(e.code == '50035' || e.code == '10015')) {
-        global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${guild ? guild.name : 'Could not found the guild!'})`)
-        global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${guild ? guild.name : 'Could not found the guild!'})`)
+      if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500')) {
+        console.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
+        global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       }
       if (e.code == '10015') { // Webhook doesn't exist anymore.
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
