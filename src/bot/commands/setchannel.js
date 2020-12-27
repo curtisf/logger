@@ -16,7 +16,6 @@ const eventList = [
   'guildUpdate',
   'messageDelete',
   'messageDeleteBulk',
-  'messageReactionRemoveAll',
   'messageUpdate',
   'guildMemberAdd',
   'guildMemberKick',
@@ -36,6 +35,7 @@ module.exports = {
     if (!webhookPerm) {
       message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.').catch(_ => {})
       message.addReaction('❌').catch(_ => {})
+      return
     }
     let events = suffix.split(', ')
     events = cleanArray(events)
