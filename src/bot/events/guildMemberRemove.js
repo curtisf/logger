@@ -1,6 +1,5 @@
 const send = require('../modules/webhooksender')
 const prunecache = require('../modules/prunecache')
-const getUser = require('../../db/interfaces/sqlite').getUser
 
 module.exports = {
   name: 'guildMemberRemove',
@@ -47,7 +46,6 @@ module.exports = {
       if (!logs) return
       const log = logs.entries[0]
       if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-        const dbUser = await getUser(member.id)
         const user = logs.users.find(u => u.id !== member.id)
         event.eventName = 'guildMemberKick'
         event.embed = {
@@ -71,15 +69,6 @@ module.exports = {
             text: `${user.username}#${user.discriminator}`,
             icon_url: user.avatarURL
           }
-        }
-        if (dbUser.names.includes('placeholder')) {
-          dbUser.names.splice(dbUser.names.indexOf('placeholder'), 1)
-        }
-        if (dbUser.names.length !== 0) {
-          event.embed.fields.push({
-            name: 'Last Names',
-            value: `\`\`\`${dbUser.names.join(', ').substr(0, 1000)}\`\`\``
-          })
         }
         return send(event)
       } else {
