@@ -78,11 +78,12 @@ async function clearEventByID (guildID, channelID) {
 
 async function setAllEventsOneId (guildID, channelID) {
   const doc = await getDoc(guildID)
-  eventList.forEach(event => {
-    doc.event_logs[event] = channelID
+  const eventLogs = doc.event_logs
+  Object.keys(eventLogs).forEach(event => {
+    eventLogs[event] = channelID
   })
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
 async function setEventsLogId (guildID, channelID, events) {

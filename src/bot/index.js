@@ -49,7 +49,8 @@ async function init () {
     messageLimit: 0,
     autoreconnect: true,
     ratelimiterOffset: 400,
-    intents: 719
+    intents: 719,
+    defaultImageFormat: 'png'
   })
 
   global.bot.on('ratelimit', console.error)

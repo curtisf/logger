@@ -38,18 +38,19 @@ function getGuildIdByEvent (type, args) {
     case 'guildBanRemove':
     case 'guildEmojisUpdate':
     case 'guildMemberAdd':
-    case 'guildMemberRemove':
     case 'guildMemberUpdate':
     case 'guildRoleCreate':
     case 'guildRoleDelete':
     case 'guildRoleUpdate':
     case 'guildUpdate': {
       return args[0].id
-    }
-    case 'inviteCreate': // TODO: actually add inviteCreate and inviteDelete
-    case 'voiceStateUpdate':
-    case 'inviteDelete': {
+    } // TODO: actually add inviteCreate and inviteDelete
+    case 'voiceStateUpdate': {
       return args[0].guild.id
+    }
+    case 'inviteDelete':
+    case 'inviteCreate': {
+      return true // yes this coulda been left to default, but this explicitly states the purpose. This needs to run whether it's configured or not
     }
     case 'messageDeleteBulk': {
       if (!args[0][0].channel.guild.id) return

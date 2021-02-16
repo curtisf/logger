@@ -41,11 +41,17 @@ module.exports = {
     }
     let guildInvites
     try {
-      guildInvites = await guild.getInvites()
+      guildInvites = (await guild.getInvites()).map(i => inviteCache.formatInvite(i, false))
       const cachedInvites = await inviteCache.getCachedInvites(guild.id)
-      guildInvites = guildInvites.map(invite => `${invite.code}|${invite.hasOwnProperty('uses') ? invite.uses : 'Infinite'}`)
-      const usedInviteStr = compareInvites(guildInvites, cachedInvites)
-      if (!usedInviteStr) {
+      let usedInvite
+      if (guildInvites.length > cachedInvites.length) {
+        // invite desync between redis and Discord, fix it
+        console.log('Desync detected, fixing')
+        await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
+      } else {
+        usedInvite = compareInvites(guildInvites, cachedInvites)
+      }
+      if (!usedInvite) {
         if (guild.features.includes('VANITY_URL')) {
           GMAEvent.embed.fields.push({
             name: 'Invite Used',
@@ -60,19 +66,14 @@ module.exports = {
           })
         }
       }
-      if (usedInviteStr) {
-        const split = usedInviteStr.split('|')
-        const usedInvite = {
-          code: split[0],
-          uses: split[1]
-        }
+      if (usedInvite) {
         GMAEvent.embed.fields.push({
           name: 'Invite Used',
           value: `${usedInvite.code} with ${usedInvite.uses} uses`,
           inline: true
         })
       }
-      await inviteCache.cacheInvites(guild.id, guildInvites)
+      await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
     } catch (_) {
       console.error(_)
       // They're denying the bot the permissions it needs.
@@ -86,9 +87,21 @@ module.exports = {
 }
 
 function compareInvites (current, saved) {
-  let i = 0
-  for (i = 0; i < current.length; i++) {
-    if (current[i] !== saved[i]) return current[i]
+  if (current.length === saved.length) {
+    for (let i = 0; i < current.length; i++) {
+      const matchedInvite = saved.find(inv => (inv.code === current[i].code) && (inv.uses !== current[i].uses))
+      if (matchedInvite) return current[i]
+    }
+  } else {
+    for (let i = 0; i < saved.length; i++) {
+      if (!current.find(inv => inv.code === saved[i].code)) {
+        return saved[i]
+      }
+    }
   }
-  return null
+  saved.forEach(savedInvite => {
+    if (current.indexOf(savedInvite) !== -1) {
+      current.splice(current.indexOf(savedInvite), 1)
+    }
+  })
 }
