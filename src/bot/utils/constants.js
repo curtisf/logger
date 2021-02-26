@@ -39,3 +39,11 @@ exports.EVENTS_USING_AUDITLOGS = [
   'guildMemberUpdate',
   'voiceStateUpdate',
   'guildEmojisUpdate']
+
+exports.PRESET_EVENT_MAP = {
+  voice: ['voiceChannelLeave', 'voiceChannelJoin', 'voiceChannelSwitch'],
+  messages: ['messageUpdate', 'messageDelete', 'messageDeleteBulk'],
+  mod: ['guildBanAdd', 'guildBanRemove', 'guildMemberUpdate', 'guildMemberKick', 'guildMemberNickUpdate'],
+  joinlog: ['guildMemberAdd', 'guildMemberRemove'],
+  server: ['channelCreate', 'channelUpdate', 'channelDelete', 'guildRoleUpdate', 'guildRoleCreate', 'guildRoleDelete', 'guildUpdate']
+}
