@@ -4,6 +4,8 @@ module.exports = {
   name: 'guildRoleUpdate',
   type: 'on',
   handle: async (guild, role, oldRole) => {
+    const botPerms = guild.members.get(global.bot.user.id).permissions.json
+    if (!botPerms.viewAuditLogs || !botPerms.manageWebhooks) return
     const guildRoleUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildRoleUpdate',
