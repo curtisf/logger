@@ -4,20 +4,19 @@ module.exports = {
   name: 'guildRoleUpdate',
   type: 'on',
   handle: async (guild, role, oldRole) => {
-    const botPermissions = Object.keys(guild.members.get(global.bot.user.id).permissions.json)
-    if (!botPermissions.includes('viewAuditLogs') || !botPermissions.includes('manageWebhooks')) return
     const guildRoleUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildRoleUpdate',
+      who: null,
       embed: {
-        description: 'A role was updated',
+        description: `A role was updated (${role.name})`,
         fields: [],
         color: role.color ? role.color : 3553599
       }
     }
     const oldKeys = Object.keys(oldRole)
     oldKeys.forEach(prop => {
-      if (role[prop].toString() !== oldRole[prop].toString() && prop !== 'position') {
+      if (role[prop] !== oldRole[prop] && prop !== 'position' && prop !== 'permissions') {
         if (prop === 'color') {
           guildRoleUpdateEvent.embed.fields.unshift({
             name: toTitleCase(prop),
@@ -31,25 +30,56 @@ module.exports = {
         }
       }
     })
-    if (guildRoleUpdateEvent.embed.fields.length === 0) return // dunno what changed
-    const logs = await guild.getAuditLogs(1, null, 31).catch(() => {})
-    if (!logs) return
-    const log = logs.entries.find(e => e.targetID === role.id)
-    if (!log) {
-      return await send(guildRoleUpdateEvent) // just send the embed and stop there.
+    if (role.permissions.allow !== oldRole.permissions.allow || role.permissions.deny !== oldRole.permissions.deny) {
+      const field = {
+        name: 'Permissions changed',
+        value: ''
+      }
+      const newPerms = Object.keys(role.permissions.json)
+      const oldPerms = Object.keys(oldRole.permissions.json)
+      const differentPerms = getDifference(newPerms, oldPerms).concat(getDifference(oldPerms, newPerms))
+      differentPerms.forEach(perm => {
+        if (role.permissions.json.hasOwnProperty(perm) && oldRole.permissions.json.hasOwnProperty(perm)) {
+          if (role.permissions.json[perm] === true && oldRole.permissions.json[perm] === false) {
+            field.value += `\n+ ${perm}`
+          } else if (role.permissions.json[perm] === false && oldRole.permissions.json[perm] === true) {
+            field.value += `\n− ${perm}`
+          }
+        } else if (role.permissions.json.hasOwnProperty(perm) && !oldRole.permissions.json.hasOwnProperty(perm)) {
+          if (role.permissions.json[perm]) {
+            field.value += `\n+ ${perm}`
+          } else {
+            field.value += `\n− ${perm}`
+          }
+        } else if (!role.permissions.json.hasOwnProperty(perm) && oldRole.permissions.json.hasOwnProperty(perm)) {
+          field.value += `\n- ${perm}`
+        }
+      })
+      if (field.value) guildRoleUpdateEvent.embed.fields.push(field)
     }
-    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
-    const perp = log.user
-    guildRoleUpdateEvent.embed.fields.push({
-      name: 'ID',
-      value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
-    })
-    guildRoleUpdateEvent.embed.author = {
-      name: `${perp.username}#${perp.discriminator}`,
-      icon_url: perp.avatarURL
-    }
-    if (guildRoleUpdateEvent.embed.fields.length === 1) return
-    await send(guildRoleUpdateEvent)
+    await setTimeout(async () => {
+      const logs = await guild.getAuditLogs(1, null, 31)
+      const log = logs.entries[0]
+      if (log && log.user && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+        guildRoleUpdateEvent.embed.fields.push({
+          name: 'ID',
+          value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${log.user.id}\`\`\``
+        })
+        guildRoleUpdateEvent.embed.author = {
+          name: `${log.user.username}#${log.user.discriminator}`,
+          icon_url: log.user.avatarURL
+        }
+        if (guildRoleUpdateEvent.embed.fields.length === 1) return
+        await send(guildRoleUpdateEvent)
+      } else {
+        guildRoleUpdateEvent.embed.fields.push({
+          name: 'ID',
+          value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Unknown\`\`\``
+        })
+        if (guildRoleUpdateEvent.embed.fields.length === 1) return
+        await send(guildRoleUpdateEvent)
+      }
+    }, 1000)
   }
 }
 
@@ -67,4 +97,10 @@ function toTitleCase (str) {
 
 function rgbToHex (r, g, b) { // bitwise math is black magic
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+}
+
+function getDifference (array1, array2) {
+  return array1.filter(i => {
+    return array2.indexOf(i) < 0
+  })
 }
