@@ -25,6 +25,11 @@ async function init () {
       } else {
         rangeForShard = `shards ${shardStart}-${shardEnd}`
       }
+      if (process.env.CUSTOM_CLUSTER_LAUNCH == 'true' && i === 0) {
+        global.logger.info(`Custom launch mode specified, use range: ${rangeForShard} (start ${shardStart} end ${shardEnd})`)
+        global.webhook.generic(`Custom launch mode specified, use range: ${rangeForShard} (start ${shardStart} end ${shardEnd})`)
+        continue
+      }
       const worker = cluster.fork()
       Object.assign(worker, { type: 'bot', shardStart, shardEnd, rangeForShard, totalShards })
       addListeners(worker)
