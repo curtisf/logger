@@ -46,7 +46,6 @@ module.exports = {
       let usedInvite
       if (guildInvites.length > cachedInvites.length) {
         // invite desync between redis and Discord, fix it
-        console.log('Desync detected, fixing')
         await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
       } else {
         usedInvite = compareInvites(guildInvites, cachedInvites)
@@ -55,7 +54,7 @@ module.exports = {
         if (guild.features.includes('VANITY_URL')) {
           GMAEvent.embed.fields.push({
             name: 'Invite Used',
-            value: 'The discord.gg url defined by the guild owner (or admin)',
+            value: 'Server vanity',
             inline: true
           })
         } else if (member.bot) {
