@@ -18,7 +18,7 @@ if (process.env.SENTRY_URI) {
 }
 
 function connect () {
-  redisLock.lock('loggerinit', process.env.REDIS_LOCK_TTL).then(function (lock) {
+  redisLock.lock('loggerinit', parseInt(process.env.REDIS_LOCK_TTL)).then(function (lock) {
     global.logger.startup(`Shards ${cluster.worker.rangeForShard} have obtained a lock and are connecting now. Configured Redis TTL is ${process.env.REDIS_LOCK_TTL}ms.`)
     global.bot.connect()
     global.bot.once('ready', () => {
@@ -29,7 +29,7 @@ function connect () {
   }).catch(e => {
     setTimeout(() => {
       connect()
-    }, 15000)
+    }, 10000)
   }) // throw out not being able to obtain a lock.
 }
 

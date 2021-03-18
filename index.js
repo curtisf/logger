@@ -7,6 +7,5 @@ if (cluster.isMaster) {
   console.log('Master node init')
   require('./primary')
 } else {
-  console.log('Starting a worker')
   require('./replica')
 }
