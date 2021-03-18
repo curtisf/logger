@@ -50,7 +50,8 @@ async function init () {
     autoreconnect: true,
     ratelimiterOffset: 400,
     intents: 719,
-    defaultImageFormat: 'png'
+    defaultImageFormat: 'png',
+    ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
 
   global.bot.on('ratelimit', console.error)
