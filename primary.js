@@ -13,12 +13,10 @@ async function init () {
     let shardsPerWorker
     if (process.env.USE_MAX_CONCURRENCY === 'true') { // eslint-disable-line eqeqeq
       if (b.body.session_start_limit.max_concurrency === 1) {
-        global.logger.error(`Use max concurrency was specified, but observed gateway concurrency is ${b.body.session_start_limit.max_concurrency}`)
-        return
+        global.logger.warn(`Use max concurrency was specified, but observed gateway concurrency is ${b.body.session_start_limit.max_concurrency}`)
       }
       if (b.body.shards % 16 !== 0) {
-        global.logger.error('Max concurrency mode is enabled and set on Discord, but the shard count is not a multiple of 16!')
-        return
+        global.logger.warn('Max concurrency mode is enabled and set on Discord, but the shard count is not a multiple of 16!')
       }
       global.logger.info(`Using max concurrency of ${b.body.session_start_limit.max_concurrency}. Cluster starting will be delayed!`) // shardsPerWorker is set to 16 below
     }
