@@ -3,7 +3,8 @@ const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
   4: 'Category',
-  5: 'Announcement'
+  5: 'Announcement',
+  13: 'Stage Channel'
 }
 
 module.exports = {
@@ -73,11 +74,12 @@ module.exports = {
         if (member) {
           overwriteName += member.username + member.nick ? `(${member.mention})` : ''
         }
-      } else {
+      } else if (newOverwrite.type === 'role') {
         const role = channel.guild.roles.find(r => r.id === newOverwrite.id)
+        if (!role) return
         overwriteName += role.name
         if (role.color) channelUpdateEvent.embed.color = role.color
-      }
+      
       const field = {
         name: overwriteName,
         value: ''
