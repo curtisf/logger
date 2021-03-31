@@ -79,7 +79,7 @@ module.exports = {
         if (!role) return
         overwriteName += role.name
         if (role.color) channelUpdateEvent.embed.color = role.color
-      
+      }
       const field = {
         name: overwriteName,
         value: ''
