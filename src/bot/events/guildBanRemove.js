@@ -4,7 +4,6 @@ module.exports = {
   name: 'guildBanRemove',
   type: 'on',
   handle: async (guild, user) => {
-    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const guildBanRemoveEvent = {
       guildID: guild.id,
       eventName: 'guildBanRemove',

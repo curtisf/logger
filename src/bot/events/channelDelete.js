@@ -10,7 +10,7 @@ module.exports = {
   name: 'channelDelete',
   type: 'on',
   handle: async channel => {
-    if (channel.type === 1 || channel.type === 3 || !channel.guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !channel.guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
+    if (channel.type === 1 || channel.type === 3) return
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',

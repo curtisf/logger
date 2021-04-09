@@ -3,8 +3,9 @@ const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 const statAggregator = require('./statAggregator')
+const enqueue = require('./bulkqueue')
 
-const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch']
+const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildMemberVerify']
 // these three events could possibly be an audit log fetch in the future, so they must be recorded together
 
 module.exports = async pkg => {
@@ -16,12 +17,14 @@ module.exports = async pkg => {
     global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
-  if (!guild.members.get(global.bot.user.id).permissions.json.manageWebhooks || !guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs) return
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
     await cacheGuild(pkg.guildID)
     return
   }
+  if (!guildSettings.getEventByName(pkg.eventName)) return
+  // I apologize for this horrendous one liner
+  if (!global.bot.getChannel(guildSettings.getEventByName(pkg.eventName))?.permissionsOf(global.bot.user.id).json.manageWebhooks || !global.bot.getChannel(guildSettings.getEventByName(pkg.eventName)).permissionsOf(global.bot.user.id).json.viewAuditLog) return
   const webhook = await webhookCache.getWebhook(guildSettings.getEventByName(pkg.eventName))
   let webhookID, webhookToken
   if (webhook) {
@@ -41,28 +44,36 @@ module.exports = async pkg => {
     if (!pkg.embed.timestamp) {
       pkg.embed.timestamp = new Date()
     }
-    global.bot.executeWebhook(webhookID, webhookToken, {
-      file: pkg.file ? pkg.file : '',
-      username: global.bot.user.username,
-      avatarURL: global.bot.user.avatarURL,
-      embeds: [pkg.embed],
-      allowedMentions: { // even though this is an embed and cannot ping, why not
-        everyone: false,
-        roles: false,
-        users: false
-      }
-    }).catch(async e => {
-      if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500')) {
-        console.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-        global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-      }
-      if (e.code == '10015') { // Webhook doesn't exist anymore.
-        await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
-        return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
-      } else {
-        console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
-      }
-    })
+
+    // Thanks for the help, De Morgan's laws.
+    if (guild.memberCount < 25000 && guild.voiceStates.size < 1000) {
+      global.bot.executeWebhook(webhookID, webhookToken, {
+        file: pkg.file ? pkg.file : '',
+        username: global.bot.user.username,
+        avatarURL: global.bot.user.avatarURL,
+        embeds: [pkg.embed],
+        allowedMentions: { // even though this is an embed and cannot ping, why not
+          everyone: false,
+          roles: false,
+          users: false
+        }
+      }).catch(async e => {
+        if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500' || e.code == '503' || (e && e.message && e.message.includes('Internal Server Error')))) {
+          global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
+          global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
+        }
+        if (e.code == '10015') { // Webhook doesn't exist anymore.
+          await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
+          return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
+        } else {
+          console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
+        }
+      })
+    } else {
+      pkg.webhookID = webhookID
+      pkg.webhookToken = webhookToken
+      enqueue(pkg, guildSettings)
+    }
     if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
       statAggregator.incrementMisc('fetchAuditLogs')
     }

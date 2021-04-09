@@ -8,10 +8,10 @@ Logger is a powerful [Discord](https://discordapp.com) bot meant to give staff m
 
 ## Installation
 
-A detailed guide has yet to be made. You will need:
+You are mostly on your own selfhosting this version. Required applications:
 - PostgreSQL 11
 - Redis
-- NodeJS
+- NodeJS 14+ (14.5.0)
 
 1. Setup Postgres and add a superuser (default user works)
 2. Clone bot repo and enter the created folder

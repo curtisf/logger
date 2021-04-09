@@ -1,5 +1,7 @@
 module.exports = {
   name: 'error',
   type: 'on',
-  handle: console.error
+  handle: e => {
+    console.error('[ERIS] ERROR: ', e)
+  }
 }

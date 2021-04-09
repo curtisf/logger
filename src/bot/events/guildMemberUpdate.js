@@ -6,7 +6,6 @@ module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
   handle: async (guild, member, oldMember) => {
-    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const guildMemberUpdate = {
       guildID: guild.id,
       eventName: 'guildMemberUpdate',
@@ -24,19 +23,31 @@ module.exports = {
     }
     if (oldMember && member.nick !== oldMember.nick) { // if member is cached and nick is different
       guildMemberUpdate.eventName = 'guildMemberNickUpdate'
+      guildMemberUpdate.embed.description = `${member.mention} ${member.nick ? `(now ${member.nick})` : ''} was updated`
+      delete guildMemberUpdate.author
       guildMemberUpdate.embed.fields[0] = ({
-        name: 'New name',
+        name: 'New Name',
         value: `${member.nick ? member.nick : member.username}#${member.discriminator}`
       })
       guildMemberUpdate.embed.fields.push({
-        name: 'Old name',
+        name: 'Old Name',
         value: `${oldMember.nick ? oldMember.nick : member.username}#${member.discriminator}`
       })
       guildMemberUpdate.embed.fields.push({
         name: 'ID',
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``
       })
-      await send(guildMemberUpdate)
+      return await send(guildMemberUpdate)
+    } else if (oldMember?.pending && !member.pending && guild.features.includes('COMMUNITY')) {
+      guildMemberUpdate.eventName = 'guildMemberVerify'
+      guildMemberUpdate.embed.description = `${member.mention} (${member.username}#${member.discriminator}: \`${member.id}\`) has verified.`
+      guildMemberUpdate.embed.author = {
+        name: `${member.username}#${member.discriminator}`,
+        icon_url: member.avatarURL
+      }
+      guildMemberUpdate.embed.color = 0x1ced9a
+      delete guildMemberUpdate.embed.fields
+      return await send(guildMemberUpdate)
     }
     // if member cached and roles not different, stop here.
     if (oldMember && arrayCompare(member.roles, oldMember.roles)) return // if roles are the same stop fetching audit logs
@@ -70,8 +81,8 @@ module.exports = {
         }
         // Add a + or - emoji when roles are manipulated for a user, stringify it, and assign a field value to it.
         guildMemberUpdate.embed.fields = [{
-            name: "Changes", 
-            value: `${added.map(role => `➕ **${role.name}**`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}**`).join('\n')}`
+          name: 'Changes',
+          value: `${added.map(role => `➕ **${role.name}**`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}**`).join('\n')}`
         }]
         guildMemberUpdate.embed.color = roleColor
         guildMemberUpdate.embed.footer = {

@@ -22,6 +22,7 @@ const eventLogs = {
   guildMemberKick: '',
   guildMemberRemove: '',
   guildMemberUpdate: '',
+  guildMemberVerify: '',
   voiceChannelLeave: '',
   voiceChannelJoin: '',
   voiceStateUpdate: '',

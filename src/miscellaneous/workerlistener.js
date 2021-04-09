@@ -1,6 +1,9 @@
 const cluster = require('cluster')
 const webhookLogger = require('./webhooklogger')
 const Zabbix = require('zabbix-promise')
+const Eris = require('eris')
+const requestEris = new Eris(`Bot ${process.env.BOT_TOKEN}`)
+
 const workerCrashes = {}
 let statsObj = {}
 
@@ -59,7 +62,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
 
 module.exports = async worker => {
   worker.on('online', () => {
-    console.log(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
+    global.logger.startup(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
     worker.send({
       type: 'startup',
       processType: 'bot',
@@ -77,11 +80,11 @@ module.exports = async worker => {
     }
   })
 
-  worker.on('message', message => {
-    if (message.type && message.type === 'stats') {
+  worker.on('message', async message => {
+    if (!message.type) return
+    if (message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
-        
       } else {
         for (const commandName in message.commandUsage) {
           statsObj.commandUsage[commandName] += message.commandUsage[commandName]
@@ -92,6 +95,29 @@ module.exports = async worker => {
         for (const miscItem in message.miscUsage) {
           statsObj.miscUsage[miscItem] += message.miscUsage[miscItem]
         }
+      }
+    } else if (message.type === 'apiRequest') {
+      let response
+      let error
+
+      const { method, url, auth, body, file, _route, short } = message
+
+      if (file && file.file) file.file = Buffer.from(file.file, 'base64')
+
+      try {
+        response = await requestEris.requestHandler.request(method, url, auth, body, file, _route, short)
+      } catch (err) {
+        error = {
+          code: err.code,
+          message: err.message,
+          stack: err.stack
+        }
+      }
+
+      if (error) {
+        worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, err: error }))
+      } else {
+        worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, data: response }))
       }
     }
   })

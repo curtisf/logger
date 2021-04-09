@@ -22,7 +22,7 @@ module.exports = {
     if (!invites) {
       await global.redis.set(`linvites-${guildID}`, JSON.stringify([module.exports.formatInvite(invite, true)]), 'EX', 10800000)
     } else {
-      invites.push(invite)
+      invites.push(module.exports.formatInvite(invite, false))
       await global.redis.set(`linvites-${guildID}`, JSON.stringify(invites.map(i => module.exports.formatInvite(i, true))), 'EX', 10800000)
     }
   },

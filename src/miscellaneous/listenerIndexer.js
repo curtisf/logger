@@ -11,7 +11,7 @@ module.exports = () => {
     if (event.type === 'once') {
       once.push({ name: event.name, handle: event.handle })
     } else {
-      on.push({ name: event.name, handle: event.handle })
+      on.push({ name: event.name, handle: event.handle, ...(event.requiredPerms?.length ? { requiredPerms: event.requiredPerms } : {}) })
     }
   })
   return [on, once]

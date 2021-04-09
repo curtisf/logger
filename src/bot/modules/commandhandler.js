@@ -13,8 +13,8 @@ module.exports = async message => {
 function processCommand (message, commandName, suffix) {
   const command = Object.keys(global.bot.commands).map(k => global.bot.commands[k]).find(c => c.name === commandName)
   if (!command) return
-  const bp = message.channel.guild.members.get(global.bot.user.id).permissions.json
-  if (!bp.readMessages || !bp.sendMessages || !bp.manageWebhooks) return
+  const bp = message.channel.permissionsOf(global.bot.user.id).json
+  if (!bp.viewChannel || !bp.sendMessages || !bp.manageWebhooks) return
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')
     return

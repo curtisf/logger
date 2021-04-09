@@ -1,7 +1,4 @@
-const webhookCache = require('../modules/webhookcache')
-const clearEventByID = require('../../db/interfaces/postgres/update').clearEventByID
 const setEventLogs = require('../../db/interfaces/postgres/update').setEventsLogId
-const setAllOneID = require('../../db/interfaces/postgres/update').setAllEventsOneId
 const cacheGuild = require('../utils/cacheGuild')
 
 const eventList = [
@@ -26,7 +23,8 @@ const eventList = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildEmojisUpdate',
-  'guildMemberNickUpdate'
+  'guildMemberNickUpdate',
+  'guildMemberVerify'
 ]
 
 module.exports = {
@@ -42,7 +40,7 @@ module.exports = {
     if (events.length === 0 && suffix) {
       message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
     } else if (events.length === 0 && !suffix) {
-      await setAllOneID(message.channel.guild.id, message.channel.id)
+      await setEventLogs(message.channel.guild.id, message.channel.id, eventList)
       await cacheGuild(message.channel.guild.id)
       message.channel.createMessage(`<@${message.author.id}>, I set all events to log here!`)
     } else {
@@ -52,7 +50,7 @@ module.exports = {
     }
   },
   name: 'setchannel',
-  description: `Use this in a log channel to make me log to here. [WARNING] it's easier to setup the bot on the dashboard than using this command! setchannel without any suffix will set all events to the current channel. Otherwise, you can use *${eventList.toString(', ')}* any further components being comma separated. Example: ${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate`,
+  description: `[WARNING] It's easier to setup the bot on the [dashboard](https://logger.bot) than using this command!\nUse this in the channel you want to log to. setchannel without any suffix will set all events to the current channel. Otherwise, you can use any combination of these:\n\`\`\`${eventList.toString(', ')}\`\`\`\n Examples:\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` -> logs message deletions and updates\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` -> logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` -> logs everything`,
   perm: 'manageWebhooks',
   category: 'Logging'
 }

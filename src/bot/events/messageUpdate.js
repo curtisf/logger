@@ -40,28 +40,23 @@ module.exports = {
           color: 15084269
         }
       }
-      const nowChunks = []
-      const beforeChunks = []
-      if (newMessage.content) {
-        newMessage.content = escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])
-        if (newMessage.content.length > 1000) {
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, newMessage.content.length))
-        } else {
-          nowChunks.push(newMessage.content)
-        }
+      let nowChunks, beforeChunks
+      if (newMessage.content.length > 1000) {
+        nowChunks = chunkify(escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, ''))
       } else {
-        nowChunks.push('None')
+        nowChunks = [escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])]
       }
-      if (oldMessage.content) {
-        if (oldMessage.content.length > 1000) {
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1000))
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1001, oldMessage.content.length))
-        } else {
-          beforeChunks.push(oldMessage.content)
-        }
+
+      if (oldMessage.content.length > 1000) {
+        beforeChunks = chunkify(oldMessage.content.replace(/\"/g, '"').replace(/`/g, ''))
       } else {
-        beforeChunks.push('None')
+        beforeChunks = [oldMessage.content]
+      }
+      if (nowChunks.length === 0) {
+        nowChunks.push('<no message content>')
+      }
+      if (beforeChunks.length === 0) {
+        beforeChunks.push('<no message content>')
       }
       nowChunks.forEach((chunk, i) => {
         messageUpdateEvent.embed.fields.push({
@@ -83,4 +78,14 @@ module.exports = {
       await send(messageUpdateEvent)
     }
   }
+}
+
+function chunkify (toChunk) {
+  const lenChunks = Math.ceil(toChunk.length / 1000)
+  const chunksToReturn = []
+  for (let i = 0; i < lenChunks; i++) {
+    const chunkedStr = toChunk.substring((1000 * i), i === 0 ? 1000 : 1000 * (i + 1))
+    chunksToReturn.push(chunkedStr)
+  }
+  return chunksToReturn
 }

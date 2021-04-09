@@ -2,10 +2,12 @@ const cacheGuild = require('../utils/cacheGuild')
 
 // I generally hate middleware associated with events, but this could potentially save
 // a whole lot on resources and audit log fetching if pulled off correctly.
+
 module.exports = async (event, type) => {
   if (type === 'on') {
     global.bot.on(event.name, async (...args) => {
       const guildId = getGuildIdByEvent(event.name, args)
+
       if (!guildId) {
         global.logger.warn(`While executing event ${event.name}, a guild ID was not returned!`)
       } else if (guildId === true) { // when true, don't fetch event logs
@@ -14,7 +16,22 @@ module.exports = async (event, type) => {
         if (!global.bot.guildSettingsCache[guildId]) {
           await cacheGuild(guildId)
         }
-        if (guildId !== true && global.bot.guildSettingsCache[guildId] && !global.bot.guildSettingsCache[guildId].event_logs[event.name]) return // true means skip guildsettings fetch
+
+        const logChannel = global.bot.guildSettingsCache[guildId].event_logs[event.name] && global.bot.getChannel(global.bot.guildSettingsCache[guildId].event_logs[event.name])
+        if (!logChannel) return
+
+        const botPerms = logChannel.permissionsOf(global.bot.user.id).json
+
+        if (!botPerms.manageWebhooks || !botPerms.viewAuditLog) return
+
+        // so far, this perm check is only needed for guild member add (fetch invites)
+        if (event.requiredPerms && event.requiredPerms?.length !== 0) {
+          for (let i = 0; i < event.requiredPerms.length; i++) {
+            if (!botPerms[event.requiredPerms[i]]) return
+          }
+        }
+
+        if (guildId !== true && !global.bot.guildSettingsCache[guildId]) return // true means skip guildsettings fetch
         await event.handle.apply(this, args)
       }
     })
@@ -44,7 +61,9 @@ function getGuildIdByEvent (type, args) {
     case 'guildRoleUpdate':
     case 'guildUpdate': {
       return args[0].id
-    } // TODO: actually add inviteCreate and inviteDelete
+    }
+    case 'voiceChannelJoin':
+    case 'voiceChannelLeave':
     case 'voiceStateUpdate': {
       return args[0].guild.id
     }

@@ -26,7 +26,7 @@ async function init () {
     // if max concurrency isn't enabled this will work
     const workerCount = Math.ceil(totalShards / shardsPerWorker) // if max concurrency is 16, shard count / 16 will be an integer for how many workers are needed
     global.webhook.generic(`Shard manager is booting up. Discord recommends ${totalShards} shards. With the core count being ${coreCount}, there will be ${shardsPerWorker} shards per worker, and ${workerCount} workers.${process.env.USE_MAX_CONCURRENCY === 'true' ? ' Max concurrency is enabled.' : ''}`) // eslint-disable-line eqeqeq
-    console.log(`TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nShards per worker: ${shardsPerWorker}\nWorker count: ${workerCount}${process.env.USE_MAX_CONCURRENCY === 'true' ? '\nMax concurrency is enabled.' : ''}`)
+    global.logger.startup(`[SHARDER]: TOTAL SHARDS: ${totalShards}\nCore count: ${coreCount}\nShards per worker: ${shardsPerWorker}\nWorker count: ${workerCount}${process.env.USE_MAX_CONCURRENCY === 'true' ? '\nMax concurrency is enabled.' : ''}`)
     for (let i = 0; i < workerCount; i++) {
       const shardStart = i * shardsPerWorker
       let shardEnd = ((i + 1) * shardsPerWorker) - 1

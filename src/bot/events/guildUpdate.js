@@ -11,7 +11,6 @@ module.exports = {
   name: 'guildUpdate',
   type: 'on',
   handle: async (newGuild, oldGuild) => {
-    if (!newGuild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !newGuild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const fields = []
     newGuild.getAuditLogs(1, null, 1).then((log) => {
       if (!log || !log.entries) return // this could be null coalesced but why not make it backwards compatible
@@ -45,7 +44,7 @@ module.exports = {
         }
       })
     }).catch(() => {})
-    // TODO: handle new guild updates, son!
+    // TODO: handle new guild updates, son! (update: will jump on this next, see project board on github)
     function handle (name, log) {
       let after = 'None'
       let before = 'None'

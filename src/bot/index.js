@@ -1,6 +1,5 @@
 const Eris = require('eris') // my local fork, will fix package.json later
 const cluster = require('cluster')
-const raven = require('raven')
 const Raven = require('raven')
 const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
@@ -8,6 +7,7 @@ const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const eventMiddleware = require('./modules/eventmiddleware')
 const statAggregator = require('./modules/statAggregator')
+const syncedRequestHandler = require('./modules/syncedrequestworker')
 
 require('dotenv').config()
 
@@ -22,7 +22,7 @@ function connect () {
     global.logger.startup(`Shards ${cluster.worker.rangeForShard} have obtained a lock and are connecting now. Configured Redis TTL is ${process.env.REDIS_LOCK_TTL}ms.`)
     global.bot.connect()
     global.bot.once('ready', () => {
-      lock.unlock().catch(function (err) {
+      lock.unlock().catch(function () {
         global.logger.warn(cluster.worker.rangeForShard + ' could not unlock, waiting')
       })
     })
@@ -37,7 +37,7 @@ async function init () {
   global.logger.info('Shard init')
   global.redis = require('../db/clients/redis')
   global.bot = new Eris(process.env.BOT_TOKEN, {
-    firstShardID: cluster.worker.shardStart, // TODO: k8s
+    firstShardID: cluster.worker.shardStart,
     lastShardID: cluster.worker.shardEnd,
     maxShards: cluster.worker.totalShards,
     allowedMentions: {
@@ -48,11 +48,12 @@ async function init () {
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    ratelimiterOffset: 400,
     intents: 719,
     defaultImageFormat: 'png',
     ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
+
+  global.bot.requestHandler = syncedRequestHandler
 
   global.bot.on('ratelimit', console.error)
 

@@ -4,7 +4,7 @@ global.cluster = require('cluster')
 require('./src/miscellaneous/logger')
 require('dotenv').config()
 if (cluster.isMaster) {
-  console.log('Master node init')
+  global.logger.startup('Master node init')
   require('./primary')
 } else {
   require('./replica')

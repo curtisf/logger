@@ -56,8 +56,9 @@ const eventLogs = {
   voiceStateUpdate: '',
   voiceChannelSwitch: '',
   guildEmojisUpdate: '',
-  guildMemberNickUpdate: ''
-}
+  guildMemberNickUpdate: '',
+  guildMemberVerify: '' // I am a moron for having an object representing
+} // default event settings in multiple places instead of in constants.js
 
 async function clearEventLog (guildID) {
   await cacheGuild(guildID)

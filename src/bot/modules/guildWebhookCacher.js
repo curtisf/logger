@@ -5,8 +5,8 @@ const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = async (guildID, channelID) => {
   if (!global.bot.guilds.get(guildID)) return // if not in that guild anymore, stop.
-  const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permissions.json
-  if (!perms.manageWebhooks) {
+  const perms = global.bot.getChannel(channelID)?.permissionsOf(global.bot.user.id).json
+  if (!perms || !perms.manageWebhooks) {
     return
   }
   const guild = global.bot.guilds.get(guildID)
@@ -24,8 +24,18 @@ module.exports = async (guildID, channelID) => {
     await cacheGuild(guildID)
     return
   }
-  const webhooks = await global.bot.guilds.get(guildID).getWebhooks()
-  statAggregator.incrementMisc('fetchWebhooks')
+  let webhooks
+  try {
+    webhooks = await logChannel?.getWebhooks()
+    statAggregator.incrementMisc('fetchWebhooks')
+  } catch (_) {
+    global.logger.warn(`Logchannel ${channelID} in ${global.bot.guilds.get(guildID).name} ${guildID} does not exist even though it is in cache`)
+    await global.redis.del(`webhook-${channelID}`)
+    global.bot.guildSettingsCache[guildID].clearEventByID(channelID)
+    await clearEventByID(guildID, channelID)
+    await cacheGuild(guildID)
+    return
+  }
   for (let i = 0; i < webhooks.length; i++) {
     if (webhooks[i].token && webhooks[i].channel_id === channelID) { // check for token because channel subscriptions count as webhooks
       webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)
@@ -49,7 +59,9 @@ module.exports = async (guildID, channelID) => {
       // With permission checking, this can only trigger if Discord sends a 500 error code OR
       // the user hit the guild webhook limit. The best action is to leave because the bot
       // doesn't know who to contact when this occurs (owner? staff?)
-      global.bot.guilds.get(guildID).leave()
+      // global.bot.guilds.get(guildID).leave() comment this out for now
+      // it may be uncommented out when I'm certain it won't
+      // throw an error on prod and leave thousands of servers
       global.webhook.warn(`Leaving guild ${guildID} (${global.bot.guilds.get(guildID).name}, ${global.bot.guilds.get(guildID).memberCount}) because of an error: ${e.message}`)
     })
     if (newHook && newHook.id) {

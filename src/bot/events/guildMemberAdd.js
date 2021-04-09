@@ -6,6 +6,7 @@ const inviteCache = require('../modules/invitecache')
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
+  requiredPerms: ['manageGuild', 'manageChannels'], // manageGuild -> fetch invites, manageChannels -> receive INVITE_CREATE & INVITE_DELETE
   handle: async (guild, member) => {
     if (!guild.members.get(global.bot.user.id).permissions.json.manageGuild) return
     const GMAEvent = {
@@ -86,21 +87,13 @@ module.exports = {
 }
 
 function compareInvites (current, saved) {
-  if (current.length === saved.length) {
-    for (let i = 0; i < current.length; i++) {
-      const matchedInvite = saved.find(inv => (inv.code === current[i].code) && (inv.uses !== current[i].uses))
-      if (matchedInvite) return current[i]
-    }
-  } else {
-    for (let i = 0; i < saved.length; i++) {
-      if (!current.find(inv => inv.code === saved[i].code)) {
-        return saved[i]
-      }
+  const toIter = (current.length >= saved.length ? current : saved)
+  for (let i = 0; i < toIter.length; i++) {
+    const savedInvite = saved.find(inv => inv.code === toIter[i].code)
+    const currentInvite = current.find(inv => inv.code === toIter[i].code)
+    if (!savedInvite || !currentInvite) return null // if either is missing we shouldn't compare whatsoever
+    if (savedInvite.uses !== currentInvite.uses) {
+      return toIter[i]
     }
   }
-  saved.forEach(savedInvite => {
-    if (current.indexOf(savedInvite) !== -1) {
-      current.splice(current.indexOf(savedInvite), 1)
-    }
-  })
 }

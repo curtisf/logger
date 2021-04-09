@@ -17,11 +17,13 @@ exports.ALL_EVENTS = [
   'guildMemberRemove',
   'guildMemberUpdate',
   'guildMemberNickUpdate',
+  'guildMemberVerify',
   'voiceChannelLeave',
   'voiceChannelJoin',
   'voiceStateUpdate',
   'voiceChannelSwitch',
-  'guildEmojisUpdate']
+  'guildEmojisUpdate'
+]
 
 exports.EVENTS_USING_AUDITLOGS = [
   'channelCreate',
@@ -38,7 +40,8 @@ exports.EVENTS_USING_AUDITLOGS = [
   'guildMemberRemove',
   'guildMemberUpdate',
   'voiceStateUpdate',
-  'guildEmojisUpdate']
+  'guildEmojisUpdate'
+]
 
 exports.PRESET_EVENT_MAP = {
   voice: ['voiceChannelLeave', 'voiceChannelJoin', 'voiceChannelSwitch'],

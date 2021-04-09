@@ -4,8 +4,6 @@ module.exports = {
   name: 'guildRoleCreate',
   type: 'on',
   handle: async (guild, role) => {
-    const botPermissions = Object.keys(guild.members.get(global.bot.user.id).permissions.json)
-    if (!botPermissions.includes('viewAuditLogs') || !botPermissions.includes('manageWebhooks')) return
     const guildRoleCreateEvent = {
       guildID: guild.id,
       eventName: 'guildRoleCreate',

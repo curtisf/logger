@@ -5,7 +5,6 @@ module.exports = {
   name: 'voiceStateUpdate',
   type: 'on',
   handle: async (member, oldState) => {
-    if (!member.guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !member.guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     statAggregator.incrementEvent('voiceStateUpdate')
     const state = member.voiceState
     const channel = member.guild.channels.get(state.channelID)
@@ -31,10 +30,6 @@ module.exports = {
         color: 3553599
       }
     }
-    // if (oldState.mute && !state.mute) voiceStateUpdateEvent.embed.description += 'unmuted'
-    // else if (!oldState.mute && state.mute) voiceStateUpdateEvent.embed.description += 'muted'
-    // else if (oldState.deaf && !state.deaf) voiceStateUpdateEvent.embed.description += 'undeafened'
-    // else if (!oldState.deaf && state.deaf) voiceStateUpdateEvent.embed.description += 'deafened'
     const logs = await member.guild.getAuditLogs(5, null, 24).catch(() => {})
     if (!logs) return
     const log = logs.entries.find(e => e.targetID === member.id)

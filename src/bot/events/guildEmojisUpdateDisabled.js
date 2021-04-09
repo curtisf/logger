@@ -9,7 +9,6 @@ module.exports = {
   name: 'guildEmojisUpdateDisabled',
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
-    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     let type
     const guildEmojisUpdateEvent = {
       guildID: guild.id,

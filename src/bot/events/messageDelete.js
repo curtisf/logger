@@ -42,16 +42,15 @@ module.exports = {
         color: 8530669
       }
     }
-    const messageChunks = []
+    let messageChunks = []
     if (cachedMessage.content) {
       if (cachedMessage.content.length > 1000) {
-        messageChunks.push(cachedMessage.content.substring(0, 1000))
-        messageChunks.push(cachedMessage.content.substring(1001, cachedMessage.content.length))
+        messageChunks = chunkify(cachedMessage.content.replace(/\"/g, '"').replace(/`/g, ''))
       } else {
         messageChunks.push(cachedMessage.content)
       }
     } else {
-      messageChunks.push('None')
+      messageChunks.push('<no message content>')
     }
     messageChunks.forEach((chunk, i) => {
       messageDeleteEvent.embed.fields.push({
@@ -68,4 +67,14 @@ module.exports = {
     })
     await send(messageDeleteEvent)
   }
+}
+
+function chunkify (toChunk) {
+  const lenChunks = Math.ceil(toChunk.length / 1000)
+  const chunksToReturn = []
+  for (let i = 0; i < lenChunks; i++) {
+    const chunkedStr = toChunk.substring((1000 * i), i === 0 ? 1000 : 1000 * (i + 1))
+    chunksToReturn.push(chunkedStr)
+  }
+  return chunksToReturn
 }

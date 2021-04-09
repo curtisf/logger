@@ -9,7 +9,6 @@ module.exports = {
     if (!member.roles) {
       member = new User({ id: member.id, ...member.user }, global.bot)
     }
-    if (!guild.members.get(global.bot.user.id).permissions.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permissions.json.manageWebhooks) return
     const roles = []
     if (member.roles) {
       member.roles.forEach(roleID => {
@@ -68,7 +67,7 @@ module.exports = {
       })
       return send(event)
     } else {
-      // TODO: redo purge audit log stuff eventually
+      // TODO: redo purge audit log stuff eventually (update: copy from patron bot eventually)
       event.embed = {
         author: {
           name: `${member.username}#${member.discriminator}`,
