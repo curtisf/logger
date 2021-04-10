@@ -1,9 +1,10 @@
-const EVENTS_USING_AUDITLOGS = require('../utils/constants').EVENTS_USING_AUDITLOGS
+const { EVENTS_USING_AUDITLOGS } = require('../utils/constants')
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 const statAggregator = require('./statAggregator')
 const enqueue = require('./bulkqueue')
+const setEventsByChannelID = require('../../db/interfaces/postgres/update').setEventsLogId
 
 const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildMemberVerify']
 // these three events could possibly be an audit log fetch in the future, so they must be recorded together
@@ -23,7 +24,11 @@ module.exports = async pkg => {
     return
   }
   if (!guildSettings.getEventByName(pkg.eventName)) return
-  // I apologize for this horrendous one liner
+  if (!global.bot.getChannel(guildSettings.getEventByName(pkg.eventName))) {
+    await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
+    await setEventsByChannelID(pkg.guildID, '', [pkg.eventName])
+    await cacheGuild(pkg.guildID)
+  }
   if (!global.bot.getChannel(guildSettings.getEventByName(pkg.eventName))?.permissionsOf(global.bot.user.id).json.manageWebhooks || !global.bot.getChannel(guildSettings.getEventByName(pkg.eventName)).permissionsOf(global.bot.user.id).json.viewAuditLog) return
   const webhook = await webhookCache.getWebhook(guildSettings.getEventByName(pkg.eventName))
   let webhookID, webhookToken
@@ -46,7 +51,7 @@ module.exports = async pkg => {
     }
 
     // Thanks for the help, De Morgan's laws.
-    if (guild.memberCount < 25000 && guild.voiceStates.size < 1000) {
+    if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
       global.bot.executeWebhook(webhookID, webhookToken, {
         file: pkg.file ? pkg.file : '',
         username: global.bot.user.username,

@@ -39,12 +39,11 @@ module.exports = {
 
       // if the request is to post a log via webhook, don't time it since
       // log channels can be backed up a ton
-      if (method === 'POST' && url.includes('/webhooks/')) resolve()
       const timeout = setTimeout(() => {
         reject(new Error(`Request timed out (>${this.timeout}ms) on ${method} ${url}`))
 
         unregisterEvent(`apiResponse.${requestID}`)
-      }, 15000 + (url.endsWith('/messages') ? 120000 : 0))
+      }, 15000 + (url.endsWith('/messages' || (method === 'POST' && url.includes('/webhooks/'))) ? 240000 : 0)) // wait awhile for webhook responses
 
       registerEvent(`apiResponse.${requestID}`, data => {
         if (data.err) {

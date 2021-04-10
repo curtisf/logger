@@ -10,7 +10,6 @@ exports.ALL_EVENTS = [
   'guildUpdate',
   'messageDelete',
   'messageDeleteBulk',
-  'messageReactionRemoveAll',
   'messageUpdate',
   'guildMemberAdd',
   'guildMemberKick',

@@ -17,7 +17,7 @@ class GenericCommand {
     this.perm = data.perm
     this.type = data.type || 'any'
     this.category = data.category || 'Uncategorized'
-    this.hidden = data.hidden ? true : false
+    this.hidden = !!data.hidden
 
     global.bot.commands[data.name] = this
   }

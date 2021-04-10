@@ -29,8 +29,8 @@ const eventList = [
 
 module.exports = {
   func: async (message, suffix) => {
-    const webhookPerm = message.channel.permissionsOf(global.bot.user.id).json.manageWebhooks
-    if (!webhookPerm) {
+    const botPerms = message.channel.permissionsOf(global.bot.user.id).json
+    if (!botPerms.manageWebhooks) {
       message.channel.createMessage('I lack the manage webhooks permission! This is necessary for me to send messages to your configured logging channel.').catch(_ => {})
       message.addReaction('❌').catch(_ => {})
       return
@@ -42,15 +42,15 @@ module.exports = {
     } else if (events.length === 0 && !suffix) {
       await setEventLogs(message.channel.guild.id, message.channel.id, eventList)
       await cacheGuild(message.channel.guild.id)
-      message.channel.createMessage(`<@${message.author.id}>, I set all events to log here!`)
+      message.channel.createMessage(`<@${message.author.id}>, I set all events to log here! ${!botPerms.manageChannels || !botPerms.manageGuild ? 'Join logging will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
     } else {
       await setEventLogs(message.channel.guild.id, message.channel.id, events)
       await cacheGuild(message.channel.guild.id)
-      message.channel.createMessage(`<@${message.author.id}>, it has been done.`)
+      message.channel.createMessage(`<@${message.author.id}>, it has been done. ${events.includes('guildMemberAdd') && (!botPerms.manageChannels || !botPerms.manageGuild) ? 'Join logging will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
     }
   },
   name: 'setchannel',
-  description: `[WARNING] It's easier to setup the bot on the [dashboard](https://logger.bot) than using this command!\nUse this in the channel you want to log to. setchannel without any suffix will set all events to the current channel. Otherwise, you can use any combination of these:\n\`\`\`${eventList.toString(', ')}\`\`\`\n Examples:\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` -> logs message deletions and updates\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` -> logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` -> logs everything`,
+  description: `[WARNING] The [dashboard](https://logger.bot) is the easiest way to setup!\nUse this in the channel you want to log to. setchannel without any suffix will set all events to the current channel. Otherwise, you can use any combination of these:\n\`\`\`${eventList.toString(', ')}\`\`\`\n Examples:\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` -> logs message deletions and updates\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` -> logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` -> logs everything`,
   perm: 'manageWebhooks',
   category: 'Logging'
 }

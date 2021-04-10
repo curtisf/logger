@@ -40,7 +40,7 @@ module.exports = {
     })
   },
   name: 'togglemodule',
-  description: `[DEPRECATED]\nIgnore any event provided after this command. You should have no need for this command when you can stop an event from logging by using ${process.env.GLOBAL_BOT_PREFIX}clearchannel or signing into [the dashboard](https://logger.bot)`,
+  description: `[DEPRECATED]\nIgnore any event provided after this command. You should have no need for this command when you can stop an event from logging by using ${process.env.GLOBAL_BOT_PREFIX}stoplogging or signing into [the dashboard](https://logger.bot)`,
   type: 'custom',
   perm: 'manageChannels',
   category: 'Logging'

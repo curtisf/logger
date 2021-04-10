@@ -16,7 +16,6 @@ const eventLogs = {
   guildUpdate: '',
   messageDelete: '',
   messageDeleteBulk: '',
-  messageReactionRemoveAll: '',
   messageUpdate: '',
   guildMemberAdd: '',
   guildMemberKick: '',

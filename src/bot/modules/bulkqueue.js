@@ -1,35 +1,68 @@
+const cacheGuild = require('../utils/cacheGuild')
 const guildWebhookCacher = require('./guildWebhookCacher')
+const setEventsByChannelID = require('../../db/interfaces/postgres/update').setEventsLogId
 
 const webhookIDToQueue = new Map()
 const webhookIDToTimeout = new Map()
+const webhookIDToCharLimit = new Map()
 
 module.exports = async (senderPkg, guildSettings) => {
   if (webhookIDToQueue.has(senderPkg.webhookID)) {
     const updatedQueue = webhookIDToQueue.get(senderPkg.webhookID)
-    updatedQueue.push(senderPkg)
-    webhookIDToQueue.set(senderPkg.webhookID, updatedQueue)
-    clearTimeout(webhookIDToTimeout.get(senderPkg.webhookID))
-    webhookIDToTimeout.set(senderPkg.webhookID, setTimeout(() => {
-      sendBulkLog(senderPkg, webhookIDToQueue.get(senderPkg.webhookID).map(p => p.embed), guildSettings)
-      webhookIDToQueue.delete(senderPkg.webhookID)
-      webhookIDToTimeout.delete(senderPkg.webhookID)
-    }, 1000))
-    if (updatedQueue.length === 10) {
+    const charsToPush = getEmbedCharLens(senderPkg.embed)
+    if (updatedQueue.length < 10 && webhookIDToCharLimit.get(senderPkg.webhookID) + charsToPush <= 5000) {
+      updatedQueue.push(senderPkg)
+      webhookIDToCharLimit.set(senderPkg.webhookID, webhookIDToCharLimit.get(senderPkg.webhookID) + charsToPush)
+      webhookIDToQueue.set(senderPkg.webhookID, updatedQueue)
+      clearTimeout(webhookIDToTimeout.get(senderPkg.webhookID))
+      webhookIDToTimeout.set(senderPkg.webhookID, setTimeout(() => {
+        sendBulkLog(senderPkg, webhookIDToQueue.get(senderPkg.webhookID).map(p => p.embed), guildSettings)
+        webhookIDToQueue.delete(senderPkg.webhookID)
+        webhookIDToTimeout.delete(senderPkg.webhookID)
+        webhookIDToCharLimit.delete(senderPkg.webhookID)
+      }, 5000))
+    } else if (updatedQueue.length === 10 || webhookIDToCharLimit.get(senderPkg.webhookID) + charsToPush >= 5000) { // the limit is 6000 but let's be safe
       // queue is full, send log now.
       sendBulkLog(senderPkg, updatedQueue.map(p => p.embed), guildSettings)
-      webhookIDToQueue.delete(senderPkg.webhookID)
+      webhookIDToQueue.set(senderPkg.webhookID, [senderPkg])
       clearTimeout(webhookIDToTimeout.get(senderPkg.webhookID))
-      webhookIDToTimeout.delete(senderPkg.webhookID)
+      webhookIDToCharLimit.set(senderPkg.webhookID, getEmbedCharLens(senderPkg.embed))
+      webhookIDToTimeout.set(senderPkg.webhookID, setTimeout(() => {
+        sendBulkLog(senderPkg, webhookIDToQueue.get(senderPkg.webhookID).map(p => p.embed), guildSettings)
+        webhookIDToQueue.delete(senderPkg.webhookID)
+        webhookIDToTimeout.delete(senderPkg.webhookID)
+        webhookIDToCharLimit.delete(senderPkg.webhookID)
+      }, 5000))
     }
   } else {
     webhookIDToQueue.set(senderPkg.webhookID, [senderPkg])
+    webhookIDToCharLimit.set(senderPkg.webhookID, getEmbedCharLens(senderPkg.embed))
     clearTimeout(webhookIDToTimeout.get(senderPkg.webhookID))
     webhookIDToTimeout.set(senderPkg.webhookID, setTimeout(() => {
       sendBulkLog(senderPkg, webhookIDToQueue.get(senderPkg.webhookID).map(p => p.embed), guildSettings)
       webhookIDToQueue.delete(senderPkg.webhookID)
       webhookIDToTimeout.delete(senderPkg.webhookID)
-    }, 1000))
+      webhookIDToCharLimit.delete(senderPkg.webhookID)
+    }, 5000))
   }
+}
+
+function getEmbedCharLens (embed) {
+  let total = 0
+  for (const prop in embed) {
+    if (typeof embed[prop] === 'string') {
+      total += embed[prop].length
+    }
+  }
+  for (let i = 0; i < (embed.fields ? embed.fields.length : 0); i++) {
+    if (typeof embed.fields[i].name === 'string') {
+      total += embed.fields[i].name.length
+    }
+    if (typeof embed.fields[i].value === 'string') {
+      total += embed.fields[i].value.length
+    }
+  }
+  return total
 }
 
 function sendBulkLog (senderPkg, embeds, guildSettings) {
@@ -50,6 +83,8 @@ function sendBulkLog (senderPkg, embeds, guildSettings) {
     }
     if (e.code == '10015') { // Webhook doesn't exist anymore.
       await global.redis.del(`webhook-${guildSettings.getEventByName(senderPkg.eventName)}`)
+      await setEventsByChannelID(senderPkg.guildID, '', [senderPkg.eventName])
+      await cacheGuild(senderPkg.guildID)
       return await guildWebhookCacher(senderPkg.guildID, guildSettings.getEventByName(senderPkg.eventName))
     } else {
       console.error('Error while sending a message over webhook!', e, senderPkg, senderPkg.embed.fields)
