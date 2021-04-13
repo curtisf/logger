@@ -19,22 +19,22 @@ module.exports = {
     }
     if (!cachedMessage) return
     await deleteMessage(message.id)
-    let cachedUser = global.bot.users.get(cachedMessage.author_id)
-    if (!cachedUser) {
-      try {
-        cachedUser = await message.channel.guild.getRESTMember(cachedMessage.author_id)
-        message.channel.guild.members.add(cachedUser, global.bot)
-      } catch (_) {
-        // either the member does not exist or the person left and others are deleting their messages
-      }
-    }
+    const cachedUser = global.bot.users.get(cachedMessage.author_id)
+    // if (!cachedUser) {
+    //   try {
+    //     cachedUser = await message.channel.guild.getRESTMember(cachedMessage.author_id)
+    //     message.channel.guild.members.add(cachedUser, global.bot)
+    //   } catch (_) {
+    //     // either the member does not exist or the person left and others are deleting their messages
+    //   }
+    // }
     const member = message.channel.guild.members.get(cachedMessage.author_id)
     const messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
         author: {
-          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${cachedUser && cachedUser.nick ? `(${member.nick})` : ''}` : 'User not member of server',
+          name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${cachedUser && cachedUser.nick ? `(${member.nick})` : ''}` : `Unknown User <@${cachedMessage.author_id}>`,
           icon_url: cachedUser ? cachedUser.avatarURL : 'https://logger.bot/staticfiles/red-x.png'
         },
         description: `Message deleted in <#${message.channel.id}>`,

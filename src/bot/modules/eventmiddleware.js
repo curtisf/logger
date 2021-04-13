@@ -1,4 +1,5 @@
 const cacheGuild = require('../utils/cacheGuild')
+const statAggregator = require('../modules/statAggregator')
 
 // I generally hate middleware associated with events, but this could potentially save
 // a whole lot on resources and audit log fetching if pulled off correctly.
@@ -32,6 +33,7 @@ module.exports = async (event, type) => {
         }
 
         if (guildId !== true && !global.bot.guildSettingsCache[guildId]) return // true means skip guildsettings fetch
+        statAggregator.incrementGuild(guildId)
         await event.handle.apply(this, args)
       }
     })
@@ -70,6 +72,10 @@ function getGuildIdByEvent (type, args) {
     case 'inviteDelete':
     case 'inviteCreate': {
       return true // yes this coulda been left to default, but this explicitly states the purpose. This needs to run whether it's configured or not
+    }
+    case 'messageDelete': {
+      if (!args[0].channel?.guild.id) return
+      return args[0].channel?.guild.id
     }
     case 'messageDeleteBulk': {
       if (!args[0][0].channel.guild.id) return

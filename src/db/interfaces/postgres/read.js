@@ -46,13 +46,18 @@ async function decryptMessageDoc (message) {
   return message
 }
 
-async function getAllMessages () {
-  const messages = await pool.query('SELECT * FROM messages')
-  return messages.rows
+async function getMessagesByIds (messageIds) {
+  const message = await pool.query('SELECT * FROM messages WHERE id = ANY ($1)', [messageIds])
+  if (message.rows.length === 0) return null
+  const decryptedMessages = []
+  message.rows.forEach(async row => {
+    decryptedMessages.push(await decryptMessageDoc(row))
+  })
+  return decryptedMessages
 }
 
 exports.getMessageById = getMessageById
 exports.getMessagesByAuthor = getMessagesByAuthor
 exports.getAllGuilds = getAllGuilds
 exports.getGuild = getGuild
-exports.getAllMessages = getAllMessages
+exports.getMessagesByIds = getMessagesByIds

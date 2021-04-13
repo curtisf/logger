@@ -13,8 +13,18 @@ let statsObj = {}
 requestEris.on('ratelimit-hit', () => ratelimitCounter++)
 requestEris.on('rest-hit', () => restHits++)
 
+const allWorkers = []
+
 if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUBMISSION_INTERVAL))) {
   setInterval(async () => {
+    allWorkers.forEach(w => {
+      w.send(JSON.stringify({ type: 'sendStats' }))
+    })
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('ok')
+      }, 2000)
+    })
     if (ipcMessageCounter !== 0) {
       await Zabbix.sender({
         server: 'localhost',
@@ -94,6 +104,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
 }
 
 module.exports = async worker => {
+  allWorkers.push(worker)
   worker.on('online', () => {
     global.logger.startup(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
     worker.send({
@@ -157,6 +168,7 @@ module.exports = async worker => {
   })
 
   worker.on('exit', code => {
+    allWorkers.splice(allWorkers.indexOf(worker), 1)
     if (code === 0) {
       global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)

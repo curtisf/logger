@@ -1,17 +1,14 @@
 const sa = require('superagent')
-const getMessageById = require('../../db/interfaces/postgres/read').getMessageById
+const getMessagesByIds = require('../../db/interfaces/postgres/read').getMessagesByIds
 const send = require('../modules/webhooksender')
 
 module.exports = {
   name: 'messageDeleteBulk',
   type: 'on',
   handle: async messages => {
-    const dbMessages = []
-    await messages.forEach(async (m, i) => {
-      const message = await getMessageById(m.id)
-      if (message) dbMessages.push(message)
-      if (i === messages.length - 1) await paste(dbMessages, messages[0].channel.guild.id)
-    })
+    if (messages.length === 0) return // TODO: TEST!
+    const dbMessages = await getMessagesByIds(messages.map(m => m.id))
+    await paste(dbMessages, messages[0].channel.guild.id)
   }
 }
 
@@ -31,7 +28,7 @@ async function paste (messages, guildID) {
       globalUser = {
         username: 'Unknown',
         discriminator: '0000',
-        avatarURL: 'http://www.clker.com/cliparts/C/8/4/G/W/o/transparent-red-circle-hi.png'
+        avatarURL: '<no avatar>'
       }
     }
     return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts)}: ${m.content} |  | `

@@ -109,8 +109,10 @@ process.on('unhandledRejection', (e) => {
 })
 
 process.on('uncaughtException', (e) => {
-  console.error(e)
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out')) Raven.captureException(e.stack, { level: 'fatal' })
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
+    console.error(e)
+    Raven.captureException(e.stack, { level: 'fatal' })
+  }
 })
 
 init()

@@ -1,8 +1,11 @@
 // This file exists to aggregate command, event, & other miscellaneous statistics to send to Zabbix.
 
+const guildActivity = new Map()
+
 const commandStatistics = {
   archive: 0,
   clearchannel: 0,
+  clearmydata: 0,
   stoplogging: 0,
   help: 0,
   ignorechannel: 0,
@@ -32,6 +35,7 @@ const eventStatistics = {
   guildMemberRemove: 0,
   guildMemberUpdate: 0,
   guildMemberNickUpdate: 0,
+  guildMemberVerify: 0,
   guildRoleCreate: 0,
   guildRoleDelete: 0,
   guildRoleUpdate: 0,
@@ -84,10 +88,17 @@ module.exports = {
   },
   incrementRedisSet () {
     miscStatistics.redisSet++
+  },
+  incrementGuild (guildID) {
+    if (guildActivity.has(guildID)) guildActivity.set(guildID, guildActivity.get(guildID) + 1)
+    else guildActivity.set(guildID, 1)
+  },
+  getMostActiveGuilds () {
+    return [...guildActivity.entries()].sort((e1, e2) => e2[1] - e1[1])
   }
 }
 
-setInterval(() => {
+function sendStatsIPC () {
   let allEventAggregate = 0
   Object.keys(eventStatistics).forEach(k => {
     allEventAggregate += eventStatistics[k]
@@ -109,4 +120,20 @@ setInterval(() => {
       miscStatistics[k] = 0
     })
   }
-}, process.env.STAT_SUBMISSION_INTERVAL)
+  guildActivity.clear()
+}
+
+process.on('message', m => {
+  try {
+    m = JSON.parse(m)
+  } catch (e) {
+    global.logger.error('A request response returned is not JSON parseable!')
+    console.error(e)
+    return
+  }
+  if (m && m.type === 'sendStats') {
+    sendStatsIPC()
+  }
+})
+
+module.exports.sendStatsIPC = sendStatsIPC
