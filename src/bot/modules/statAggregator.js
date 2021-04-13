@@ -3,7 +3,7 @@
 const commandStatistics = {
   archive: 0,
   clearchannel: 0,
-  clearmydata: 0,
+  stoplogging: 0,
   help: 0,
   ignorechannel: 0,
   info: 0,
@@ -43,8 +43,8 @@ const eventStatistics = {
   voiceChannelLeave: 0,
   voiceChannelSwitch: 0,
   voiceStateUpdate: 0,
-  'rest-hit': 0,
-  'ratelimit-hit': 0
+  'rest-timeout': 0,
+  'rest-request': 0
 }
 
 const miscStatistics = {

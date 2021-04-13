@@ -29,6 +29,7 @@ function unregisterEvent (id) {
 
 module.exports = {
   request: async function (method, url, auth, body, file, _route, short) {
+    global.bot.emit('rest-request', null)
     return new Promise((resolve, reject) => {
       const stackCapture = new Error().stack
       const requestID = crypto.randomBytes(16).toString('hex')
@@ -40,10 +41,11 @@ module.exports = {
       // if the request is to post a log via webhook, don't time it since
       // log channels can be backed up a ton
       const timeout = setTimeout(() => {
+        global.bot.emit('rest-timeout', null)
         reject(new Error(`Request timed out (>${this.timeout}ms) on ${method} ${url}`))
 
         unregisterEvent(`apiResponse.${requestID}`)
-      }, 15000 + (url.endsWith('/messages' || (method === 'POST' && url.includes('/webhooks/'))) ? 240000 : 0)) // wait awhile for webhook responses
+      }, 15000 + (url.endsWith('/messages' || (method === 'POST' && url.includes('/webhooks/'))) ? 60000 : 0)) // wait awhile for webhook responses
 
       registerEvent(`apiResponse.${requestID}`, data => {
         if (data.err) {
@@ -61,5 +63,8 @@ module.exports = {
         unregisterEvent(`apiResponse.${requestID}`)
       })
     })
+  },
+  getWaitingRequestCount: function () {
+    return returnMap.size
   }
 }

@@ -40,6 +40,7 @@ module.exports = {
           color: 15084269
         }
       }
+      if (!newMessage.content) return // if no content why log it? normal users don't have image logging anyways
       let nowChunks, beforeChunks
       if (newMessage.content.length > 1000) {
         nowChunks = chunkify(escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, ''))

@@ -5,13 +5,46 @@ const Eris = require('eris')
 const requestEris = new Eris(`Bot ${process.env.BOT_TOKEN}`)
 
 const workerCrashes = {}
+let ratelimitCounter = 0
+let restHits = 0
+let ipcMessageCounter = 0
 let statsObj = {}
+
+requestEris.on('ratelimit-hit', () => ratelimitCounter++)
+requestEris.on('rest-hit', () => restHits++)
 
 if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUBMISSION_INTERVAL))) {
   setInterval(async () => {
+    if (ipcMessageCounter !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.misc.ipc-counter',
+        value: ipcMessageCounter
+      })
+      ipcMessageCounter = 0
+    }
+    if (ratelimitCounter !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.event.ratelimit-hit',
+        value: ratelimitCounter
+      })
+      ratelimitCounter = 0
+    }
+    if (restHits !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.event.rest-hit',
+        value: restHits
+      })
+      restHits = 0
+    }
     if (statsObj.commandUsage) {
       for (const eventName in statsObj.eventUsage) {
-        if (statsObj.eventUsage[eventName] > 0) {
+        if (statsObj?.eventUsage[eventName] > 0) {
           try {
             const result = await Zabbix.sender({
               server: 'localhost',
@@ -26,7 +59,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       }
 
       for (const commandName in statsObj.commandUsage) {
-        if (statsObj.commandUsage[commandName] > 0) {
+        if (statsObj?.commandUsage[commandName] > 0) {
           try {
             const result = await Zabbix.sender({
               server: 'localhost',
@@ -41,7 +74,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       }
 
       for (const miscName in statsObj.miscUsage) {
-        if (statsObj.miscUsage[miscName] > 0) {
+        if (statsObj?.miscUsage[miscName] > 0) {
           try {
             const result = await Zabbix.sender({
               server: 'localhost',
@@ -97,6 +130,7 @@ module.exports = async worker => {
         }
       }
     } else if (message.type === 'apiRequest') {
+      ipcMessageCounter++
       let response
       let error
 

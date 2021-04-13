@@ -6,8 +6,9 @@ const statAggregator = require('./statAggregator')
 const enqueue = require('./bulkqueue')
 const setEventsByChannelID = require('../../db/interfaces/postgres/update').setEventsLogId
 
-const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildMemberVerify']
+// const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildMemberVerify']
 // these three events could possibly be an audit log fetch in the future, so they must be recorded together
+// update: debug, see what is doing what
 
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
@@ -83,8 +84,6 @@ module.exports = async pkg => {
     if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
       statAggregator.incrementMisc('fetchAuditLogs')
     }
-    if (!doNotAggregate.includes(pkg.eventName)) {
-      statAggregator.incrementEvent(pkg.eventName)
-    }
+    statAggregator.incrementEvent(pkg.eventName)
   }
 }
