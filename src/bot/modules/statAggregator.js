@@ -124,13 +124,6 @@ function sendStatsIPC () {
 }
 
 process.on('message', m => {
-  try {
-    m = JSON.parse(m)
-  } catch (e) {
-    global.logger.error('A request response returned is not JSON parseable!')
-    console.error(e)
-    return
-  }
   if (m && m.type === 'sendStats') {
     sendStatsIPC()
   }

@@ -30,7 +30,7 @@ const allWorkers = []
 if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUBMISSION_INTERVAL))) {
   setInterval(async () => {
     allWorkers.forEach(w => {
-      w.send(JSON.stringify({ type: 'sendStats' }))
+      w.send({ type: 'sendStats' })
     })
     await new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -229,15 +229,25 @@ module.exports = async worker => {
       }
 
       if (error) {
-        worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, err: error }))
+        worker.send({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, err: error })
       } else {
-        worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, data: response }))
+        worker.send({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, data: response })
       }
     } else if (message.type === 'debugActivity') {
       if (message.data === 'clear') {
         console.log('clearing activity')
         activityByUrlMap.clear()
         console.log('OK cleared')
+      } else if (message.data === 'cpuusage') {
+        const os = require('os-utils')
+
+        os.cpuUsage(v => {
+          console.log(`Cluster master cpu usage: ${v * 100}%`)
+        })
+
+        os.cpuFree(v => {
+          console.log(`Cluster master cpu free: ${v * 100}%`)
+        })
       } else {
         console.debug([...activityByUrlMap.entries()].sort((e1, e2) => e2[1] - e1[1]).slice(0, 200))
       }
