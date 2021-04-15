@@ -2,6 +2,7 @@
 
 const crypto = require('crypto')
 const returnMap = new Map()
+const activityByUrlMap = new Map()
 
 process.on('message', m => {
   try {
@@ -35,6 +36,17 @@ module.exports = {
 
       if (file && file.file) file.file = Buffer.from(file.file).toString('base64')
 
+      if (activityByUrlMap.size > 100000) {
+        console.log(`[${cluster.worker.rangeForShard}] URL activity map getting big, clearing...`)
+        activityByUrlMap.clear()
+      }
+
+      if (!activityByUrlMap.has(url)) {
+        activityByUrlMap.set(url, 1)
+      } else {
+        activityByUrlMap.set(url, activityByUrlMap.get(url) + 1)
+      }
+
       process.send({ type: 'apiRequest', requestID, method, url, auth, body, file, _route, short })
       global.bot.emit('rest-request', null)
 
@@ -67,5 +79,12 @@ module.exports = {
   },
   getWaitingRequestCount: function () {
     return returnMap.size
+  },
+  printActivityMap: function () {
+    console.debug(cluster.worker.rangeForShard, [...activityByUrlMap.entries()].sort((e1, e2) => e2[1] - e1[1]).slice(0, 200))
+  },
+  clearActivityMap: function () {
+    activityByUrlMap.clear()
+    console.log(`[${cluster.worker.rangeForShard}] activity map cleared`)
   }
 }

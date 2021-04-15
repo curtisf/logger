@@ -233,6 +233,12 @@ module.exports = async worker => {
     }
   })
 
+  worker.on('disconnect', () => {
+    console.error(`[${cluster.worker.rangeForShard}] IPC disconnected!`)
+    global.webhook.error(`[${cluster.worker.rangeForShard}] IPC disconnected! <@&349414410869276673>`)
+    process.exit(1)
+  })
+
   worker.on('exit', code => {
     allWorkers.splice(allWorkers.indexOf(worker), 1)
     if (code === 0) {
