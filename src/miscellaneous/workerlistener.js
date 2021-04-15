@@ -6,6 +6,7 @@ const requestEris = new Eris(`Bot ${process.env.BOT_TOKEN}`)
 
 const workerCrashes = {}
 let ratelimitCounter = 0
+let globalRatelimitCounter = 0
 let restHits = 0
 let ipcMessageCounter = 0
 let auditLogHitCounter = 0
@@ -22,6 +23,7 @@ requestEris.on('warn', w => {
 requestEris.on('error', e => {
   console.error('Request Eris Error', e)
 })
+requestEris.on('global-ratelimit-hit', () => globalRatelimitCounter++)
 
 const allWorkers = []
 
@@ -52,6 +54,15 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
         value: ratelimitCounter
       })
       ratelimitCounter = 0
+    }
+    if (globalRatelimitCounter !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.event.global-ratelimit-hit',
+        value: globalRatelimitCounter
+      })
+      globalRatelimitCounter = 0
     }
     if (restHits !== 0) {
       await Zabbix.sender({
