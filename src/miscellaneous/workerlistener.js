@@ -194,6 +194,11 @@ module.exports = async worker => {
         nonWebhookSends++
       }
 
+      if (activityByUrlMap.size > 100000) {
+        console.log('URL activity map getting big, clearing...')
+        activityByUrlMap.clear()
+      }
+
       if (!activityByUrlMap.has(url)) {
         activityByUrlMap.set(url, 1)
       } else {
