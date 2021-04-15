@@ -3,6 +3,7 @@
 const crypto = require('crypto')
 const returnMap = new Map()
 const activityByUrlMap = new Map()
+const Chronos = require('../utils/chronos')
 
 process.on('message', m => {
   if (m && m.type === 'fetchReturn') {
@@ -45,7 +46,7 @@ module.exports = {
 
       // if the request is to post a log via webhook, don't time it since
       // log channels can be backed up a ton
-      const timeout = setTimeout(() => {
+      const timeout = Chronos.setTimeout(() => {
         global.bot.emit('rest-timeout', null)
         reject(new Error(`Request timed out (>${this.timeout}ms) on ${method} ${url}`))
 
@@ -54,7 +55,7 @@ module.exports = {
       // if 20 minutes isn't long enough for the central rest client to respond, may god save our souls
 
       registerEvent(`apiResponse.${requestID}`, data => {
-        clearTimeout(timeout)
+        Chronos.clearTimeout(timeout)
         unregisterEvent(`apiResponse.${requestID}`)
 
         if (data.err) {
