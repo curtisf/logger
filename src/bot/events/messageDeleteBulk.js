@@ -13,6 +13,7 @@ module.exports = {
 }
 
 async function paste (messages, guildID) {
+  if (!messages) return
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',

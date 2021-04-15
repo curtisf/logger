@@ -1,11 +1,9 @@
 const send = require('../modules/webhooksender')
-const statAggregator = require('../modules/statAggregator')
 
 module.exports = {
   name: 'voiceStateUpdate',
   type: 'on',
   handle: async (member, oldState) => {
-    statAggregator.incrementEvent('voiceStateUpdate')
     const state = member.voiceState
     const channel = member.guild.channels.get(state.channelID)
     if (!state.channelID || oldState.channelID) return

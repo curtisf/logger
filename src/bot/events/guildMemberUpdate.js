@@ -22,6 +22,7 @@ module.exports = {
       }
     }
     if (oldMember && member.nick !== oldMember.nick) { // if member is cached and nick is different
+      if (member.bot && !global.bot.guildSettingsCache[guild.id].isLogBots()) return
       guildMemberUpdate.eventName = 'guildMemberNickUpdate'
       guildMemberUpdate.embed.description = `${member.mention} ${member.nick ? `(now ${member.nick})` : ''} was updated`
       delete guildMemberUpdate.author

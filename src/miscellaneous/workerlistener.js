@@ -8,10 +8,20 @@ const workerCrashes = {}
 let ratelimitCounter = 0
 let restHits = 0
 let ipcMessageCounter = 0
+let auditLogHitCounter = 0
 let statsObj = {}
+let webhookSends = 0
+let nonWebhookSends = 0
+const activityByUrlMap = new Map()
 
 requestEris.on('ratelimit-hit', () => ratelimitCounter++)
 requestEris.on('rest-hit', () => restHits++)
+requestEris.on('warn', w => {
+  console.warn('Request Eris Warning', w)
+})
+requestEris.on('error', e => {
+  console.error('Request Eris Error', e)
+})
 
 const allWorkers = []
 
@@ -51,6 +61,33 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
         value: restHits
       })
       restHits = 0
+    }
+    if (auditLogHitCounter !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.misc.fetchAuditLogs',
+        value: auditLogHitCounter
+      })
+      auditLogHitCounter = 0
+    }
+    if (webhookSends !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.event.webhookSends',
+        value: webhookSends
+      })
+      webhookSends = 0
+    }
+    if (nonWebhookSends !== 0) {
+      await Zabbix.sender({
+        server: 'localhost',
+        host: process.env.ZABBIX_HOST,
+        key: 'logger.event.nonWebhookSends',
+        value: nonWebhookSends
+      })
+      nonWebhookSends = 0
     }
     if (statsObj.commandUsage) {
       for (const eventName in statsObj.eventUsage) {
@@ -147,6 +184,22 @@ module.exports = async worker => {
 
       const { method, url, auth, body, file, _route, short } = message
 
+      if (url.endsWith('audit-logs')) {
+        auditLogHitCounter++
+      }
+
+      if (url.includes('webhooks')) {
+        webhookSends++
+      } else {
+        nonWebhookSends++
+      }
+
+      if (!activityByUrlMap.has(url)) {
+        activityByUrlMap.set(url, 1)
+      } else {
+        activityByUrlMap.set(url, activityByUrlMap.get(url) + 1)
+      }
+
       if (file && file.file) file.file = Buffer.from(file.file, 'base64')
 
       try {
@@ -163,6 +216,14 @@ module.exports = async worker => {
         worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, err: error }))
       } else {
         worker.send(JSON.stringify({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, data: response }))
+      }
+    } else if (message.type === 'debugActivity') {
+      if (message.data === 'clear') {
+        console.log('clearing activity')
+        activityByUrlMap.clear()
+        console.log('OK cleared')
+      } else {
+        console.debug([...activityByUrlMap.entries()].sort((e1, e2) => e2[1] - e1[1]).slice(0, 200))
       }
     }
   })

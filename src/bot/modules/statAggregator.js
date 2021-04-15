@@ -55,7 +55,7 @@ const miscStatistics = {
   redisGet: 0,
   redisSet: 0,
   fetchWebhooks: 0,
-  fetchAuditLogs: 0,
+  // fetchAuditLogs: 0,
   ready: 0,
   disconnect: 0,
   createWebhook: 0

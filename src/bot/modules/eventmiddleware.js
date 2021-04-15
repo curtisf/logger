@@ -1,5 +1,4 @@
 const cacheGuild = require('../utils/cacheGuild')
-const statAggregator = require('../modules/statAggregator')
 
 // I generally hate middleware associated with events, but this could potentially save
 // a whole lot on resources and audit log fetching if pulled off correctly.
@@ -33,7 +32,7 @@ module.exports = async (event, type) => {
         }
 
         if (guildId !== true && !global.bot.guildSettingsCache[guildId]) return // true means skip guildsettings fetch
-        statAggregator.incrementGuild(guildId)
+        if (guildId !== true && global.bot.guildSettingsCache[guildId].eventIsDisabled(event.name)) return
         await event.handle.apply(this, args)
       }
     })

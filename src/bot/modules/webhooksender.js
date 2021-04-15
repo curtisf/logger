@@ -10,6 +10,15 @@ const setEventsByChannelID = require('../../db/interfaces/postgres/update').setE
 // these three events could possibly be an audit log fetch in the future, so they must be recorded together
 // update: debug, see what is doing what
 
+const doNotAggregate = [
+  'disconnect',
+  'error',
+  'interactionCreate',
+  'inviteCreate',
+  'inviteDelete',
+  'warn'
+]
+
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
   if (!pkg.embed.color) pkg.embed.color = 3553599
@@ -52,7 +61,8 @@ module.exports = async pkg => {
     }
 
     // Thanks for the help, De Morgan's laws.
-    if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
+    // if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
+    if (true) { // temporary
       global.bot.executeWebhook(webhookID, webhookToken, {
         file: pkg.file ? pkg.file : '',
         username: global.bot.user.username,
@@ -81,9 +91,9 @@ module.exports = async pkg => {
       pkg.webhookToken = webhookToken
       enqueue(pkg, guildSettings)
     }
-    if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
-      statAggregator.incrementMisc('fetchAuditLogs')
+    statAggregator.incrementGuild(pkg.guildID)
+    if (!doNotAggregate.includes(pkg.eventName)) {
+      statAggregator.incrementEvent(pkg.eventName)
     }
-    statAggregator.incrementEvent(pkg.eventName)
   }
 }

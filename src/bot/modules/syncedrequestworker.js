@@ -29,7 +29,6 @@ function unregisterEvent (id) {
 
 module.exports = {
   request: async function (method, url, auth, body, file, _route, short) {
-    global.bot.emit('rest-request', null)
     return new Promise((resolve, reject) => {
       const stackCapture = new Error().stack
       const requestID = crypto.randomBytes(16).toString('hex')
@@ -37,6 +36,7 @@ module.exports = {
       if (file && file.file) file.file = Buffer.from(file.file).toString('base64')
 
       process.send({ type: 'apiRequest', requestID, method, url, auth, body, file, _route, short })
+      global.bot.emit('rest-request', null)
 
       // if the request is to post a log via webhook, don't time it since
       // log channels can be backed up a ton
@@ -45,9 +45,13 @@ module.exports = {
         reject(new Error(`Request timed out (>${this.timeout}ms) on ${method} ${url}`))
 
         unregisterEvent(`apiResponse.${requestID}`)
-      }, 15000 + (url.endsWith('/messages' || (method === 'POST' && url.includes('/webhooks/'))) ? 60000 : 0)) // wait awhile for webhook responses
+      }, 1000 * 60 * 20)
+      // if 20 minutes isn't long enough for the central rest client to respond, may god save our souls
 
       registerEvent(`apiResponse.${requestID}`, data => {
+        clearTimeout(timeout)
+        unregisterEvent(`apiResponse.${requestID}`)
+
         if (data.err) {
           const error = new Error(data.err.message)
 
@@ -58,9 +62,6 @@ module.exports = {
         } else {
           resolve(data.data)
         }
-
-        clearTimeout(timeout)
-        unregisterEvent(`apiResponse.${requestID}`)
       })
     })
   },
