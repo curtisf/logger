@@ -6,8 +6,6 @@ const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const eventMiddleware = require('./modules/eventmiddleware')
-const statAggregator = require('./modules/statAggregator')
-const syncedRequestHandler = require('./modules/syncedrequestworker')
 
 require('dotenv').config()
 
@@ -45,6 +43,9 @@ async function init () {
       roles: false,
       users: false
     },
+    rest: {
+      redisInstance: global.redis
+    },
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
@@ -53,9 +54,14 @@ async function init () {
     ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
 
-  global.bot.requestHandler = syncedRequestHandler
+  const statAggregator = require('./modules/statAggregator')
 
-  global.bot.on('ratelimit', console.error)
+  global.bot.on('global-ratelimit-hit', timeLeft => {
+    global.webhook.error(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
+    console.warn(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
+    statAggregator.incrementEvent('global-ratelimit-hit')
+    global.redis.set('logger-global', timeLeft + 20, 'EX', timeLeft + 20)
+  })
 
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
@@ -74,14 +80,6 @@ async function init () {
 
   on.forEach(async event => eventMiddleware(event, 'on'))
   once.forEach(async event => eventMiddleware(event, 'once'))
-
-  global.bot.on('rest-request', () => {
-    statAggregator.incrementEvent('rest-request')
-  })
-
-  global.bot.on('ratelimit-timeout', () => {
-    statAggregator.incrementEvent('ratelimit-timeout')
-  })
 
   require('../miscellaneous/bezerk')
 
@@ -102,7 +100,7 @@ process.on('SIGINT', async () => {
 })
 
 process.on('unhandledRejection', (e) => {
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
     console.error(e)
     Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
   }

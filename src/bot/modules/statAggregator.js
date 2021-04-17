@@ -48,14 +48,18 @@ const eventStatistics = {
   voiceChannelSwitch: 0,
   voiceStateUpdate: 0,
   'rest-timeout': 0,
-  'rest-request': 0
+  'rest-request': 0,
+  webhookSends: 0,
+  nonWebhookSends: 0,
+  'rest-hit': 0,
+  'global-ratelimit-hit': 0
 }
 
 const miscStatistics = {
   redisGet: 0,
   redisSet: 0,
   fetchWebhooks: 0,
-  // fetchAuditLogs: 0,
+  fetchAuditLogs: 0,
   ready: 0,
   disconnect: 0,
   createWebhook: 0
@@ -126,6 +130,19 @@ function sendStatsIPC () {
 process.on('message', m => {
   if (m && m.type === 'sendStats') {
     sendStatsIPC()
+  }
+})
+
+global.bot.on('rawREST', r => {
+  if (!r || !r.url) return
+  module.exports.incrementEvent('rest-hit')
+  if (r.url.endsWith('audit-logs')) {
+    module.exports.incrementMisc('fetchAuditLogs')
+  }
+  if (r.url.includes('webhooks')) {
+    module.exports.incrementEvent('webhookSends')
+  } else {
+    module.exports.incrementEvent('nonWebhookSends')
   }
 })
 

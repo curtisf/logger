@@ -1,29 +1,9 @@
 const cluster = require('cluster')
 const webhookLogger = require('./webhooklogger')
 const Zabbix = require('zabbix-promise')
-const Eris = require('eris')
-const requestEris = new Eris(`Bot ${process.env.BOT_TOKEN}`)
 
 const workerCrashes = {}
-let ratelimitCounter = 0
-let globalRatelimitCounter = 0
-let restHits = 0
-let ipcMessageCounter = 0
-let auditLogHitCounter = 0
 let statsObj = {}
-let webhookSends = 0
-let nonWebhookSends = 0
-const activityByUrlMap = new Map()
-
-requestEris.on('ratelimit-hit', () => ratelimitCounter++)
-requestEris.on('rest-hit', () => restHits++)
-requestEris.on('warn', w => {
-  console.warn('Request Eris Warning', w)
-})
-requestEris.on('error', e => {
-  console.error('Request Eris Error', e)
-})
-requestEris.on('global-ratelimit-hit', () => globalRatelimitCounter++)
 
 const allWorkers = []
 
@@ -37,74 +17,11 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
         resolve('ok')
       }, 2000)
     })
-    if (ipcMessageCounter !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.misc.ipc-counter',
-        value: ipcMessageCounter
-      })
-      ipcMessageCounter = 0
-    }
-    if (ratelimitCounter !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.event.ratelimit-hit',
-        value: ratelimitCounter
-      })
-      ratelimitCounter = 0
-    }
-    if (globalRatelimitCounter !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.event.global-ratelimit-hit',
-        value: globalRatelimitCounter
-      })
-      globalRatelimitCounter = 0
-    }
-    if (restHits !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.event.rest-hit',
-        value: restHits
-      })
-      restHits = 0
-    }
-    if (auditLogHitCounter !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.misc.fetchAuditLogs',
-        value: auditLogHitCounter
-      })
-      auditLogHitCounter = 0
-    }
-    if (webhookSends !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.event.webhookSends',
-        value: webhookSends
-      })
-      webhookSends = 0
-    }
-    if (nonWebhookSends !== 0) {
-      await Zabbix.sender({
-        server: 'localhost',
-        host: process.env.ZABBIX_HOST,
-        key: 'logger.event.nonWebhookSends',
-        value: nonWebhookSends
-      })
-      nonWebhookSends = 0
-    }
     if (statsObj.commandUsage) {
       for (const eventName in statsObj.eventUsage) {
         if (statsObj?.eventUsage[eventName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.event.${eventName}`,
@@ -119,7 +36,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       for (const commandName in statsObj.commandUsage) {
         if (statsObj?.commandUsage[commandName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.command.${commandName}`,
@@ -134,7 +51,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       for (const miscName in statsObj.miscUsage) {
         if (statsObj?.miscUsage[miscName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.misc.${miscName}`,
@@ -188,57 +105,8 @@ module.exports = async worker => {
           statsObj.miscUsage[miscItem] += message.miscUsage[miscItem]
         }
       }
-    } else if (message.type === 'apiRequest') {
-      ipcMessageCounter++
-      let response
-      let error
-
-      const { method, url, auth, body, file, _route, short } = message
-
-      if (url.endsWith('audit-logs')) {
-        auditLogHitCounter++
-      }
-
-      if (url.includes('webhooks')) {
-        webhookSends++
-      } else {
-        nonWebhookSends++
-      }
-
-      if (activityByUrlMap.size > 100000) {
-        console.log('URL activity map getting big, clearing...')
-        activityByUrlMap.clear()
-      }
-
-      if (!activityByUrlMap.has(url)) {
-        activityByUrlMap.set(url, 1)
-      } else {
-        activityByUrlMap.set(url, activityByUrlMap.get(url) + 1)
-      }
-
-      if (file && file.file) file.file = Buffer.from(file.file, 'base64')
-
-      try {
-        response = await requestEris.requestHandler.request(method, url, auth, body, file, _route, short)
-      } catch (err) {
-        error = {
-          code: err.code,
-          message: err.message,
-          stack: err.stack
-        }
-      }
-
-      if (error) {
-        worker.send({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, err: error })
-      } else {
-        worker.send({ type: 'fetchReturn', id: `apiResponse.${message.requestID}`, data: response })
-      }
     } else if (message.type === 'debugActivity') {
-      if (message.data === 'clear') {
-        console.log('clearing activity')
-        activityByUrlMap.clear()
-        console.log('OK cleared')
-      } else if (message.data === 'cpuusage') {
+      if (message.data === 'cpuusage') {
         const os = require('os-utils')
 
         os.cpuUsage(v => {
@@ -248,8 +116,6 @@ module.exports = async worker => {
         os.cpuFree(v => {
           console.log(`Cluster master cpu free: ${v * 100}%`)
         })
-      } else {
-        console.debug([...activityByUrlMap.entries()].sort((e1, e2) => e2[1] - e1[1]).slice(0, 200))
       }
     }
   })
@@ -266,8 +132,8 @@ module.exports = async worker => {
       global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
     } else if (workerCrashes[worker.rangeForShard] >= 2) {
-      global.logger.error(`Worker ${worker.id} hosting ${worker.rangeForShard} is will not be respawned due to a detected boot loop.`)
-      global.webhook.fatal(`Worker ${worker.id} hosting ${worker.rangeForShard} is will not be respawned due to a detected boot loop. | ${worker.id}`)
+      global.logger.error(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop.`)
+      global.webhook.fatal(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop. | ${worker.id}`)
     } else {
       global.logger.error(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
       global.webhook.fatal(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)

@@ -61,8 +61,7 @@ module.exports = async pkg => {
     }
 
     // Thanks for the help, De Morgan's laws.
-    // if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
-    if (true) { // temporary
+    if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
       global.bot.executeWebhook(webhookID, webhookToken, {
         file: pkg.file ? pkg.file : '',
         username: global.bot.user.username,
@@ -94,6 +93,9 @@ module.exports = async pkg => {
     statAggregator.incrementGuild(pkg.guildID)
     if (!doNotAggregate.includes(pkg.eventName)) {
       statAggregator.incrementEvent(pkg.eventName)
+    }
+    if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
+      statAggregator.incrementMisc('fetchAuditLogs')
     }
   }
 }

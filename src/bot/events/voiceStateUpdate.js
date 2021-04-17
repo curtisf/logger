@@ -28,8 +28,7 @@ module.exports = {
         color: 3553599
       }
     }
-    // if (member.guild.voiceStates.size < 20) {
-    if (false) { // temporarily disabled
+    if (member.guild.voiceStates.size < 20) {
       const logs = await member.guild.getAuditLogs(5, null, 24).catch(() => {})
       if (!logs) return
       const log = logs.entries.find(e => e.targetID === member.id)
