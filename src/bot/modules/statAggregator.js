@@ -4,7 +4,6 @@ const guildActivity = new Map()
 
 const commandStatistics = {
   archive: 0,
-  clearchannel: 0,
   clearmydata: 0,
   stoplogging: 0,
   help: 0,
