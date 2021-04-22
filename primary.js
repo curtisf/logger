@@ -8,7 +8,7 @@ const staggerLaunchQueue = []
 let staggerInterval
 
 async function init () {
-  sa.get('https://discordapp.com/api/gateway/bot').set('Authorization', `Bot ${process.env.BOT_TOKEN}`).then(async b => {
+  sa.get('https://discord.com/api/gateway/bot').set('Authorization', `Bot ${process.env.BOT_TOKEN}`).then(async b => {
     const totalShards = b.body.shards // get recommended shard count
     let shardsPerWorker
     if (process.env.USE_MAX_CONCURRENCY === 'true') { // eslint-disable-line eqeqeq
