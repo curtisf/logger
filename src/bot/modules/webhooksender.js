@@ -90,7 +90,7 @@ module.exports = async pkg => {
       pkg.webhookToken = webhookToken
       enqueue(pkg, guildSettings)
     }
-    statAggregator.incrementGuild(pkg.guildID)
+    // statAggregator.incrementGuild(pkg.guildID)
     if (!doNotAggregate.includes(pkg.eventName)) {
       statAggregator.incrementEvent(pkg.eventName)
     }

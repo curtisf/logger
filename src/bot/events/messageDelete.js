@@ -19,15 +19,15 @@ module.exports = {
     }
     if (!cachedMessage) return
     await deleteMessage(message.id)
-    const cachedUser = global.bot.users.get(cachedMessage.author_id)
-    // if (!cachedUser) {
-    //   try {
-    //     cachedUser = await message.channel.guild.getRESTMember(cachedMessage.author_id)
-    //     message.channel.guild.members.add(cachedUser, global.bot)
-    //   } catch (_) {
-    //     // either the member does not exist or the person left and others are deleting their messages
-    //   }
-    // }
+    let cachedUser = global.bot.users.get(cachedMessage.author_id)
+    if (!cachedUser) {
+      try {
+        cachedUser = await message.channel.guild.getRESTMember(cachedMessage.author_id)
+        message.channel.guild.members.add(cachedUser, global.bot)
+      } catch (_) {
+        // either the member does not exist or the person left and others are deleting their messages
+      }
+    }
     const member = message.channel.guild.members.get(cachedMessage.author_id)
     const messageDeleteEvent = {
       guildID: message.channel.guild.id,

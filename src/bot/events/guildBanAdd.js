@@ -34,11 +34,11 @@ module.exports = {
      * Thanks Discord.
     */
     setTimeout(async () => {
-      const logs = await guild.getAuditLogs(1, null, 22).catch(() => {})
+      const logs = await guild.getAuditLogs(10, null, 22).catch(() => {})
       if (!logs) return
       const log = logs.entries.find(e => e.targetID === user.id)
       if (!log) return
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
+      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 30000) return
       const perp = log.user
       if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
       guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
