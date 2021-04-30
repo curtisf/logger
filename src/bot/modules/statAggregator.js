@@ -17,7 +17,8 @@ const commandStatistics = {
   setchannel: 0,
   togglemodule: 0,
   userinfo: 0,
-  setup: 0
+  setup: 0,
+  settz: 0
 }
 
 const eventStatistics = {
