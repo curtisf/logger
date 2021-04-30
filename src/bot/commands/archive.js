@@ -23,7 +23,10 @@ module.exports = {
     })
   },
   name: 'archive',
-  description: 'Makes a log of up to the last 1000 messages in a channel. Example: archive 100 | archive 1000. Patreon bot only: fetch 10,000 messages!',
   category: 'Utility',
-  perm: 'manageMessages'
+  perm: 'manageMessages',
+  quickHelp: 'Makes a log online of up to the last 1000 messages in a channel. Does NOT delete any messages. Patreon bot only: fetch 10,000 messages & [upgraded log site](https://logs.discord.website/logs/W9NbmmULEpxMFMoiBuKrYG)',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}archive 5\` <- lowest amount possible
+  \`${process.env.GLOBAL_BOT_PREFIX}archive 1000\` <- maximum count of messages to archive
+  \`${process.env.GLOBAL_BOT_PREFIX}archive 25\` <- create a log of the last 25 messages in the channel`
 }

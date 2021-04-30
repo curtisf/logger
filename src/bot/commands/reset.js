@@ -71,7 +71,8 @@ module.exports = {
     })
   },
   name: 'reset',
-  description: 'Completely resets my stored settings for your server. **Use with caution**.',
+  quickHelp: 'Completely resets my stored settings for your server. If you want to undo or otherwise disable Logger logging in the server, this is the command.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}reset\` <- asks for confirmation (say "yes") before clearing logging settings for the server.`,
   type: 'admin',
   category: 'Administration'
 }

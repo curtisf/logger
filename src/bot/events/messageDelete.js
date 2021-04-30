@@ -63,7 +63,7 @@ module.exports = {
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
     }, {
       name: 'Date',
-      value: new Date(cachedMessage.ts).toUTCString()
+      value: global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime(cachedMessage.ts)
     })
     await send(messageDeleteEvent)
   }

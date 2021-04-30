@@ -63,7 +63,8 @@ module.exports = {
     await message.channel.createMessage({ embed: embed })
   },
   name: 'serverinfo',
-  description: 'Get information about the server this command is used in.',
+  quickHelp: 'Get information about the server this command is used in.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}serverinfo\` <- returns an embed with member count, features, and emojis of the server used in.`,
   type: 'any',
   category: 'Utility'
 }

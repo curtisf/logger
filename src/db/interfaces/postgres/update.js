@@ -140,6 +140,13 @@ async function updateMessageByID (id, content) {
   }
 }
 
+async function setTimezone (guildID, tz) {
+  const doc = await getDoc(guildID)
+  doc.custom_settings.timezone = tz
+  await pool.query('UPDATE guilds SET custom_settings=$1 WHERE id=$2', [doc.custom_settings, guildID])
+  await cacheGuild(guildID)
+}
+
 exports.toggleLogBots = toggleLogBots
 exports.disableEvent = disableEvent
 exports.ignoreChannel = ignoreChannel
@@ -148,3 +155,4 @@ exports.clearEventByID = clearEventByID
 exports.setAllEventsOneId = setAllEventsOneId
 exports.setEventsLogId = setEventsLogId
 exports.updateMessageByID = updateMessageByID
+exports.setTimezone = setTimezone

@@ -22,7 +22,8 @@ module.exports = {
     })
   },
   name: 'logbots',
-  description: 'Use this to toggle whether I log bots or not (DEFAULT: No)',
+  quickHelp: 'Use this to toggle whether I log actions done bots or not (DEFAULT: disabled). Does NOT ignore bots deleting messages!',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}logbots\` <- toggle whether bot actions are logged, current status will be returned (ignoring or actively logging)`,
   type: 'admin',
   category: 'Logging'
 }

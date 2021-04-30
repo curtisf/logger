@@ -28,10 +28,10 @@ module.exports = {
       value: `${member.username}#${member.discriminator} ${member.nick ? `(**${member.nick}**)` : ''} (${member.id})`
     }, {
       name: 'Join Date',
-      value: `${new Date(member.joinedAt).toUTCString()} (${Math.round((new Date().getTime() - member.joinedAt) / (1000 * 60 * 60 * 24))} days)`
+      value: `${global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime(member.joinedAt)} (${Math.round((new Date().getTime() - member.joinedAt) / (1000 * 60 * 60 * 24))} days)`
     }, {
       name: 'Creation Date',
-      value: `${new Date(member.createdAt).toUTCString()} (${Math.round((new Date().getTime() - member.createdAt) / (1000 * 60 * 60 * 24))} days)`
+      value: global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime((member.id / 4194304) + 1420070400000)
     }, {
       name: 'Roles',
       value: roles.length !== 0 ? roles.map(c => `\`${c.name}\``).join(', ') : 'None'
@@ -51,7 +51,9 @@ module.exports = {
     }).catch(() => { })
   },
   name: 'userinfo',
-  description: 'Use this with a mention to get info about a user.', // The restriction of using a mention is very intentional.
+  quickHelp: 'Use this with a mention to get info about a user or about yourself with no mention.', // The restriction of using a mention is very intentional.
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}userinfo\` <- create an embed showing information about you
+  \`${process.env.GLOBAL_BOT_PREFIX}userinfo @AnyUser\` <- create an embed showing information about the user that was mentioned`,
   type: 'any',
   category: 'General'
 }

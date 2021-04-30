@@ -72,10 +72,6 @@ function getGuildIdByEvent (type, args) {
     case 'inviteCreate': {
       return true // yes this coulda been left to default, but this explicitly states the purpose. This needs to run whether it's configured or not
     }
-    case 'messageDelete': {
-      if (!args[0].channel?.guild.id) return
-      return args[0].channel?.guild.id
-    }
     case 'messageDeleteBulk': {
       if (!args[0][0].channel.guild.id) return
       return args[0][0].channel.guild.id // this is fine because discord will atleast send message id and channel

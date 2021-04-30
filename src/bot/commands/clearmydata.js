@@ -19,7 +19,8 @@ module.exports = {
     })
   },
   name: 'clearmydata',
-  description: 'Provides the information needed to clear your data from the bot. Your messages are automatically deleted after two days from the database without using this command.',
+  quickHelp: 'Provides the information needed to clear your data from the bot. Your stored data (messages) is automatically deleted after two days from the database regardless of using this command.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}clearmydata\``,
   type: 'any',
   category: 'Utility'
 }

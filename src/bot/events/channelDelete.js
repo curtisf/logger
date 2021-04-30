@@ -25,7 +25,7 @@ module.exports = {
           value: channel.name
         }, {
           name: 'Creation date',
-          value: new Date(channel.createdAt).toUTCString()
+          value: global.bot.guildSettingsCache[channel.guild.id].makeFormattedTime(channel.createdAt)
         },
         {
           name: 'Position',

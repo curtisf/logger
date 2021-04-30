@@ -17,7 +17,8 @@ module.exports = {
     })
   },
   name: 'invite',
-  description: 'Get my invite link.',
+  quickHelp: 'Returns an embed with multiple invites to choose your preferred permissions.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}invite\` <- returns an embed with invites for different use cases (fewer required perms = better!)`,
   type: 'any',
   category: 'General'
 }

@@ -52,12 +52,12 @@ module.exports = {
       if (member.roles) {
         event.embed.fields.push(rolesField, {
           name: 'Joined At',
-          value: `${new Date(member.joinedAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+          value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.joinedAt)} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
         })
       }
       event.embed.fields.push({
         name: 'Created At',
-        value: `${new Date(member.createdAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
+        value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.createdAt)} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
       }, {
         name: 'Reason',
         value: log.reason ? log.reason : 'None provided'

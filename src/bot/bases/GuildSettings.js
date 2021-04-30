@@ -1,4 +1,5 @@
 const cacheGuild = require('../utils/cacheGuild')
+const momentTz = require('moment-timezone')
 
 class GuildSettings {
   constructor (data) {
@@ -22,8 +23,21 @@ class GuildSettings {
     this.voice = data.feeds ? data.feeds.voice.channelID : ''
     this.premium = data.premium ? data.premium : false
     this.ignoredUsers = data.ignoredUsers
+    this.customSettings = data.custom_settings
 
-    global.bot.guildSettingsCache[data.id] = this
+    global.bot.guildSettingsCache[data.id] = this // someday, this will be replaced because it's dumb
+  }
+
+  makeFormattedTime (unixTimestamp) {
+    if (unixTimestamp && this.getTimezone()) {
+      return momentTz(new Date(unixTimestamp)).tz(this.getTimezone()).format('YYYY-MM-DD hh:mm:ss z')
+    } else {
+      return new Date().toUTCString()
+    }
+  }
+
+  getTimezone () {
+    return this.customSettings.timezone
   }
 
   getEventLogID (eventName) {

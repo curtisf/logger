@@ -31,7 +31,7 @@ module.exports = {
         description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} was updated (${channel.name})`,
         fields: [{
           name: 'Creation date',
-          value: new Date((channel.id / 4194304) + 1420070400000).toUTCString(),
+          value: global.bot.guildSettingsCache[channel.guild.id].makeFormattedTime(channel.createdAt),
           inline: true
         }]
       }

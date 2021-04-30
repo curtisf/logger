@@ -23,6 +23,7 @@
     "eris": "github:curtisf/eris#dev",
     "ioredis": "^4.17.3",
     "markdown-escape": "^1.1.0",
+    "moment-timezone": "^0.5.33",
     "os-utils": "0.0.14",
     "pg": "^8.3.3",
     "pg-format": "^1.0.4",

@@ -44,7 +44,8 @@ module.exports = {
     })
   },
   name: 'info',
-  description: 'Get information about Logger and the current shard.',
+  quickHelp: 'Get information about how Logger was made and the current shard serving you.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}info\``,
   type: 'any',
   category: 'Information'
 }

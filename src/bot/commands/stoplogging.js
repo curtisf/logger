@@ -39,7 +39,10 @@ module.exports = {
     }
   },
   name: 'stoplogging',
-  description: 'Use this in a log channel to stop me from logging to here.',
+  quickHelp: 'Use this in a log channel to stop me from logging certain (or all) events. This command is the opposite of setchannel and can be used the same way to unset events instead of setting them.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}stoplogging\` <- stops logging every event configured to log to the channel it's used in
+  \`${process.env.GLOBAL_BOT_PREFIX}stoplogging messageDelete, messageUpdate\` <- if the bot was logging messageDelete and messageUpdate to the channel this is used in, now it is unset
+  \`${process.env.GLOBAL_BOT_PREFIX}stoplogging guildMemberVerify\` <- if the bot was logging member verify events to the channel this was used in, it will stop doing so`,
   type: 'admin',
   category: 'Logging'
 }

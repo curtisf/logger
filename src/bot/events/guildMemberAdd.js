@@ -23,7 +23,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: new Date().toUTCString()
+          value: global.bot.guildSettingsCache[guild.id].makeFormattedTime(Date.now())
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,

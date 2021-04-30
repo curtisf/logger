@@ -1,4 +1,5 @@
 const setEventLogs = require('../../db/interfaces/postgres/update').setEventsLogId
+const guildWebhookCacher = require('../modules/guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 
 const eventList = [
@@ -22,7 +23,6 @@ const eventList = [
   'voiceChannelJoin',
   'voiceStateUpdate',
   'voiceChannelSwitch',
-  'guildEmojisUpdate',
   'guildMemberNickUpdate',
   'guildMemberVerify'
 ]
@@ -42,15 +42,22 @@ module.exports = {
     } else if (events.length === 0 && !suffix) {
       await setEventLogs(message.channel.guild.id, message.channel.id, eventList)
       await cacheGuild(message.channel.guild.id)
+      await guildWebhookCacher(message.channel.guild.id, message.channel.id)
       message.channel.createMessage(`<@${message.author.id}>, I set all events to log here! ${!botPerms.manageChannels || !botPerms.manageGuild ? 'Join logging will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
     } else {
       await setEventLogs(message.channel.guild.id, message.channel.id, events)
       await cacheGuild(message.channel.guild.id)
+      await guildWebhookCacher(message.channel.guild.id, message.channel.id)
       message.channel.createMessage(`<@${message.author.id}>, it has been done. ${events.includes('guildMemberAdd') && (!botPerms.manageChannels || !botPerms.manageGuild) ? 'Join logging will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
     }
   },
   name: 'setchannel',
-  description: `[WARNING] The [dashboard](https://logger.bot) is the easiest way to setup!\nUse this in the channel you want to log to. setchannel without any suffix will set all events to the current channel. Otherwise, you can use any combination of these:\n\`\`\`${eventList.toString(', ')}\`\`\`\n Examples:\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` -> logs message deletions and updates\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` -> logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**\n\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` -> logs everything`,
+  quickHelp: 'The [dashboard](https://logger.bot) is the easiest way to setup! Setchannel configures bot logging behavior.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` <- log everything where this is sent
+  \`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` <- logs message deletions and updates
+  \`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` <- logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**
+  \`${process.env.GLOBAL_BOT_PREFIX}setchannel anyevent\` <- individually set events to log to the channel this is used in. Supports multiple events at a time. Valid events:
+  \`\`\`${eventList.toString(',')}\`\`\``, // 4 characters away from max embed length
   perm: 'manageWebhooks',
   category: 'Logging'
 }

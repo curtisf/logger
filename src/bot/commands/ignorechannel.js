@@ -27,7 +27,10 @@ module.exports = {
     })
   },
   name: 'ignorechannel',
-  description: 'Ignore any event that originates from the channel this command is used in. Use in the text channel you want to ignore OR provide a channel id (can be a voice channel) as a suffix (ignorechannel channelID).',
+  quickHelp: 'Ignore any event that originates from the channel this command is used in. Use in the text channel you want to the bot to ignore OR provide a channel id (can be a voice channel) as a suffix.',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}ignorechannel\` <- ignore events from the channel this is ran in
+  \`${process.env.GLOBAL_BOT_PREFIX}ignorechannel voice channel id\` <- ignore voice events related to the given channel
+  \`${process.env.GLOBAL_BOT_PREFIX}ignorechannel text channel id\` <- ignore text-related events related to the given channel`,
   type: 'custom',
   perm: 'manageChannels',
   category: 'Logging'
