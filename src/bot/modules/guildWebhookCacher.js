@@ -4,8 +4,9 @@ const statAggregator = require('./statAggregator')
 const cacheGuild = require('../utils/cacheGuild')
 
 module.exports = async (guildID, channelID) => {
-  const perms = global.bot.guilds.get(guildID).members.get(global.bot.user.id).permission.json
-  if (!perms.manageWebhooks) {
+  if (!global.bot.guilds.get(guildID)) return // if not in that guild anymore, stop.
+  const perms = global.bot.getChannel(channelID)?.permissionsOf(global.bot.user.id).json
+  if (!perms || !perms.manageWebhooks) {
     return
   }
   const guild = global.bot.guilds.get(guildID)
@@ -22,7 +23,18 @@ module.exports = async (guildID, channelID) => {
     await cacheGuild(guildID)
     return
   }
-  const webhooks = await global.bot.guilds.get(guildID).getWebhooks()
+  let webhooks
+  try {
+    webhooks = await logChannel?.getWebhooks()
+    statAggregator.incrementMisc('fetchWebhooks')
+  } catch (_) {
+    global.logger.warn(`Logchannel ${channelID} in ${global.bot.guilds.get(guildID).name} ${guildID} does not exist even though it is in cache`)
+    await global.redis.del(`webhook-${channelID}`)
+    global.bot.guildSettingsCache[guildID].clearEventByID(channelID)
+    await clearEventByID(guildID, channelID)
+    await cacheGuild(guildID)
+    return
+  }
   for (let i = 0; i < webhooks.length; i++) {
     if (webhooks[i].token && webhooks[i].channel_id === channelID) { // check for token because channel subscriptions count as webhooks
       webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)

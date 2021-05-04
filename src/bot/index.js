@@ -13,11 +13,8 @@ precheckReqs().then(() => {
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
+const eventMiddleware = require('./modules/eventmiddleware')
 const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
-
-function connect () {
-  bot.connect()
-}
 
 function precheckReqs () {
   return new Promise((resolve, reject) => {
@@ -25,8 +22,8 @@ function precheckReqs () {
     if (process.execPath.includes('nodejs')) return // not packaged
     let rawConfig
     try {
-      rawConfig = fs.readFileSync(path.join(path.dirname(process.execPath), 'config.txt'))
-      // rawConfig = fs.readFileSync(path.resolve(__dirname, '../../../config.txt'))
+      // rawConfig = fs.readFileSync(path.join(path.dirname(process.execPath), 'config.txt'))
+      rawConfig = fs.readFileSync(path.resolve(__dirname, '../../config.txt'))
     } catch (e) {
       console.error('Could not find config, generating it for you. Fill it out!')
       global.signale.error('Could not find config.txt, one has been generated. Fill it out and restart the bot!')
@@ -56,7 +53,7 @@ function precheckReqs () {
 }
 
 async function init () {
-  bot = new Eris(global.envInfo.BOT_TOKEN, {
+  global.bot = new Eris(global.envInfo.BOT_TOKEN, {
     disableEvents: { TYPING_START: true },
     restMode: true,
     messageLimit: 0,
@@ -65,30 +62,31 @@ async function init () {
     intents: 719
   })
 
-  bot.editStatus('dnd', {
+  global.bot.editStatus('dnd', {
     name: 'Bot is booting'
   })
 
-  bot.commands = {}
-  bot.ignoredChannels = []
-  bot.guildSettingsCache = {}
+  global.bot.commands = {}
+  global.bot.ignoredChannels = []
+  global.bot.guildSettingsCache = {}
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
   const [on, once] = listenerIndexer()
 
-  on.forEach(async event => bot.on(event.name, await event.handle))
-  once.forEach(async event => bot.once(event.name, await event.handle))
+  // on.forEach(async event => global.bot.on(event.name, await event.handle))
+  // once.forEach(async event => global.bot.once(event.name, await event.handle))
 
-  // require('../miscellaneous/bezerk')
+  on.forEach(async event => eventMiddleware(event, 'on'))
+  once.forEach(async event => eventMiddleware(event, 'once'))
 
   global.signale.note('Connecting to Discord...')
-  connect()
-  deleteMessagesOlderThanDays()
+  global.bot.connect()
   if (global.envInfo.ENABLE_API) {
     global.signale.success('Enabling API for dashboard use')
     require('../api/index')
   }
+  await deleteMessagesOlderThanDays()
 
   // const oldMessagesDeleted = await deleteMessagesOlderThanDays(1l.envInfo.MESSAGE_HISTORY_DAYS) debating on removing these
   // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${global.envInfo.MESSAGE_HISTORY_DAYS} day(s).`)
@@ -105,11 +103,15 @@ process.on('SIGINT', async () => {
 })
 
 process.on('unhandledRejection', (e) => {
-  console.error(e)
-  if (!e.message.includes('[50013]') && !e.message.startsWith('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
+    console.error(e)
+    Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
+  }
 })
 
 process.on('uncaughtException', (e) => {
-  console.error(e)
-  if (!e.message.includes('[50013]')) Raven.captureException(e.stack, { level: 'fatal' })
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
+    console.error(e)
+    Raven.captureException(e.stack, { level: 'fatal' })
+  }
 })

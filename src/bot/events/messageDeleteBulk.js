@@ -16,6 +16,7 @@ module.exports = {
 }
 
 async function paste (messages, guildID) {
+  if (!messages) return
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',
@@ -31,7 +32,7 @@ async function paste (messages, guildID) {
       globalUser = {
         username: 'Unknown',
         discriminator: '0000',
-        avatarURL: 'http://www.clker.com/cliparts/C/8/4/G/W/o/transparent-red-circle-hi.png'
+        avatarURL: '<no avatar>'
       }
     }
     return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | ${new Date(m.ts).toString()}: ${m.content}`

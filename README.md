@@ -1,10 +1,6 @@
-
-<center><img  src="https://curtisf.dev/Logger.png" />
-
-<a  href="https://discordbots.org/bot/298822483060981760" >
-
-<img  src="https://discordbots.org/api/widget/298822483060981760.svg"  alt="Logger" />
-
+<center><img src="https://cdn.discordapp.com/attachments/349356606883889152/616414555639382016/Logger.png" />
+<a href="https://discordbots.org/bot/298822483060981760" >
+  <img src="https://discordbots.org/api/widget/298822483060981760.svg" alt="Logger" />
 </a>
 
 </center>

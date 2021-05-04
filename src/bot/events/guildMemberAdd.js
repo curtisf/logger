@@ -4,8 +4,8 @@ const inviteCache = require('../modules/invitecache')
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
+  requiredPerms: ['manageGuild', 'manageChannels'], // manageGuild -> fetch invites, manageChannels -> receive INVITE_CREATE & INVITE_DELETE
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json.manageGuild) return
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
@@ -20,7 +20,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: new Date().toString()
+          value: new Date().toUTCString()
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,
@@ -39,15 +39,20 @@ module.exports = {
     }
     let guildInvites
     try {
-      guildInvites = await guild.getInvites()
+      guildInvites = (await guild.getInvites()).map(i => inviteCache.formatInvite(i))
       const cachedInvites = await inviteCache.getCachedInvites(guild.id)
-      guildInvites = guildInvites.map(invite => `${invite.code}|${invite.hasOwnProperty('uses') ? invite.uses : 'Infinite'}`)
-      const usedInviteStr = compareInvites(guildInvites, cachedInvites)
-      if (!usedInviteStr) {
+      let usedInvite
+      if (guildInvites.length > cachedInvites.length) {
+        // invite desync between redis and Discord, fix it
+        await inviteCache.cacheInvites(guild.id, guildInvites)
+      } else {
+        usedInvite = compareInvites(guildInvites, cachedInvites)
+      }
+      if (!usedInvite) {
         if (guild.features.includes('VANITY_URL')) {
           GMAEvent.embed.fields.push({
             name: 'Invite Used',
-            value: 'The discord.gg url defined by the guild owner (or admin)',
+            value: 'Server vanity',
             inline: true
           })
         } else if (member.bot) {
@@ -58,12 +63,7 @@ module.exports = {
           })
         }
       }
-      if (usedInviteStr) {
-        const split = usedInviteStr.split('|')
-        const usedInvite = {
-          code: split[0],
-          uses: split[1]
-        }
+      if (usedInvite) {
         GMAEvent.embed.fields.push({
           name: 'Invite Used',
           value: `${usedInvite.code} with ${usedInvite.uses} uses`,
@@ -84,9 +84,13 @@ module.exports = {
 }
 
 function compareInvites (current, saved) {
-  let i = 0
-  for (i = 0; i < current.length; i++) {
-    if (current[i] !== saved[i]) return current[i]
+  const toIter = (current.length >= saved.length ? current : saved)
+  for (let i = 0; i < toIter.length; i++) {
+    const savedInvite = saved.find(inv => inv.code === toIter[i].code)
+    const currentInvite = current.find(inv => inv.code === toIter[i].code)
+    if (!savedInvite || !currentInvite) return null // if either is missing we shouldn't compare whatsoever
+    if (savedInvite.uses !== currentInvite.uses) {
+      return toIter[i]
+    }
   }
-  return null
 }

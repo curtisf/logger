@@ -63,13 +63,15 @@ module.exports = {
         complete = true
         await deleteGuild(message.channel.guild.id)
         await createGuild(message.channel.guild)
+        await cacheGuild(message.channel.guild.id)
         return
       }
       i = i + 1
     })
   },
   name: 'reset',
-  description: 'Completely resets my stored settings for your server. **Use with caution**.',
+  quickHelp: 'Completely resets my stored settings for your server. If you want to undo or otherwise disable Logger logging in the server, this is the command.',
+  examples: `\`${global.envInfo.GLOBAL_BOT_PREFIX}reset\` <- asks for confirmation (say "yes") before clearing logging settings for the server.`,
   type: 'admin',
   category: 'Administration'
 }

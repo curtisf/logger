@@ -10,7 +10,7 @@ class GuildSettings {
     this.id = data.id
     this.ignoredChannels = data.ignoredChannels || data.ignored_channels
     this.logBots = data.logBots || data.log_bots
-    this.event_logs = data.event_logs // TODO: make a guild doc transformer that converts old docs to new
+    this.event_logs = data.event_logs
     this.allLog = data.logchannel
     this.ownerID = data.ownerID || data.owner_id
     this.disabledEvents = data.disabledEvents || data.disabled_events
@@ -22,8 +22,9 @@ class GuildSettings {
     this.voice = data.feeds ? data.feeds.voice.channelID : ''
     this.premium = data.premium ? data.premium : false
     this.ignoredUsers = data.ignoredUsers
+    this.customSettings = data.custom_settings
 
-    global.bot.guildSettingsCache[data.id] = this
+    global.bot.guildSettingsCache[data.id] = this // someday, this will be replaced because it's dumb
   }
 
   getEventLogID (eventName) {

@@ -13,13 +13,10 @@ module.exports = {
         value: `${message.channel.guild.verificationLevel}`
       }, {
         name: 'Owner',
-        value: `**${global.bot.users.get(message.channel.guild.ownerID).username}#${global.bot.users.get(message.channel.guild.ownerID).discriminator}** (${message.channel.guild.ownerID})`
+        value: `<@${message.channel.guild.ownerID}>`
       }, {
-        name: 'Member Count',
-        value: `**${message.channel.guild.memberCount}**\n**${message.channel.guild.members.filter(u => u.bot).length}** bots\n**${message.channel.guild.members.filter(u => !u.bot).length}** users`
-      }, {
-        name: 'Partnership',
-        value: message.channel.guild.features.length !== 0 ? message.channel.guild.features.join(', ') : 'None'
+        name: 'Features',
+        value: message.channel.guild.features.length !== 0 ? message.channel.guild.features.join(', ') : 'No Guild Features'
       }, {
         name: 'Channels',
         value: `**${message.channel.guild.channels.size}** total\n**${message.channel.guild.channels.filter(c => c.type === 0).length}** text\n**${message.channel.guild.channels.filter(c => c.type === 2).length}** voice\n**${message.channel.guild.channels.filter(c => c.type === 4).length}** categories`
@@ -66,7 +63,8 @@ module.exports = {
     await message.channel.createMessage({ embed: embed })
   },
   name: 'serverinfo',
-  description: 'Get information about the server this command is used in.',
+  quickHelp: 'Get information about the server this command is used in.',
+  examples: `\`${global.envInfo.GLOBAL_BOT_PREFIX}serverinfo\` <- returns an embed with member count, features, and emojis of the server used in.`,
   type: 'any',
   category: 'Utility'
 }

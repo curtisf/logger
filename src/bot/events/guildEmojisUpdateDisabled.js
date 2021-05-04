@@ -1,27 +1,26 @@
 const send = require('../modules/webhooksender')
 const AUDIT_ID = {
-  'added': 60,
-  'removed': 62,
-  'updated': 61
+  added: 60,
+  removed: 62,
+  updated: 61
 }
 
 module.exports = {
-  name: 'guildEmojisUpdate',
+  name: 'guildEmojisUpdateDisabled',
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
     let type
     const guildEmojisUpdateEvent = {
       guildID: guild.id,
       eventName: 'guildEmojisUpdate',
       embed: {
-        description: `Guild emojis were updated.`,
+        description: 'Guild emojis were updated.',
         fields: [{
           name: 'Emoji was manipulated',
           value: ''
         }, {
           name: 'ID',
-          value: `\`\`\`ini\nUser = Unknown\nEmoji = Unknown\`\`\``
+          value: '```ini\nUser = Unknown\nEmoji = Unknown```'
         }],
         color: 3553599
       }
@@ -39,7 +38,7 @@ module.exports = {
       }
       type = 'added'
       guildEmojisUpdateEvent.embed.thumbnail = {
-        'url': `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
+        url: `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
       }
       guildEmojisUpdateEvent.embed.fields[0].name = 'Added emoji'
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
@@ -57,9 +56,10 @@ module.exports = {
     }
     await setTimeout(async () => {
       const num = AUDIT_ID[type]
-      const logs = await guild.getAuditLogs(1, null, num).catch(() => {return})
+      const logs = await guild.getAuditLogs(1, null, num).catch(() => {})
       if (!logs) return
       const log = logs.entries[0]
+      if (!log) return
       const user = logs.users[0]
       if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
         guildEmojisUpdateEvent.embed.author = {

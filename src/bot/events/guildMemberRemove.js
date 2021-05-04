@@ -1,15 +1,13 @@
 const send = require('../modules/webhooksender')
 const prunecache = require('../modules/prunecache')
+const { User } = require('eris')
 
 module.exports = {
   name: 'guildMemberRemove',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
-    if (!member.createdAt) {
-      member.id = 'Unknown'
-      member.username = 'Unknown'
-      member.discriminator = 'Unknown'
+    if (!member.roles) {
+      member = new User({ id: member.id, ...member.user }, global.bot)
     }
     const roles = []
     if (member.roles) {
@@ -23,79 +21,79 @@ module.exports = {
       value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ') // No idea why the below line is needed
     }
     if (!rolesField.value) rolesField.value = 'None'
-    if (!member.username) { // If they don't have a username, then either the lib is dying or it is a lurker
-      return await send({
-        guildID: guild.id,
-        eventName: 'guildMemberRemove',
-        embed: {
-          author: {
-            name: 'Lurker',
-            icon_url: 'https://images.emojiterra.com/twitter/512px/1f440.png' // I'm not worried about using a website url for icon because
-            //                                                                   Discord caches the image as to prevent unneccesary load
-          },
-          description: 'A lurker has left the server'
-        }
-      })
+    const event = {
+      guildID: guild.id,
+      eventName: 'guildMemberRemove'
     }
-    await setTimeout(async () => {
-      const event = {
-        guildID: guild.id,
-        eventName: 'guildMemberRemove'
-      }
-      const logs = await guild.getAuditLogs(1, null, 20).catch(() => {})
-      if (!logs) return
-      const log = logs.entries[0]
-      if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-        const user = logs.users.find(u => u.id !== member.id)
-        event.eventName = 'guildMemberKick'
-        event.embed = {
-          author: {
-            name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
-            icon_url: member.avatarURL
-          },
-          color: 16711680,
-          description: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''} was kicked`,
-          fields: [{
-            name: 'User Information',
-            value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
-          }, rolesField, {
-            name: 'Reason',
-            value: log.reason ? log.reason : 'None provided'
-          }, {
-            name: 'ID',
-            value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
-          }],
-          footer: {
-            text: `${user.username}#${user.discriminator}`,
-            icon_url: user.avatarURL
-          }
-        }
-        return send(event)
-      } else {
-        const purgeLogs = await guild.getAuditLogs(1, null, 21)
-        purgeLogEntry = purgeLogs.entries[0]
-        const user = purgeLogs.users[0]
-        if (!purgeLogEntry || Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) > 30000) {
-          event.embed = {
-            author: {
-              name: `${member.username}#${member.discriminator}`,
-              icon_url: member.avatarURL
-            },
-            color: 16711680,
-            description: `${member.username}#${member.discriminator} left`,
-            fields: [{
-              name: 'User Information',
-              value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
-            }, rolesField, {
-              name: 'ID',
-              value: `\`\`\`ini\nUser = ${member.id}\`\`\``
-            }]
-          }
-          return send(event)
-        } else if (Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) < 30000) { // 30 seconds
-          return prunecache.handle(purgeLogEntry.id, guild, member, user) // pass event to module for caching/managing prunes
+    const logs = await guild.getAuditLogs(5, null, 20).catch(() => {})
+    let log
+    if (logs && logs.entries && logs.entries.length !== 0) {
+      log = logs.entries.find(e => e.targetID === member.id)
+    }
+    if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+      const user = log.user
+      event.eventName = 'guildMemberKick'
+      event.embed = {
+        author: {
+          name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
+          icon_url: member.avatarURL
+        },
+        color: 16711680,
+        description: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''} was kicked`,
+        fields: [{
+          name: 'User Information',
+          value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
+        }],
+        footer: {
+          text: `${user.username}#${user.discriminator}`,
+          icon_url: user.avatarURL
         }
       }
-    }, 1000)
+      if (member.roles) {
+        event.embed.fields.push(rolesField, {
+          name: 'Joined At',
+          value: `${new Date(member.joinedAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+        })
+      }
+      event.embed.fields.push({
+        name: 'Created At',
+        value: `${new Date(member.createdAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
+      }, {
+        name: 'Reason',
+        value: log.reason ? log.reason : 'None provided'
+      }, {
+        name: 'ID',
+        value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
+      })
+      return send(event)
+    } else {
+      // TODO: redo purge audit log stuff eventually (update: copy from patron bot eventually)
+      event.embed = {
+        author: {
+          name: `${member.username}#${member.discriminator}`,
+          icon_url: member.avatarURL
+        },
+        color: 16711680,
+        description: `${member.username}#${member.discriminator} left`,
+        fields: [{
+          name: 'User Information',
+          value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
+        }]
+      }
+      if (member.roles) {
+        event.embed.fields.push(rolesField, {
+          name: 'Joined At',
+          value: `${new Date(member.joinedAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+        })
+      }
+      event.embed.fields.push({
+        name: 'Created At',
+        value: `${new Date(member.createdAt).toUTCString()} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60)).toFixed(0)} hours old)`
+      }, {
+        name: 'ID',
+        value: `\`\`\`ini\nUser = ${member.id}\`\`\``
+      })
+      return send(event)
+    }
   }
 }

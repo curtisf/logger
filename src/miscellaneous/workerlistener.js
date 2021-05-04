@@ -1,17 +1,28 @@
 const webhookLogger = require('./webhooklogger')
 const Zabbix = require('zabbix-promise')
+
 const workerCrashes = {}
 let statsObj = {}
 
-if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUBMISSION_INTERVAL))) {
+const allWorkers = []
+
+if (global.envInfo.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(global.envInfo.STAT_SUBMISSION_INTERVAL))) {
   setInterval(async () => {
+    allWorkers.forEach(w => {
+      w.send({ type: 'sendStats' })
+    })
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('ok')
+      }, 2000)
+    })
     if (statsObj.commandUsage) {
       for (const eventName in statsObj.eventUsage) {
-        if (statsObj.eventUsage[eventName] > 0) {
+        if (statsObj?.eventUsage[eventName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
-              host: process.env.ZABBIX_HOST,
+              host: global.envInfo.ZABBIX_HOST,
               key: `logger.event.${eventName}`,
               value: statsObj.eventUsage[eventName] === 0 ? 1 : statsObj.eventUsage[eventName]
             })
@@ -22,11 +33,11 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       }
 
       for (const commandName in statsObj.commandUsage) {
-        if (statsObj.commandUsage[commandName] > 0) {
+        if (statsObj?.commandUsage[commandName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
-              host: process.env.ZABBIX_HOST,
+              host: global.envInfo.ZABBIX_HOST,
               key: `logger.command.${commandName}`,
               value: statsObj.commandUsage[commandName] === 0 ? 1 : statsObj.commandUsage[commandName]
             })
@@ -37,11 +48,11 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       }
 
       for (const miscName in statsObj.miscUsage) {
-        if (statsObj.miscUsage[miscName] > 0) {
+        if (statsObj?.miscUsage[miscName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            Zabbix.sender({
               server: 'localhost',
-              host: process.env.ZABBIX_HOST,
+              host: global.envInfo.ZABBIX_HOST,
               key: `logger.misc.${miscName}`,
               value: statsObj.miscUsage[miscName] === 0 ? 1 : statsObj.miscUsage[miscName]
             })
@@ -53,12 +64,13 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
 
       statsObj = {}
     }
-  }, parseInt(process.env.STAT_SUBMISSION_INTERVAL) + 250) // add 1/4 second deadband to allow the shards to respond
+  }, parseInt(global.envInfo.STAT_SUBMISSION_INTERVAL) + 250) // add 1/4 second deadband to allow the shards to respond
 }
 
 module.exports = async worker => {
+  allWorkers.push(worker)
   worker.on('online', () => {
-    console.log(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
+    global.logger.startup(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
     worker.send({
       type: 'startup',
       processType: 'bot',
@@ -76,8 +88,9 @@ module.exports = async worker => {
     }
   })
 
-  worker.on('message', message => {
-    if (message.type && message.type === 'stats') {
+  worker.on('message', async message => {
+    if (!message.type) return
+    if (message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
       } else {
@@ -91,16 +104,35 @@ module.exports = async worker => {
           statsObj.miscUsage[miscItem] += message.miscUsage[miscItem]
         }
       }
+    } else if (message.type === 'debugActivity') {
+      if (message.data === 'cpuusage') {
+        const os = require('os-utils')
+
+        os.cpuUsage(v => {
+          console.log(`Cluster master cpu usage: ${v * 100}%`)
+        })
+
+        os.cpuFree(v => {
+          console.log(`Cluster master cpu free: ${v * 100}%`)
+        })
+      }
     }
   })
 
+  worker.on('disconnect', () => {
+    console.error(`[${cluster.worker.rangeForShard}] IPC disconnected!`)
+    global.webhook.error(`[${cluster.worker.rangeForShard}] IPC disconnected! <@&349414410869276673>`)
+    process.exit(1)
+  })
+
   worker.on('exit', code => {
+    allWorkers.splice(allWorkers.indexOf(worker), 1)
     if (code === 0) {
       global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
     } else if (workerCrashes[worker.rangeForShard] >= 2) {
-      global.logger.error(`Worker ${worker.id} hosting ${worker.rangeForShard} is will not be respawned due to a detected boot loop.`)
-      global.webhook.fatal(`Worker ${worker.id} hosting ${worker.rangeForShard} is will not be respawned due to a detected boot loop. | ${worker.id}`)
+      global.logger.error(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop.`)
+      global.webhook.fatal(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop. | ${worker.id}`)
     } else {
       global.logger.error(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
       global.webhook.fatal(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)

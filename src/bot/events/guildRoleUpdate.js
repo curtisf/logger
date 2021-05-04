@@ -16,7 +16,7 @@ module.exports = {
     }
     const oldKeys = Object.keys(oldRole)
     oldKeys.forEach(prop => {
-      if (role[prop].toString() !== oldRole[prop].toString() && prop !== 'position') {
+      if (role[prop] !== oldRole[prop] && prop !== 'position' && prop !== 'permissions') {
         if (prop === 'color') {
           guildRoleUpdateEvent.embed.fields.unshift({
             name: toTitleCase(prop),
@@ -60,16 +60,14 @@ module.exports = {
     await setTimeout(async () => {
       const logs = await guild.getAuditLogs(1, null, 31)
       const log = logs.entries[0]
-      if (!log) return
-      const perp = logs.users[0]
-      if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+      if (log && log.user && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
         guildRoleUpdateEvent.embed.fields.push({
           name: 'ID',
-          value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
+          value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${log.user.id}\`\`\``
         })
         guildRoleUpdateEvent.embed.author = {
-          name: `${perp.username}#${perp.discriminator}`,
-          icon_url: perp.avatarURL
+          name: `${log.user.username}#${log.user.discriminator}`,
+          icon_url: log.user.avatarURL
         }
         if (guildRoleUpdateEvent.embed.fields.length === 1) return
         await send(guildRoleUpdateEvent)

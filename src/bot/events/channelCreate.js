@@ -2,23 +2,25 @@ const send = require('../modules/webhooksender')
 const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
-  4: 'Category'
+  4: 'Category',
+  5: 'Announcement',
+  13: 'Stage Channel'
 }
 
 module.exports = {
   name: 'channelCreate',
   type: 'on',
   handle: async newChannel => { // If it's a DM or group channel, ignore the creation
-    if (newChannel.type === 1 || newChannel.type === 3 || !newChannel.guild.members.get(global.bot.user.id).permission.json['viewAuditLogs'] || !newChannel.guild.members.get(global.bot.user.id).permission.json['manageWebhooks']) return
+    if (newChannel.type === 1 || newChannel.type === 3) return
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
       embed: {
         author: {
           name: 'Unknown User',
-          icon_url: 'http://laoblogger.com/images/outlook-clipart-red-x-10.jpg'
+          icon_url: 'https://logger.bot/staticfiles/red-x.png'
         },
-        description: `${CHANNEL_TYPE_MAP[newChannel.type]} created <#${newChannel.id}>`,
+        description: `${CHANNEL_TYPE_MAP[newChannel.type] ? CHANNEL_TYPE_MAP[newChannel.type] : 'Unsupported channel type'} created <#${newChannel.id}>`,
         fields: [{
           name: 'Name',
           value: newChannel.name
@@ -41,20 +43,17 @@ module.exports = {
         }
       })
     }
-    await setTimeout(async () => {
-      const logs = await newChannel.guild.getAuditLogs(1, null, 10).catch(() => {return})
-      if (!logs) return
-      const log = logs.entries[0]
-      const user = logs.users[0]
-      const member = newChannel.guild.members.get(user.id)
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
-        channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
-        channelCreateEvent.embed.author.icon_url = user.avatarURL
-        channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
-        await send(channelCreateEvent)
-      } else {
-        await send(channelCreateEvent)
-      }
-    }, 1000)
+    const logs = await newChannel.guild.getAuditLogs(5, null, 10).catch(() => {})
+    if (!logs) return
+    const log = logs.entries.find(e => e.targetID === newChannel.id)
+    if (!log) return
+    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
+    const user = log.user
+    if (user.bot && !global.bot.guildSettingsCache[newChannel.guild.id].isLogBots()) return
+    const member = newChannel.guild.members.get(user.id)
+    channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+    channelCreateEvent.embed.author.icon_url = user.avatarURL
+    channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
+    await send(channelCreateEvent)
   }
 }
