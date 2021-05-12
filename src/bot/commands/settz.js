@@ -17,7 +17,7 @@ module.exports = {
     } else if (!suffix || (!MOST_TIMEZONES.includes(suffix) && suffix !== 'reset')) {
       await message.channel.createMessage({
         embed: {
-          description: 'The provided timezone is not valid. You can use any timezone [here](https://gist.github.com/curtisf/6f9e68e6767fc8526a294761c0ca40cd)',
+          description: 'The provided timezone is not valid. You can use any timezone [here](https://gist.github.com/curtisf/6f9e68e6767fc8526a294761c0ca40cd) or `reset` to clear the saved timezone.',
           author: {
             name: `${message.author.username}#${message.author.discriminator}`,
             icon_url: message.author.avatarURL

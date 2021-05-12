@@ -31,6 +31,8 @@ class GuildSettings {
   makeFormattedTime (unixTimestamp) {
     if (unixTimestamp && this.getTimezone()) {
       return momentTz(new Date(unixTimestamp)).tz(this.getTimezone()).format('YYYY-MM-DD hh:mm:ss z')
+    } else if (unixTimestamp) {
+      return new Date(unixTimestamp).toUTCString()
     } else {
       return new Date().toUTCString()
     }
