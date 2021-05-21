@@ -31,7 +31,7 @@ module.exports = {
         },
         {
           name: 'Member Count',
-          value: guild.memberCount,
+          value: guild.memberCount.toLocaleString(),
           inline: true
         }],
         color: 65280
@@ -69,7 +69,7 @@ module.exports = {
       if (usedInvite) {
         GMAEvent.embed.fields.push({
           name: 'Invite Used',
-          value: `${usedInvite.code} with ${usedInvite.uses} uses`,
+          value: `${usedInvite.code} with ${usedInvite.uses.toLocaleString()} uses`,
           inline: true
         })
       }
