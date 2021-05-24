@@ -32,7 +32,7 @@ async function paste (messages, guildID) {
         avatarURL: '<no avatar>'
       }
     }
-    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts)}: ${m.content} |  | `
+    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${global.bot.guildSettingsCache[guildID].makeFormattedTime(m.ts)}: ${m.content} |  | `
   }).join('\r\n')
   if (pasteString) {
     sa
