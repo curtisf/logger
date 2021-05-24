@@ -39,7 +39,7 @@ module.exports = {
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``
       })
       return await send(guildMemberUpdate)
-    } else if (oldMember?.pending && !member.pending && guild.features.includes('COMMUNITY')) {
+    } else if (oldMember?.pending && !member.pending && guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED')) {
       guildMemberUpdate.eventName = 'guildMemberVerify'
       guildMemberUpdate.embed.description = `${member.mention} (${member.username}#${member.discriminator}: \`${member.id}\`) has verified.`
       guildMemberUpdate.embed.author = {
