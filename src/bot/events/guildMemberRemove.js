@@ -74,7 +74,7 @@ module.exports = {
           icon_url: member.avatarURL
         },
         color: 16711680,
-        description: `${member.username}#${member.discriminator} left ${guild.features.includes('DISCOVERABLE') ? '(possibly a lurker)' : ''}`,
+        description: `${member.username}#${member.discriminator} left`,
         fields: [{
           name: 'User Information',
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
