@@ -2,6 +2,16 @@ const send = require('../modules/webhooksender')
 const cacheGuild = require('../utils/cacheGuild')
 const arrayCompare = require('../utils/arraycompare')
 
+const canUseExternal = guild => {
+  const logChannelID = global.bot.guildSettingsCache[guild.id].event_logs.guildMemberUpdate
+  if (logChannelID) {
+    const logChannel = global.bot.getChannel(logChannelID)
+    const permOverwrite = !!logChannel.permissionOverwrites.get(guild.id)?.json.useExternalEmojis
+    if (permOverwrite) return true
+  }
+  return !!guild.roles.get(guild.id)?.permissions.json.useExternalEmojis
+}
+
 module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
@@ -38,7 +48,7 @@ module.exports = {
         name: 'ID',
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``
       })
-      return await send(guildMemberUpdate)
+      await send(guildMemberUpdate)
     } else if (oldMember?.pending && !member.pending && guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED')) {
       guildMemberUpdate.eventName = 'guildMemberVerify'
       guildMemberUpdate.embed.description = `${member.mention} (${member.username}#${member.discriminator}: \`${member.id}\`) has verified.`
@@ -48,7 +58,18 @@ module.exports = {
       }
       guildMemberUpdate.embed.color = 0x1ced9a
       delete guildMemberUpdate.embed.fields
-      return await send(guildMemberUpdate)
+      await send(guildMemberUpdate)
+    } else if (oldMember && oldMember.premiumSince !== member.premiumSince) {
+      const embedCopy = guildMemberUpdate
+      embedCopy.eventName = 'guildMemberBoostUpdate'
+      embedCopy.embed.description = `${member.mention} has ${member.premiumSince ? 'boosted' : 'stopped boosting'} the server.`
+      embedCopy.embed.author = {
+        name: `${member.username}#${member.discriminator}`,
+        icon_url: member.avatarURL
+      }
+      embedCopy.embed.color = member.premiumSince ? 0x15cc12 : 0xeb4034
+      delete embedCopy.embed.fields
+      await send(embedCopy)
     }
     // if member cached and roles not different, stop here.
     if (oldMember && arrayCompare(member.roles, oldMember.roles)) return // if roles are the same stop fetching audit logs
@@ -83,7 +104,7 @@ module.exports = {
         // Add a + or - emoji when roles are manipulated for a user, stringify it, and assign a field value to it.
         guildMemberUpdate.embed.fields = [{
           name: 'Changes',
-          value: `${added.map(role => `➕ **${role.name}**`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}**`).join('\n')}`
+          value: `${added.map(role => `${canUseExternal(guild) ? '<:greenplus:562826499929931776>' : '➕'} **${role.name}**`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}**`).join('\n')}`
         }]
         guildMemberUpdate.embed.color = roleColor
         guildMemberUpdate.embed.footer = {

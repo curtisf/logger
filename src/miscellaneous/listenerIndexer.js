@@ -6,6 +6,9 @@ module.exports = () => {
   const once = []
   const on = []
   files.forEach(filename => {
+    if (require.cache[path.resolve('src', 'bot', 'events', filename)]) {
+      delete require.cache[path.resolve('src', 'bot', 'events', filename)]
+    }
     const event = require(path.resolve('src', 'bot', 'events', filename))
     event.name = event.name.replace('.js', '')
     if (event.type === 'once') {

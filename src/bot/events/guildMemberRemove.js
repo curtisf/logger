@@ -52,12 +52,12 @@ module.exports = {
       if (member.roles) {
         event.embed.fields.push(rolesField, {
           name: 'Joined At',
-          value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.joinedAt)} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+          value: `<t:${Math.round(member.joinedAt / 1000)}:F> (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
         })
       }
       event.embed.fields.push({
         name: 'Created At',
-        value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.createdAt)} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
+        value: `<t:${Math.round(member.createdAt / 1000)}:F> (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
       }, {
         name: 'Reason',
         value: log.reason ? log.reason : 'None provided'
@@ -83,17 +83,17 @@ module.exports = {
       if (member.roles) {
         event.embed.fields.push(rolesField, {
           name: 'Joined At',
-          value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.joinedAt)} (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
+          value: `<t:${Math.round(member.joinedAt / 1000)}:F> (<t:${Math.round(member.joinedAt / 1000)}:R>)`
         })
+        event.embed.fields.push({
+          name: 'Created At',
+          value: `<t:${Math.round(member.createdAt / 1000)}:F> (<t:${Math.round(member.createdAt / 1000)}:R>)`
+        }, {
+          name: 'ID',
+          value: `\`\`\`ini\nUser = ${member.id}\`\`\``
+        })
+        return send(event)
       }
-      event.embed.fields.push({
-        name: 'Created At',
-        value: `${global.bot.guildSettingsCache[guild.id].makeFormattedTime(member.createdAt)} (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60)).toFixed(0)} hours old)`
-      }, {
-        name: 'ID',
-        value: `\`\`\`ini\nUser = ${member.id}\`\`\``
-      })
-      return send(event)
     }
   }
 }

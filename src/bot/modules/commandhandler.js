@@ -18,6 +18,9 @@ function processCommand (message, commandName, suffix) {
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')
     return
+  } else if (command.noThread && (message.channel.type === 10 || message.channel.type === 11 || message.channel.type === 12)) {
+    message.channel.createMessage('You cannot use this command in a thread!')
+    return
   } else if (message.author.id === process.env.CREATOR_IDS) {
     global.logger.info(`Developer override by ${message.author.username}#${message.author.discriminator} at ${new Date().toUTCString()}`)
     command.func(message, suffix)

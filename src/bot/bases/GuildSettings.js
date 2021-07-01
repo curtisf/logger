@@ -1,5 +1,4 @@
 const cacheGuild = require('../utils/cacheGuild')
-const momentTz = require('moment-timezone')
 
 class GuildSettings {
   constructor (data) {
@@ -26,20 +25,6 @@ class GuildSettings {
     this.customSettings = data.custom_settings
 
     global.bot.guildSettingsCache[data.id] = this // someday, this will be replaced because it's dumb
-  }
-
-  makeFormattedTime (unixTimestamp) {
-    if (unixTimestamp && this.getTimezone()) {
-      return momentTz(new Date(unixTimestamp)).tz(this.getTimezone()).format('YYYY-MM-DD hh:mm:ss z')
-    } else if (unixTimestamp) {
-      return new Date(unixTimestamp).toUTCString()
-    } else {
-      return new Date().toUTCString()
-    }
-  }
-
-  getTimezone () {
-    return this.customSettings.timezone
   }
 
   getEventLogID (eventName) {

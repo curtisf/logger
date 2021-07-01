@@ -27,12 +27,13 @@ const eventLogs = {
   voiceStateUpdate: '',
   voiceChannelSwitch: '',
   guildEmojisUpdate: '',
-  guildMemberNickUpdate: ''
+  guildMemberNickUpdate: '',
+  guildMemberBoostUpdate: ''
 }
 
 async function createGuild (guild) {
   try {
-    await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots, custom_settings) VALUES ($1, $2, $3, $4, $5, $6, $7)', [guild.id, guild.ownerID, [], [], eventLogs, false, { timezone: '' }]) // Regenerate the document if a user kicks and reinvites the bot.
+    await pool.query('INSERT INTO guilds (id, owner_id, ignored_channels, disabled_events, event_logs, log_bots, custom_settings) VALUES ($1, $2, $3, $4, $5, $6, $7)', [guild.id, guild.ownerID, [], [], eventLogs, false, { }]) // Regenerate the document if a user kicks and reinvites the bot.
     await cacheGuild(guild.id)
   } catch (e) { }
 }

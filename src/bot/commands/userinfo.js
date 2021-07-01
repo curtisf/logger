@@ -28,10 +28,10 @@ module.exports = {
       value: `${member.username}#${member.discriminator} ${member.nick ? `(**${member.nick}**)` : ''} (${member.id})`
     }, {
       name: 'Join Date',
-      value: `${global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime(member.joinedAt)} (${Math.round((new Date().getTime() - member.joinedAt) / (1000 * 60 * 60 * 24))} days)`
+      value: `<t:${Math.round(member.joinedAt / 1000)}:F> (<t:${Math.round(member.joinedAt / 1000)}:R>)`
     }, {
       name: 'Creation Date',
-      value: global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime((member.id / 4194304) + 1420070400000)
+      value: `<t:${Math.round(((member.id / 4194304) + 1420070400000) / 1000)}:F>`
     }, {
       name: 'Roles',
       value: roles.length !== 0 ? roles.map(c => `\`${c.name}\``).join(', ') : 'None'

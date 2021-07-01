@@ -1,9 +1,10 @@
+const escape = require('markdown-escape')
+
 module.exports = {
   func: async message => {
     const fields = []
     const embed = {
       description: `Information about ${message.channel.guild.name}`,
-      timestamp: new Date(),
       color: 319403,
       fields: [{
         name: 'Name',
@@ -13,7 +14,7 @@ module.exports = {
         value: `${message.channel.guild.verificationLevel}`
       }, {
         name: 'Owner',
-        value: `<@${message.channel.guild.ownerID}>`
+        value: `**${global.bot.users.get(message.channel.guild.ownerID).username}#${bot.users.get(message.channel.guild.ownerID).discriminator}** (${message.channel.guild.ownerID})`
       }, {
         name: 'Features',
         value: message.channel.guild.features.length !== 0 ? message.channel.guild.features.join(', ') : 'No Guild Features'
@@ -38,6 +39,7 @@ module.exports = {
         name: 'Emojis',
         value: 'None'
       })
+      await message.channel.createMessage({ embed: embed })
     } else {
       const emojiObj = {
         0: []
@@ -45,26 +47,41 @@ module.exports = {
       let counter = 0 // Dynamically create embed fields based on character count
       message.channel.guild.emojis.forEach(emoji => {
         if (emojiObj[counter].join('\n').length < 950) {
-          emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
+          if (!emoji.available) return
+          emojiObj[counter].push(`<${emoji.animated ? 'a' : ''}:${emoji.name}:${emoji.id}> ${escape(emoji.name)} ${emoji.roles.length !== 0 ? '<- 🔒 role restricted' : ''}`)
         } else {
+          if (!emoji.available) return
           counter++
           emojiObj[counter] = []
-          emojiObj[counter].push(`<:${emoji.name}:${emoji.id}>`)
+          emojiObj[counter].push(`<${emoji.animated ? 'a' : ''}:${emoji.name}:${emoji.id}>`)
         }
       })
-      Object.keys(emojiObj).forEach(key => {
-        fields.push({
+      const emojiFields = Object.keys(emojiObj).map(key => {
+        return {
           name: 'Emojis',
-          value: emojiObj[key].join('\n')
-        })
+          value: emojiObj[key].join('\n'),
+          inline: true
+        }
       })
+      for (let i = 0; i < emojiFields.length; i++) {
+        if (!emojiFields[i]) break
+        if (i % 4 !== 0) continue
+        const emojiFieldsToUse = [emojiFields[i]]
+        if (emojiFields[i + 1]) emojiFieldsToUse.push(emojiFields[i + 1])
+        if (emojiFields[i + 2]) emojiFieldsToUse.push(emojiFields[i + 2])
+        if (emojiFields[i + 3]) emojiFieldsToUse.push(emojiFields[i + 3])
+        if (i === 0) {
+          embed.fields = embed.fields.concat(emojiFieldsToUse)
+          await message.channel.createMessage({ embed: embed })
+        } else {
+          await message.channel.createMessage({ embed: { description: 'Emojis continued', fields: emojiFieldsToUse } })
+        }
+      }
     }
-    embed.fields = embed.fields.concat(fields)
-    await message.channel.createMessage({ embed: embed })
   },
   name: 'serverinfo',
-  quickHelp: 'Get information about the server this command is used in.',
-  examples: `\`${process.env.GLOBAL_BOT_PREFIX}serverinfo\` <- returns an embed with member count, features, and emojis of the server used in.`,
+  quickHelp: 'Use to get information about the current server (emojis, owner, member count, etc)',
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}serverinfo`,
   type: 'any',
   category: 'Utility'
 }

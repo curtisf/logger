@@ -9,8 +9,15 @@ const CHANNEL_TYPE_MAP = {
   13: 'Stage Channel'
 }
 
-// this is guild-wide because this module has no idea of the perms that the log channel posesses
-const canUseExternal = guild => guild.roles.get(guild.id).permissions.json.useExternalEmojis
+const canUseExternal = guild => {
+  const logChannelID = global.bot.guildSettingsCache[guild.id].event_logs.channelUpdate
+  if (logChannelID) {
+    const logChannel = global.bot.getChannel(logChannelID)
+    const permOverwrite = !!logChannel.permissionOverwrites.get(guild.id)?.json.useExternalEmojis
+    if (permOverwrite) return true
+  }
+  return !!guild.roles.get(guild.id)?.permissions.json.useExternalEmojis
+}
 
 module.exports = {
   name: 'channelUpdate',
@@ -31,7 +38,7 @@ module.exports = {
         description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} was updated (${channel.name})`,
         fields: [{
           name: 'Creation date',
-          value: global.bot.guildSettingsCache[channel.guild.id].makeFormattedTime(channel.createdAt),
+          value: `<t:${Math.round(((channel.id / 4194304) + 1420070400000) / 1000)}:F>`,
           inline: true
         }]
       }
@@ -95,7 +102,7 @@ module.exports = {
       if (Object.keys(log.after).length !== 0 && Object.keys(log.before).length === 0) {
         channelUpdateEvent.embed.fields.push({
           name: 'Overwrite Created',
-          value: `For: \`${log.after.type === 0 ? `role ${channel.guild.roles.get(log.after.id).name}` : `member <@${log.after.id}>`}\``
+          value: `For: ${log.after.type === 0 ? `role ${channel.guild.roles.get(log.after.id).name}` : `member <@${log.after.id}>`}`
         })
         if (log.after.type === 0) {
           const role = channel.guild.roles.get(log.after.id)
@@ -104,7 +111,7 @@ module.exports = {
       } else if (Object.keys(log.before).length !== 0 && Object.keys(log.after).length === 0) {
         channelUpdateEvent.embed.fields.push({
           name: 'Overwrite Removed',
-          value: `For: \`${log.before.type === 0 ? `role ${channel.guild.roles.get(log.before.id).name}` : `member <@${log.before.id}>`}\``
+          value: `For: ${log.before.type === 0 ? `role ${channel.guild.roles.get(log.before.id).name}` : `member <@${log.before.id}>`}`
         })
         if (log.before.type === 0) {
           const role = channel.guild.roles.get(log.before.id)
@@ -118,13 +125,13 @@ module.exports = {
           const oldPerms = Object.keys(oldOverwrite.json)
           const differentPerms = (newPerms.length >= oldPerms.length ? newPerms.concat(getDifference(newPerms, oldPerms)) : oldPerms.concat(oldPerms, newPerms)).filter((v, i, self) => self.indexOf(v) === i)
           if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString() === oldChannel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString()) return
-          let overwriteName = newOverwrite.type + ' '
-          if (newOverwrite.type === 'member') {
+          let overwriteName = `${newOverwrite.type === 1 ? 'member' : 'role'} `
+          if (newOverwrite.type === 1) {
             const member = channel.guild.members.get(newOverwrite.id)
             if (member) {
               overwriteName += member.username + member.nick ? `(${member.mention})` : ''
             }
-          } else if (newOverwrite.type === 'role') {
+          } else if (newOverwrite.type === 0) {
             const role = channel.guild.roles.find(r => r.id === newOverwrite.id)
             if (!role) return
             overwriteName += role.name
@@ -152,7 +159,7 @@ module.exports = {
             }
           })
           if (field.value) {
-            if (newOverwrite.type === 'member') field.value = `<@${newOverwrite.id}>` + field.value
+            if (newOverwrite.type === 1) field.value = `<@${newOverwrite.id}>` + field.value
             channelUpdateEvent.embed.fields.push(field)
           }
         })

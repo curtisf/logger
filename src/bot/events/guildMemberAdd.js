@@ -1,8 +1,6 @@
 const send = require('../modules/webhooksender')
 const inviteCache = require('../modules/invitecache')
 
-// I hate this code so, so, so much. Everyday it continues to run in the bot makes me angrier.
-
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
@@ -23,7 +21,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: global.bot.guildSettingsCache[guild.id].makeFormattedTime(Date.now())
+          value: `<t:${Math.round(Date.now() / 1000)}:F>`
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,

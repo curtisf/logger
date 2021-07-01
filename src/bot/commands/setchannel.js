@@ -24,7 +24,9 @@ const eventList = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildMemberNickUpdate',
-  'guildMemberVerify'
+  'guildMemberVerify',
+  'guildEmojisUpdate',
+  'guildMemberBoostUpdate'
 ]
 
 module.exports = {
@@ -55,10 +57,11 @@ module.exports = {
   quickHelp: 'The [dashboard](https://logger.bot) is the easiest way to setup! Setchannel configures bot logging behavior.',
   examples: `\`${process.env.GLOBAL_BOT_PREFIX}setchannel\` <- log everything where this is sent
   \`${process.env.GLOBAL_BOT_PREFIX}setchannel messageDelete, messageUpdate\` <- logs message deletions and updates
-  \`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` <- logs when someone joins, leaves, or is kicked **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**
-  \`${process.env.GLOBAL_BOT_PREFIX}setchannel anyevent\` <- individually set events to log to the channel this is used in. Supports multiple events at a time. Valid events:
+  \`${process.env.GLOBAL_BOT_PREFIX}setchannel guildMemberAdd, guildMemberRemove, guildMemberKick\` <- joins, leaves, kicks logging **(YOU MUST ALLOW LOGGER __MANAGE CHANNELS AND MANAGE SERVER__ FOR JOIN LOGGING TO WORK! Why? Discord does not send invite info without it!)**
+  \`${process.env.GLOBAL_BOT_PREFIX}setchannel anyevent\` <- set events one-by-one to log. Use commas for multiple. Valid events:
   \`\`\`${eventList.toString(',')}\`\`\``, // 4 characters away from max embed length
   perm: 'manageWebhooks',
+  noThread: true,
   category: 'Logging'
 }
 

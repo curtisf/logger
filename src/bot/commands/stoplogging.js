@@ -44,6 +44,7 @@ module.exports = {
   \`${process.env.GLOBAL_BOT_PREFIX}stoplogging messageDelete, messageUpdate\` <- if the bot was logging messageDelete and messageUpdate to the channel this is used in, now it is unset
   \`${process.env.GLOBAL_BOT_PREFIX}stoplogging guildMemberVerify\` <- if the bot was logging member verify events to the channel this was used in, it will stop doing so`,
   type: 'admin',
+  noThread: true,
   category: 'Logging'
 }
 

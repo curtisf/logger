@@ -3,9 +3,8 @@ const cluster = require('cluster')
 const Raven = require('raven')
 const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
-const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
-const eventMiddleware = require('./modules/eventmiddleware')
+const addBotListeners = require('./utils/addbotlisteners')
 
 require('dotenv').config()
 
@@ -49,19 +48,25 @@ async function init () {
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    intents: 719,
+    intents: [
+      'guilds',
+      'guildVoiceStates',
+      'guildEmojis',
+      'guildInvites',
+      'guildMembers',
+      'guildMessages',
+      'guildBans'
+    ],
     defaultImageFormat: 'png',
     ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
 
-  const statAggregator = require('./modules/statAggregator')
+  // Twilight stuff
+  // const twilight = require('./modules/twilight')
 
-  global.bot.on('global-ratelimit-hit', timeLeft => {
-    global.webhook.error(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
-    console.warn(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
-    statAggregator.incrementEvent('global-ratelimit-hit')
-    global.redis.set('logger-global', timeLeft + 20, 'EX', timeLeft + 20)
-  })
+  // twilight.initClient(global.bot)
+
+  // global.bot.requestHandler = twilight
 
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
@@ -73,20 +78,12 @@ async function init () {
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
-  const [on, once] = listenerIndexer()
 
-  // on.forEach(async event => global.bot.on(event.name, await event.handle))
-  // once.forEach(async event => global.bot.once(event.name, await event.handle))
-
-  on.forEach(async event => eventMiddleware(event, 'on'))
-  once.forEach(async event => eventMiddleware(event, 'once'))
+  addBotListeners()
 
   require('../miscellaneous/bezerk')
 
   connect()
-
-  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(process.env.MESSAGE_HISTORY_DAYS) debating on removing these
-  // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${process.env.MESSAGE_HISTORY_DAYS} day(s).`)
 }
 process.on('exit', (code) => {
   global.logger.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)

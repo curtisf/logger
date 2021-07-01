@@ -23,6 +23,7 @@ class GenericCommand {
     this.perm = data.perm
     this.type = data.type || 'any'
     this.hidden = !!data.hidden
+    this.noThread = !!data.noThread
 
     global.bot.commands[data.name] = this
   }

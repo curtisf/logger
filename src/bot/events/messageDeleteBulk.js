@@ -32,7 +32,7 @@ async function paste (messages, guildID) {
         avatarURL: '<no avatar>'
       }
     }
-    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${global.bot.guildSettingsCache[guildID].makeFormattedTime(m.ts)}: ${m.content} |  | `
+    return `${globalUser.username}#${globalUser.discriminator} (${m.author_id}) | (${globalUser.avatarURL}) | ${new Date(m.ts).toUTCString()}: ${m.content}`
   }).join('\r\n')
   if (pasteString) {
     sa
@@ -44,7 +44,7 @@ async function paste (messages, guildID) {
         if (!err && res.body && res.statusCode === 200 && res.body.key) {
           messageDeleteBulkEvent.embed.fields.push({
             name: 'Link',
-            value: `https://haste.lemonmc.com/${res.body.key}.txt`
+            value: `https://haste.logger.bot/${res.body.key}.txt`
           })
           send(messageDeleteBulkEvent)
         } else {

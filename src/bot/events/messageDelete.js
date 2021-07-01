@@ -3,7 +3,6 @@ const getMessageFromDB = require('../../db/interfaces/postgres/read').getMessage
 const getMessageFromBatch = require('../../db/messageBatcher').getMessage
 const deleteMessage = require('../../db/interfaces/postgres/delete').deleteMessage
 const cacheGuild = require('../utils/cacheGuild')
-const escape = require('markdown-escape')
 
 module.exports = {
   name: 'messageDelete',
@@ -59,11 +58,11 @@ module.exports = {
       })
     })
     messageDeleteEvent.embed.fields.push({
+      name: 'Date',
+      value: `<t:${Math.round(cachedMessage.ts / 1000)}:F>`
+    }, {
       name: 'ID',
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
-    }, {
-      name: 'Date',
-      value: global.bot.guildSettingsCache[message.channel.guild.id].makeFormattedTime(cachedMessage.ts)
     })
     await send(messageDeleteEvent)
   }
