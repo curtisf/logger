@@ -3,6 +3,7 @@ const escape = require('markdown-escape')
 module.exports = {
   func: async message => {
     const fields = []
+    const owner = global.bot.users.get(message.channel.guild.ownerID)
     const embed = {
       description: `Information about ${message.channel.guild.name}`,
       color: 319403,
@@ -14,7 +15,7 @@ module.exports = {
         value: `${message.channel.guild.verificationLevel}`
       }, {
         name: 'Owner',
-        value: `**${global.bot.users.get(message.channel.guild.ownerID).username}#${bot.users.get(message.channel.guild.ownerID).discriminator}** (${message.channel.guild.ownerID})`
+        value: `${owner ? `**${global.bot.users.get(message.channel.guild.ownerID).username}#${bot.users.get(message.channel.guild.ownerID).discriminator}** ` : ''}(${message.channel.guild.ownerID})`
       }, {
         name: 'Features',
         value: message.channel.guild.features.length !== 0 ? message.channel.guild.features.join(', ') : 'No Guild Features'
