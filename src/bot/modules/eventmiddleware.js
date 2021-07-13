@@ -61,7 +61,7 @@ function getGuildIdByEvent (type, args) {
     case 'guildRoleDelete':
     case 'guildRoleUpdate':
     case 'guildUpdate': {
-      return args[0].id
+      return args[0]?.id
     }
     case 'voiceChannelJoin':
     case 'voiceChannelLeave':

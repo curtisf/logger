@@ -17,7 +17,7 @@ module.exports = async (guildID, channelID) => {
   try {
     logChannel = global.bot.getChannel(channelID)
   } catch (_) {
-    global.logger.warn(`Logchannel ${channelID} in ${global.bot.guilds.get(guildID).name} ${guildID} does not exist`)
+    global.logger.warn(`Logchannel ${channelID} in ${guildID} does not exist`)
     await global.redis.del(`webhook-${channelID}`)
     global.bot.guildSettingsCache[guildID].clearEventByID(channelID)
     await clearEventByID(guildID, channelID)
@@ -29,7 +29,7 @@ module.exports = async (guildID, channelID) => {
     webhooks = await logChannel?.getWebhooks()
     statAggregator.incrementMisc('fetchWebhooks')
   } catch (_) {
-    global.logger.warn(`Logchannel ${channelID} in ${global.bot.guilds.get(guildID).name} ${guildID} does not exist even though it is in cache`)
+    global.logger.warn(`Logchannel ${channelID} in ${guildID} does not exist even though it is in cache`)
     await global.redis.del(`webhook-${channelID}`)
     global.bot.guildSettingsCache[guildID].clearEventByID(channelID)
     await clearEventByID(guildID, channelID)

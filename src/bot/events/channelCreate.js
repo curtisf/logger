@@ -35,7 +35,7 @@ module.exports = {
       newChannel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 0) { // Should only be role anyways, but let's just be safe
           const role = newChannel.guild.roles.find(r => r.id === overwrite.id)
-          if (role.name === '@everyone') return
+          if (!role || role.name === '@everyone') return
           channelCreateEvent.embed.fields.push({
             name: role.name,
             value: `Type: role\nPermissions: ${Object.keys(overwrite.json).filter(perm => overwrite.json[perm]).join(', ')}`

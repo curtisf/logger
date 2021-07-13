@@ -100,13 +100,14 @@ module.exports = {
       }
     } else {
       if (Object.keys(log.after).length !== 0 && Object.keys(log.before).length === 0) {
+        const nRole = channel.guild.roles.get(log.after.id)
+        if (!nRole) return
         channelUpdateEvent.embed.fields.push({
           name: 'Overwrite Created',
-          value: `For: ${log.after.type === 0 ? `role ${channel.guild.roles.get(log.after.id).name}` : `member <@${log.after.id}>`}`
+          value: `For: ${log.after.type === 0 ? `role ${nRole.name}` : `member <@${log.after.id}>`}`
         })
         if (log.after.type === 0) {
-          const role = channel.guild.roles.get(log.after.id)
-          channelUpdateEvent.embed.color = role.color || 0x03d3fc
+          channelUpdateEvent.embed.color = nRole.color || 0x03d3fc
         }
       } else if (Object.keys(log.before).length !== 0 && Object.keys(log.after).length === 0) {
         channelUpdateEvent.embed.fields.push({

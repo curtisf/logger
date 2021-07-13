@@ -15,7 +15,7 @@ module.exports = {
         value: `${message.channel.guild.verificationLevel}`
       }, {
         name: 'Owner',
-        value: `${owner ? `**${global.bot.users.get(message.channel.guild.ownerID).username}#${bot.users.get(message.channel.guild.ownerID).discriminator}** ` : ''}(${message.channel.guild.ownerID})`
+        value: `${owner ? `**${owner.username}#${owner.discriminator}** ` : ''}(${message.channel.guild.ownerID})`
       }, {
         name: 'Features',
         value: message.channel.guild.features.length !== 0 ? message.channel.guild.features.join(', ') : 'No Guild Features'
