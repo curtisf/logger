@@ -47,6 +47,7 @@ module.exports = {
     } else {
       type = 'updated'
       emoji = emojis.find(e => oldEmojis.find(o => o.id === e.id).name !== e.name)
+      if (!emoji) return
       guildEmojisUpdateEvent.embed.fields[0].name = 'Updated emoji'
       guildEmojisUpdateEvent.embed.fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
       guildEmojisUpdateEvent.embed.thumbnail = {
