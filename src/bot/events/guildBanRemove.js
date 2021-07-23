@@ -28,10 +28,9 @@ module.exports = {
     }
     const logs = await guild.getAuditLogs(5, null, 23).catch(() => {})
     if (!logs) return
-    const log = logs.entries.find(e => e.targetID === user.id)
-    if (!log) return
-    const perp = log.user
-    if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
+    const log = logs.entries.find(e => e.targetID === user.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+    if (log) { // if the audit log is less than 3 seconds off
+      const perp = log.user
       if (log.reason) guildBanRemoveEvent.embed.fields[1].value = log.reason
       guildBanRemoveEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
       guildBanRemoveEvent.embed.footer = {
