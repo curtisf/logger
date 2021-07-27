@@ -60,19 +60,16 @@ module.exports = {
     }
     await setTimeout(async () => {
       const num = AUDIT_ID[type]
-      const logs = await guild.getAuditLogs(5, null, num).catch(() => {})
+      const logs = await guild.getAuditLog({ limit: 5, actionType: num }).catch(() => {})
       if (!logs) return
-      const log = logs.entries.find(e => e?.targetID === emoji.id)
-      if (!log) return
-      const user = log.user
-      if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
+      const log = logs.entries.find(e => e?.targetID === emoji.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+      if (log) { // if the audit log is less than 3 seconds off
+        const user = log.user
         guildEmojisUpdateEvent.embed.author = {
           name: `${user.username}#${user.discriminator}`,
           icon_url: user.avatarURL
         }
         guildEmojisUpdateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nEmoji = ${emoji.id}\`\`\``
-        await send(guildEmojisUpdateEvent)
-      } else {
         await send(guildEmojisUpdateEvent)
       }
     }, 1000)

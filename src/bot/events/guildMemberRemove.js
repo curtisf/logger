@@ -25,12 +25,12 @@ module.exports = {
       guildID: guild.id,
       eventName: 'guildMemberRemove'
     }
-    const logs = await guild.getAuditLogs(5, null, 20).catch(() => {})
+    const logs = await guild.getAuditLog({ limit: 5, actionType: 20 }).catch(() => {})
     let log
     if (logs && logs.entries && logs.entries.length !== 0) {
-      log = logs.entries.find(e => e.targetID === member.id)
+      log = logs.entries.find(e => e.targetID === member.id && (Date.now() - ((e.id / 4194304) + 1420070400000)) < 3000)
     }
-    if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+    if (log) {
       const user = log.user
       event.eventName = 'guildMemberKick'
       event.embed = {
@@ -85,15 +85,15 @@ module.exports = {
           name: 'Joined At',
           value: `<t:${Math.round(member.joinedAt / 1000)}:F> (<t:${Math.round(member.joinedAt / 1000)}:R>)`
         })
-        event.embed.fields.push({
-          name: 'Created At',
-          value: `<t:${Math.round(member.createdAt / 1000)}:F> (<t:${Math.round(member.createdAt / 1000)}:R>)`
-        }, {
-          name: 'ID',
-          value: `\`\`\`ini\nUser = ${member.id}\`\`\``
-        })
-        return send(event)
       }
+      event.embed.fields.push({
+        name: 'Created At',
+        value: `<t:${Math.round(member.createdAt / 1000)}:F> (<t:${Math.round(member.createdAt / 1000)}:R>)`
+      }, {
+        name: 'ID',
+        value: `\`\`\`ini\nUser = ${member.id}\`\`\``
+      })
+      return send(event)
     }
   }
 }

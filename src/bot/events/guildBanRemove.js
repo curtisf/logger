@@ -26,7 +26,7 @@ module.exports = {
         color: 3553599
       }
     }
-    const logs = await guild.getAuditLogs(5, null, 23).catch(() => {})
+    const logs = await guild.getAuditLog({ limit: 5, actionType: 23 }).catch(() => {})
     if (!logs) return
     const log = logs.entries.find(e => e.targetID === user.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
     if (log) { // if the audit log is less than 3 seconds off

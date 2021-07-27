@@ -73,12 +73,12 @@ module.exports = {
     }
     // if member cached and roles not different, stop here.
     if (oldMember && arrayCompare(member.roles, oldMember.roles)) return // if roles are the same stop fetching audit logs
-    guild.getAuditLogs(5, null, 25).then(async log => {
+    guild.getAuditLog({ limit: 5, actionType: 25 }).then(async log => {
       if (!log.entries[0]) return
-      const possibleLogs = log.entries.filter(e => e.targetID === member.id)
-      if (possibleLogs.length !== 0) log = possibleLogs[0]
+      const possibleLog = log.entries.find(e => e.targetID === member.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+      if (possibleLog) log = possibleLog
       else return // no log, what's the point
-      if (log && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // we are guaranteed to get unique logs for member update actions now
+      if (log) { // we are guaranteed to get unique logs for member update actions now
         // This time check exists solely when the member is not cached and updates their nickname. It's considered a member update and not nick update
         log.guild = []
         const user = log.user

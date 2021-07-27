@@ -2,9 +2,9 @@ const send = require('../modules/webhooksender')
 const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
-  4: 'Category',
-  5: 'Announcement',
-  13: 'Stage Channel'
+  4: 'Category channel',
+  5: 'Announcement channel',
+  13: 'Stage channel'
 }
 
 module.exports = {
@@ -43,11 +43,10 @@ module.exports = {
         }
       })
     }
-    const logs = await newChannel.guild.getAuditLogs(5, null, 10).catch(() => {})
+    const logs = await newChannel.guild.getAuditLog({ actionType: 10, limit: 10 }).catch(() => {})
     if (!logs) return
-    const log = logs.entries.find(e => e.targetID === newChannel.id)
+    const log = logs.entries.find(e => e.targetID === newChannel.id && (new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 3000))
     if (!log) return
-    if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 3000) return
     const user = log.user
     if (user.bot && !global.bot.guildSettingsCache[newChannel.guild.id].isLogBots()) return
     const member = newChannel.guild.members.get(user.id)

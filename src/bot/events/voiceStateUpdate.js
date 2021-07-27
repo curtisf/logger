@@ -29,10 +29,10 @@ module.exports = {
       }
     }
     // if (member.guild.voiceStates.size < 20) {
-    const logs = await member.guild.getAuditLogs(5, null, 24).catch(() => {})
+    const logs = await member.guild.getAuditLogs({ limit: 5, actionType: 24 }).catch(() => {})
     if (!logs) return
-    const log = logs.entries.find(e => e.targetID === member.id)
-    if (!log || Date.now() - ((log.id / 4194304) + 1420070400000) > 3000) return // if the most recent log is too far away, stop
+    const log = logs.entries.find(e => e.targetID === member.id && (Date.now() - ((e.id / 4194304) + 1420070400000) < 3000))
+    if (!log) return
     const user = log.user
     const actionName = Object.keys(log.before)[0]
     if (!actionName) return
@@ -46,20 +46,5 @@ module.exports = {
       icon_url: user.avatarURL
     }
     await send(voiceStateUpdateEvent)
-    // } else {
-    //   const toPushField = {
-    //     name: 'Action',
-    //     value: ''
-    //   }
-    //   if (oldState.mute && !state.mute) toPushField.value += 'unmuted'
-    //   else if (!oldState.mute && state.mute) toPushField.value += 'muted'
-    //   else if (oldState.deaf && !state.deaf) toPushField.value += 'undeafened'
-    //   else if (!oldState.deaf && state.deaf) toPushField.value += 'deafened'
-    //   if (toPushField.value) {
-    //     voiceStateUpdateEvent.embed.fields.unshift(toPushField)
-    //     voiceStateUpdateEvent.embed.fields[voiceStateUpdateEvent.embed.fields.length - 1].value += '```'
-    //     send(voiceStateUpdateEvent)
-    //   }
-    // }
   }
 }

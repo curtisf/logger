@@ -58,9 +58,9 @@ module.exports = {
       if (field.value) guildRoleUpdateEvent.embed.fields.push(field)
     }
     await setTimeout(async () => {
-      const logs = await guild.getAuditLogs(1, null, 31)
-      const log = logs.entries[0]
-      if (log && log.user && Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
+      const logs = await guild.getAuditLog({ limit: 5, actionType: 31 })
+      const log = logs.entries.find(e => Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+      if (log && log.user) {
         guildRoleUpdateEvent.embed.fields.push({
           name: 'ID',
           value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${log.user.id}\`\`\``

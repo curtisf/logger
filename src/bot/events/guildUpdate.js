@@ -27,8 +27,8 @@ module.exports = {
   type: 'on',
   handle: async (newGuild, oldGuild) => {
     const fields = []
-    newGuild.getAuditLogs(1, null, 1).then((log) => {
-      if (!log || !log.entries || new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) return // this could be null coalesced but why not make it backwards compatible
+    newGuild.getAuditLogs({ actionType: 1, limit: 1 }).then((log) => {
+      if (!log || !log.entries || log.entries.length === 0 || new Date().getTime() - new Date((log.entries[0].id / 4194304) + 1420070400000).getTime() > 3000) return // this could be null coalesced but why not make it backwards compatible
       const user = log.entries[0].user
       const member = newGuild.members.get(user.id)
       let arr

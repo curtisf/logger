@@ -34,9 +34,9 @@ module.exports = {
      * Thanks Discord.
     */
     setTimeout(async () => {
-      const logs = await guild.getAuditLogs(10, null, 22).catch(() => {})
+      const logs = await guild.getAuditLog({ limit: 10, actionType: 22 }).catch(() => {})
       if (!logs) return
-      const log = logs.entries.find(e => e.targetID === user.id && new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 30000)
+      const log = logs.entries.find(e => e.targetID === user.id && new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 60000)
       if (!log) return
       const perp = log.user
       if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
@@ -46,6 +46,6 @@ module.exports = {
         icon_url: perp.avatarURL
       }
       await send(guildBanAddEvent)
-    }, 1000)
+    }, 2000)
   }
 }

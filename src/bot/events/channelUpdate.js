@@ -60,7 +60,7 @@ module.exports = {
       auditLogId = 11
     } else auditLogId = 14
 
-    const logs = await channel.guild.getAuditLogs(1, null, auditLogId).catch(() => {})
+    const logs = await channel.guild.getAuditLog({ limit: 5, actionType: auditLogId }).catch(() => {})
     if (!logs) return
     const log = logs.entries.find(e => e.targetID === channel.id)
     if (!log) return // there should always be an audit log
