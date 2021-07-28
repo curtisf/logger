@@ -82,7 +82,7 @@ module.exports = {
   },
   name: 'serverinfo',
   quickHelp: 'Use to get information about the current server (emojis, owner, member count, etc)',
-  examples: `\`${process.env.GLOBAL_BOT_PREFIX}serverinfo`,
+  examples: `\`${process.env.GLOBAL_BOT_PREFIX}serverinfo\``,
   type: 'any',
   category: 'Utility'
 }

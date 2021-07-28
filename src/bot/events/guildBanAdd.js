@@ -35,9 +35,15 @@ module.exports = {
     */
     setTimeout(async () => {
       const logs = await guild.getAuditLog({ limit: 10, actionType: 22 }).catch(() => {})
-      if (!logs) return
+      if (!logs) {
+        global.logger.warn(`Guild Ban Add was unable to fetch audit logs in guild ${guild.name} (${guild.id})`)
+        return
+      }
       const log = logs.entries.find(e => e.targetID === user.id && new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 60000)
-      if (!log) return
+      if (!log) {
+        global.logger.warn(`Guild Ban Add on ${guild.name} (${guild.id}) was not able to match a log.`)
+        return
+      }
       const perp = log.user
       if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
       guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
