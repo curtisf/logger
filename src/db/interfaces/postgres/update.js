@@ -95,13 +95,12 @@ async function setEventsLogId (guildID, channelID, events) {
   await cacheGuild(guildID)
 }
 
-async function setEventsRawLogs (guildID, channelID, events) {
-  const doc = await getDoc(guildID)
-  doc.event_logs = { ...doc.event_logs, ...events }
-  console.log('raw set result', doc.event_logs)
-  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
-  await cacheGuild(guildID)
-}
+// async function setEventsRawLogs (guildID, channelID, events) {
+//   const doc = await getDoc(guildID)
+//   doc.event_logs = { ...doc.event_logs, ...events }
+//   await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+//   await cacheGuild(guildID)
+// }
 
 async function disableEvent (guildID, event) {
   const doc = await getDoc(guildID)
