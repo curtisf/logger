@@ -17,6 +17,7 @@
   "author": "Curtis Fowler",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@sentry/node": "^6.11.0",
     "aes256": "^1.0.4",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
@@ -27,7 +28,6 @@
     "os-utils": "0.0.14",
     "pg": "^8.3.3",
     "pg-format": "^1.0.4",
-    "raven": "^2.6.4",
     "redis": "^3.0.2",
     "redlock": "^4.1.0",
     "standard": "^14.3.4",

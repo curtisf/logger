@@ -1,6 +1,6 @@
-const Eris = require('eris') // my local fork, will fix package.json later
+const Eris = require('eris')
 const cluster = require('cluster')
-const Raven = require('raven')
+const Sentry = require('@sentry/node')
 const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
@@ -9,7 +9,9 @@ const addBotListeners = require('./utils/addbotlisteners')
 require('dotenv').config()
 
 if (process.env.SENTRY_URI) {
-  Raven.config(process.env.SENTRY_URI).install()
+  Sentry.init({
+    dsn: process.env.SENTRY_URI
+  })
 } else {
   global.logger.warn('No Sentry URI provided. Error logging will be restricted to messages only.')
 }
@@ -43,7 +45,13 @@ async function init () {
       users: false
     },
     rest: {
-      redisInstance: global.redis
+      use_twilight: !!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST,
+      ...(!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST ? {
+        domain: process.env.TWILIGHT_HOST || 'localhost',
+        baseURL: '/api/v9',
+        port: process.env.TWILIGHT_PORT || 8080,
+        requestTimeout: 1000 * 60 * 60 // 1h time
+      } : {})
     },
     restMode: true,
     messageLimit: 0,
@@ -60,13 +68,6 @@ async function init () {
     defaultImageFormat: 'png',
     ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
-
-  // Twilight stuff
-  // const twilight = require('./modules/twilight')
-
-  // twilight.initClient(global.bot)
-
-  // global.bot.requestHandler = twilight
 
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
@@ -85,9 +86,16 @@ async function init () {
 
   connect()
 }
+
 process.on('exit', (code) => {
   global.logger.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)
-  require('../db/clients/postgres').end()
+  const poolClient = require('../db/clients/postgres')
+  poolClient.end(() => {
+    global.logger.info('PostgreSQL clients returned')
+  })
+  if (process.env.TWILIGHT_PROXY_PORT) {
+    global.bot.requestHandler.closeConn()
+  }
 })
 
 process.on('SIGINT', async () => {
@@ -99,14 +107,14 @@ process.on('SIGINT', async () => {
 process.on('unhandledRejection', (e) => {
   if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
     console.error(e)
-    Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
+    Sentry.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
   }
 })
 
 process.on('uncaughtException', (e) => {
   if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
     console.error(e)
-    Raven.captureException(e.stack, { level: 'fatal' })
+    Sentry.captureException(e.stack, { level: 'fatal' })
   }
 })
 
