@@ -7,7 +7,7 @@ module.exports = {
     const guildBanAddEvent = {
       guildID: guild.id,
       eventName: 'guildBanAdd',
-      embed: {
+      embeds: [{
         author: {
           name: `${user.username}#${user.discriminator} `,
           icon_url: user.avatarURL
@@ -24,7 +24,7 @@ module.exports = {
           value: `\`\`\`ini\nUser = ${user.id}\nPerpetrator = Unknown\`\`\``
         }],
         color: 3553599
-      }
+      }]
     }
     /*
      * Race condition time ladies and gentlemen:
@@ -46,9 +46,9 @@ module.exports = {
         return
       }
       const perp = log.user
-      if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
-      guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
-      guildBanAddEvent.embed.footer = {
+      if (log.reason) guildBanAddEvent.embeds[0].fields[1].value = log.reason
+      guildBanAddEvent.embeds[0].fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
+      guildBanAddEvent.embeds[0].footer = {
         text: `${perp.username}#${perp.discriminator}`,
         icon_url: perp.avatarURL
       }

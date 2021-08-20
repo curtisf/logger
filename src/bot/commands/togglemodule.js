@@ -6,7 +6,7 @@ module.exports = {
     const split = suffix.split(' ')
     if (!eventList.includes(split[0])) {
       return message.channel.createMessage({
-        embed: {
+        embeds: [{
           description: `The provided argument is invalid. Valid events: ${eventList.join(', ')}`,
           color: 16711680,
           timestamp: new Date(),
@@ -18,13 +18,13 @@ module.exports = {
             name: `${message.author.username}#${message.author.discriminator}`,
             icon_url: message.author.avatarURL
           }
-        }
+        }]
       })
     }
     const disabled = await disableEvent(message.channel.guild.id, split[0])
     const respStr = `${!disabled ? 'Enabled' : 'Disabled'} ${split[0]}.`
     message.channel.createMessage({
-      embed: {
+      embeds: [{
         description: respStr,
         color: 3553599,
         timestamp: new Date(),
@@ -36,7 +36,7 @@ module.exports = {
           name: `${message.author.username}#${message.author.discriminator}`,
           icon_url: message.author.avatarURL
         }
-      }
+      }]
     })
   },
   name: 'togglemodule',

@@ -21,7 +21,7 @@ module.exports = {
       await clearEventByID(message.channel.guild.id, message.channel.id) // any event logging to this channel id will be wiped
 
       await message.channel.createMessage({
-        embed: {
+        embeds: [{
           title: 'Any events associated with this channel have been undone.',
           color: 16711680,
           timestamp: new Date(),
@@ -34,7 +34,7 @@ module.exports = {
             icon_url: message.author.avatarURL
           },
           fields: []
-        }
+        }]
       })
     }
   },

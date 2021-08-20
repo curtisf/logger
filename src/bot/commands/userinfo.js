@@ -40,14 +40,14 @@ module.exports = {
       value: perms.length !== 0 ? perms.join(', ') : 'None'
     })
     message.channel.createMessage({
-      embed: {
+      embeds: [{
         timestamp: new Date(message.timestamp),
         color: roles.length !== 0 ? roles[0].color : 3553599,
         thumbnail: {
           url: member.avatar ? member.avatarURL : `https://cdn.discordapp.com/embed/avatars/${member.discriminator % 5}.png`
         },
         fields: fields
-      }
+      }]
     }).catch(() => { })
   },
   name: 'userinfo',

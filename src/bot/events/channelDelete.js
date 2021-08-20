@@ -15,7 +15,7 @@ module.exports = {
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
-      embed: {
+      embeds: [{
         author: {
           name: 'Unknown User',
           icon_url: 'https://logger.bot/staticfiles/red-x.png'
@@ -36,13 +36,13 @@ module.exports = {
           value: `\`\`\`ini\nUser = Unknown\nChannel = ${channel.id}\`\`\``
         }],
         color: 3553599
-      }
+      }]
     }
     let lastCachedMessage = await global.redis.get(channel.lastMessageID)
     if (lastCachedMessage) {
       lastCachedMessage = JSON.parse(lastCachedMessage)
       const user = global.bot.users.get(lastCachedMessage.userID)
-      channelDeleteEvent.embed.fields.push({
+      channelDeleteEvent.embeds[0].fields.push({
         name: 'Last message',
         value: `Author: **${user.username}#${user.discriminator}**\n${lastCachedMessage.content}`
       })
@@ -52,7 +52,7 @@ module.exports = {
         if (overwrite.type === 0) { // Should only be role anyways, but let's just be safe
           const role = channel.guild.roles.find(r => r.id === overwrite.id)
           if (!role || role.name === '@everyone') return
-          channelDeleteEvent.embed.fields.push({
+          channelDeleteEvent.embeds[0].fields.push({
             name: role.name,
             value: `Type: role\nPermissions: ${Object.keys(overwrite.json).filter(perm => overwrite.json[perm]).join(', ')}`
           })
@@ -66,9 +66,9 @@ module.exports = {
       const user = log.user
       if (user.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
       const member = channel.guild.members.get(user.id)
-      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
-      channelDeleteEvent.embed.author.icon_url = user.avatarURL
-      channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+      channelDeleteEvent.embeds[0].author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+      channelDeleteEvent.embeds[0].author.icon_url = user.avatarURL
+      channelDeleteEvent.embeds[0].fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
       await send(channelDeleteEvent)
     } else {
       await send(channelDeleteEvent)

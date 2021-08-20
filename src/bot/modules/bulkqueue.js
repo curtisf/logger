@@ -88,7 +88,7 @@ function sendBulkLog (senderPkg, embeds, guildSettings) {
       await cacheGuild(senderPkg.guildID)
       return await guildWebhookCacher(senderPkg.guildID, guildSettings.getEventByName(senderPkg.eventName))
     } else {
-      console.error('Error while sending a message over webhook!', e, senderPkg, senderPkg.embed.fields)
+      console.error('Error while sending a message over webhook!', e, senderPkg, senderPkg.embeds[0].fields)
     }
   })
 }

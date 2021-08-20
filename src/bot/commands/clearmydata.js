@@ -1,7 +1,7 @@
 module.exports = {
   func: async message => {
     await message.channel.createMessage({
-      embed: {
+      embeds: [{
         title: 'Action needed:',
         description: 'To clear your data (messages), please join [my support server](https://discord.gg/ed7Gaa3) and ask in the bot support channel OR join the server and private message `James Bond#0007`. Remember: all messages stored are removed automatically after two days from the database.',
         color: 16711680,
@@ -15,7 +15,7 @@ module.exports = {
           icon_url: message.author.avatarURL
         },
         fields: []
-      }
+      }]
     })
   },
   name: 'clearmydata',

@@ -21,10 +21,10 @@ const doNotAggregate = [
 
 module.exports = async pkg => {
   if (!pkg.guildID) return global.logger.error('No guildID was provided in an embed!')
-  if (!pkg.embed.color) pkg.embed.color = 3553599
+  if (!pkg.embeds[0].color) pkg.embeds[0].color = 3553599 // todo: make a function to check all the following logic for EACH embed, not just the first
   const guild = global.bot.guilds.get(pkg.guildID)
   if (!guild) {
-    console.error('Invalid guild ID sent in package!', pkg.guildID, pkg, pkg.embed)
+    console.error('Invalid guild ID sent in package!', pkg.guildID, pkg, pkg.embeds)
     global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
@@ -50,14 +50,14 @@ module.exports = async pkg => {
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
     await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
-    if (!pkg.embed.footer) {
-      pkg.embed.footer = {
+    if (!pkg.embeds[0].footer) {
+      pkg.embeds[0].footer = {
         text: `${global.bot.user.username}#${global.bot.user.discriminator}`,
         icon_url: global.bot.user.avatarURL
       }
     }
-    if (!pkg.embed.timestamp) {
-      pkg.embed.timestamp = new Date()
+    if (!pkg.embeds[0].timestamp) {
+      pkg.embeds[0].timestamp = new Date()
     }
 
     // Thanks for the help, De Morgan's laws.
@@ -66,7 +66,7 @@ module.exports = async pkg => {
         file: pkg.file ? pkg.file : '',
         username: global.bot.user.username,
         avatarURL: global.bot.user.avatarURL,
-        embeds: [pkg.embed],
+        embeds: pkg.embeds,
         allowedMentions: { // even though this is an embed and cannot ping, why not
           everyone: false,
           roles: false,
@@ -82,7 +82,7 @@ module.exports = async pkg => {
           await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
           return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
         } else {
-          console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
+          console.error('Error while sending a message over webhook!', e, pkg, pkg.embeds[0].fields)
         }
       })
     } else {

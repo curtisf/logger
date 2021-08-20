@@ -33,7 +33,7 @@ module.exports = {
     if (log) {
       const user = log.user
       event.eventName = 'guildMemberKick'
-      event.embed = {
+      event.embeds = [{
         author: {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
@@ -48,14 +48,14 @@ module.exports = {
           text: `${user.username}#${user.discriminator}`,
           icon_url: user.avatarURL
         }
-      }
+      }]
       if (member.roles) {
-        event.embed.fields.push(rolesField, {
+        event.embeds[0].fields.push(rolesField, {
           name: 'Joined At',
           value: `<t:${Math.round(member.joinedAt / 1000)}:F> (${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${Math.abs(((new Date().getTime() - member.joinedAt) / 1000 / 60 / 60)).toFixed(0)} hours ago)`
         })
       }
-      event.embed.fields.push({
+      event.embeds[0].fields.push({
         name: 'Created At',
         value: `<t:${Math.round(member.createdAt / 1000)}:F> (${Math.abs(((new Date().getTime() - member.createdAt) / 1000 / 60 / 60 / 24)).toFixed(0)} days, ${((new Date().getTime() - member.createdAt) / 1000 / 60 / 60).toFixed(0)} hours old)`
       }, {
@@ -68,7 +68,7 @@ module.exports = {
       return send(event)
     } else {
       // TODO: redo purge audit log stuff eventually (update: copy from patron bot eventually)
-      event.embed = {
+      event.embeds = [{
         author: {
           name: `${member.username}#${member.discriminator}`,
           icon_url: member.avatarURL
@@ -79,14 +79,14 @@ module.exports = {
           name: 'User Information',
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
         }]
-      }
+      }]
       if (member.roles) {
-        event.embed.fields.push(rolesField, {
+        event.embeds[0].fields.push(rolesField, {
           name: 'Joined At',
           value: `<t:${Math.round(member.joinedAt / 1000)}:F> (<t:${Math.round(member.joinedAt / 1000)}:R>)`
         })
       }
-      event.embed.fields.push({
+      event.embeds[0].fields.push({
         name: 'Created At',
         value: `<t:${Math.round(member.createdAt / 1000)}:F> (<t:${Math.round(member.createdAt / 1000)}:R>)`
       }, {

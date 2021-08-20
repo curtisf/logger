@@ -13,7 +13,7 @@ module.exports = {
         return message.channel.createMessage(`<@${message.author.id}>, that isn't a valid command. Use \`${process.env.GLOBAL_BOT_PREFIX}help\` to see all commands.`)
       }
       await message.channel.createMessage({
-        embed: {
+        embeds: [{
           title: `Help for ${suffix}`,
           description: global.bot.commands[suffix].quickHelp,
           fields: [{
@@ -21,7 +21,7 @@ module.exports = {
             value: global.bot.commands[suffix].examples
           }],
           color: 0xFFFFFF
-        }
+        }]
       })
     } else {
       const embed = {
@@ -51,10 +51,10 @@ module.exports = {
       })
       try {
         await DMC.createMessage({
-          embed: embed
+          embeds: [embed]
         })
         await DMC.createMessage({
-          embed: {
+          embeds: [{
             description: 'Continued help information...',
             fields: [{
               name: 'Open Source',
@@ -76,7 +76,7 @@ module.exports = {
               name: 'Patreon',
               value: 'If you like me and want to support my owner (or want cool patron bot features), check out [my Patreon page](https://patreon.com/logger)\nSome of what Patrons get: image logging, see who deletes messages, ignore users, see archive and bulk delete logs in a prettified manner, archive up to 10,000 messages, messages are saved longer'
             }]
-          }
+          }]
         })
         await message.addReaction('📜')
       } catch (_) {

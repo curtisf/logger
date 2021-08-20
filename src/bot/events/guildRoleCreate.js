@@ -7,7 +7,7 @@ module.exports = {
     const guildRoleCreateEvent = {
       guildID: guild.id,
       eventName: 'guildRoleCreate',
-      embed: {
+      embeds: [{
         description: 'A role was created ',
         fields: [{
           name: 'Name',
@@ -19,20 +19,20 @@ module.exports = {
           name: 'ID',
           value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Unknown\`\`\``
         }]
-      }
+      }]
     }
     if (!guild.members.find(m => m.username === role.name)) { // if this isn't an auto role
       if (role.managed && guild.members.find(m => m.username === role.name)) {
-        guildRoleCreateEvent.embed.fields[1].value = 'Bot'
+        guildRoleCreateEvent.embeds[0].fields[1].value = 'Bot'
       }
       const logs = await guild.getAuditLog({ limit: 5, actionType: 30 }).catch(() => {})
       if (!logs) return
       const log = logs.entries.find(e => e.targetID === role.id && (new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime()) < 3000)
       if (log) {
         const perp = log.user
-        if (log.reason) guildRoleCreateEvent.embed.fields[1].value = log.reason
-        guildRoleCreateEvent.embed.fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
-        guildRoleCreateEvent.embed.author = {
+        if (log.reason) guildRoleCreateEvent.embeds[0].fields[1].value = log.reason
+        guildRoleCreateEvent.embeds[0].fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
+        guildRoleCreateEvent.embeds[0].author = {
           name: `${perp.username}#${perp.discriminator}`,
           icon_url: perp.avatarURL
         }
@@ -41,7 +41,7 @@ module.exports = {
         await send(guildRoleCreateEvent)
       }
     } else {
-      guildRoleCreateEvent.embed.fields[1] = {
+      guildRoleCreateEvent.embeds[0].fields[1] = {
         name: 'ID',
         value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Automatically created by invite\`\`\``
       }

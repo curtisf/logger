@@ -1,7 +1,7 @@
 module.exports = {
   func: async message => {
     await message.channel.createMessage({
-      embed: {
+      embeds: [{
         title: 'Configuration dashboard',
         description: `Hey, I'm ${global.bot.user.username}! My **only** purpose is to, at your command, log everything to your configured channels. Click "configuration dashboard" to login to my dashboard and configure me!`,
         url: 'https://logger.bot',
@@ -40,7 +40,7 @@ module.exports = {
             value: 'You can view the privacy policy [here](https://gist.github.com/curtisf/0598b0930c11363d24e29300cf21d572). Similarly, if you want updates on when it changes, join my support server and follow the #privacy-policy channel.'
           }
         ]
-      }
+      }]
     })
   },
   name: 'info',

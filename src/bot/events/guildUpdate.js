@@ -49,7 +49,7 @@ module.exports = {
       send({
         guildID: newGuild.id,
         eventName: 'guildUpdate',
-        embed: {
+        embeds: [{
           author: {
             name: `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`,
             icon_url: user.avatarURL
@@ -57,7 +57,7 @@ module.exports = {
           description: 'The guild was updated',
           fields: fields,
           color: 3553599
-        }
+        }]
       })
     }).catch(() => {})
     // TODO: handle new guild updates, son! (update: will jump on this next, see project board on github)

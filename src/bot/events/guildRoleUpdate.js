@@ -8,22 +8,22 @@ module.exports = {
       guildID: guild.id,
       eventName: 'guildRoleUpdate',
       who: null,
-      embed: {
+      embeds: [{
         description: `A role was updated (${role.name})`,
         fields: [],
         color: role.color ? role.color : 3553599
-      }
+      }]
     }
     const oldKeys = Object.keys(oldRole)
     oldKeys.forEach(prop => {
       if (role[prop] !== oldRole[prop] && prop !== 'position' && prop !== 'permissions') {
         if (prop === 'color') {
-          guildRoleUpdateEvent.embed.fields.unshift({
+          guildRoleUpdateEvent.embeds[0].fields.unshift({
             name: toTitleCase(prop),
             value: `Now: ${intToHex(role[prop])}\nWas: ${intToHex(oldRole[prop])}`
           })
         } else {
-          guildRoleUpdateEvent.embed.fields.unshift({
+          guildRoleUpdateEvent.embeds[0].fields.unshift({
             name: toTitleCase(prop),
             value: `Now: ${role[prop]}\nWas: ${oldRole[prop]}`
           })
@@ -55,28 +55,28 @@ module.exports = {
           field.value += `\n- ${perm}`
         }
       })
-      if (field.value) guildRoleUpdateEvent.embed.fields.push(field)
+      if (field.value) guildRoleUpdateEvent.embeds[0].fields.push(field)
     }
     await setTimeout(async () => {
       const logs = await guild.getAuditLog({ limit: 5, actionType: 31 })
       const log = logs.entries.find(e => Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
       if (log && log.user) {
-        guildRoleUpdateEvent.embed.fields.push({
+        guildRoleUpdateEvent.embeds[0].fields.push({
           name: 'ID',
           value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${log.user.id}\`\`\``
         })
-        guildRoleUpdateEvent.embed.author = {
+        guildRoleUpdateEvent.embeds[0].author = {
           name: `${log.user.username}#${log.user.discriminator}`,
           icon_url: log.user.avatarURL
         }
-        if (guildRoleUpdateEvent.embed.fields.length === 1) return
+        if (guildRoleUpdateEvent.embeds[0].fields.length === 1) return
         await send(guildRoleUpdateEvent)
       } else {
-        guildRoleUpdateEvent.embed.fields.push({
+        guildRoleUpdateEvent.embeds[0].fields.push({
           name: 'ID',
           value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Unknown\`\`\``
         })
-        if (guildRoleUpdateEvent.embed.fields.length === 1) return
+        if (guildRoleUpdateEvent.embeds[0].fields.length === 1) return
         await send(guildRoleUpdateEvent)
       }
     }, 1000)

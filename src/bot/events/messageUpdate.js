@@ -27,7 +27,7 @@ module.exports = {
       const messageUpdateEvent = {
         guildID: newMessage.channel.guild.id,
         eventName: 'messageUpdate',
-        embed: {
+        embeds: [{
           author: {
             name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`,
             icon_url: newMessage.author.avatarURL
@@ -38,7 +38,7 @@ module.exports = {
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})\n[Go To Message](https://discord.com/channels/${newMessage.channel.guild.id}/${newMessage.channel.id}/${newMessage.id})`
           }],
           color: 15084269
-        }
+        }]
       }
       if (!newMessage.content) return // if no content why log it? normal users don't have image logging anyways
       let nowChunks, beforeChunks
@@ -60,18 +60,18 @@ module.exports = {
         beforeChunks.push('<no message content>')
       }
       nowChunks.forEach((chunk, i) => {
-        messageUpdateEvent.embed.fields.push({
+        messageUpdateEvent.embeds[0].fields.push({
           name: i === 0 ? 'Now' : 'Now Continued',
           value: chunk
         })
       })
       beforeChunks.forEach((chunk, i) => {
-        messageUpdateEvent.embed.fields.push({
+        messageUpdateEvent.embeds[0].fields.push({
           name: i === 0 ? 'Previous' : 'Previous Continued',
           value: chunk // previous is already escaped, don't escape again
         })
       })
-      messageUpdateEvent.embed.fields.push({
+      messageUpdateEvent.embeds[0].fields.push({
         name: 'ID',
         value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
       })

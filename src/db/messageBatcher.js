@@ -13,7 +13,9 @@ async function addItem (messageAsArray) {
 
 async function submitBatch () {
   const toSubmit = batch.splice(0, process.env.MESSAGE_BATCH_SIZE)
-  await pool.query(format('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES %L ON CONFLICT DO NOTHING', toSubmit))
+  const poolClient = await pool.getPostgresClient()
+  await poolClient.query(format('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES %L ON CONFLICT DO NOTHING', toSubmit))
+  poolClient.release()
 }
 
 function getMessage (messageID) {

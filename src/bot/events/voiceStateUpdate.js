@@ -12,7 +12,7 @@ module.exports = {
     const voiceStateUpdateEvent = {
       guildID: member.guild.id,
       eventName: 'voiceStateUpdate',
-      embed: {
+      embeds: [{
         author: {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
@@ -26,7 +26,7 @@ module.exports = {
           value: `\`\`\`ini\nUser = ${member.id}\nChannel = ${channel.id}\n`
         }],
         color: 3553599
-      }
+      }]
     }
     // if (member.guild.voiceStates.size < 20) {
     const logs = await member.guild.getAuditLogs({ limit: 5, actionType: 24 }).catch(() => {})
@@ -36,12 +36,12 @@ module.exports = {
     const user = log.user
     const actionName = Object.keys(log.before)[0]
     if (!actionName) return
-    voiceStateUpdateEvent.embed.fields.unshift({
+    voiceStateUpdateEvent.embeds[0].fields.unshift({
       name: 'Action',
       value: `${log.before[actionName] ? 'un' : 'now '}${actionName}` || 'Unknown'
     })
-    voiceStateUpdateEvent.embed.fields[voiceStateUpdateEvent.embed.fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
-    voiceStateUpdateEvent.embed.footer = {
+    voiceStateUpdateEvent.embeds[0].fields[voiceStateUpdateEvent.embeds[0].fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
+    voiceStateUpdateEvent.embeds[0].footer = {
       text: `${user.username}#${user.discriminator}`,
       icon_url: user.avatarURL
     }

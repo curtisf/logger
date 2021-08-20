@@ -7,7 +7,7 @@ module.exports = {
     const guildRoleDeleteEvent = {
       guildID: guild.id,
       eventName: 'guildRoleDelete',
-      embed: {
+      embeds: [{
         description: 'A role was deleted',
         fields: [
           {
@@ -21,16 +21,16 @@ module.exports = {
             value: `\`\`\`ini\nRole = ${role.id}\nPerpetrator = Deletion upon member leaving\`\`\``
           }],
         color: role.color ? role.color : 3553599
-      }
+      }]
     }
     const logs = await guild.getAuditLog({ limit: 5, actionType: 32 }).catch(() => {})
     if (!logs) return
     const log = logs.entries.find(e => e.targetID === role.id && (new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime()) < 3000)
     if (log) {
       const perp = log.user
-      if (log.reason) guildRoleDeleteEvent.embed.fields[1].value = log.reason
-      guildRoleDeleteEvent.embed.fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
-      guildRoleDeleteEvent.embed.author = {
+      if (log.reason) guildRoleDeleteEvent.embeds[0].fields[1].value = log.reason
+      guildRoleDeleteEvent.embeds[0].fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
+      guildRoleDeleteEvent.embeds[0].author = {
         name: `${perp.username}#${perp.discriminator}`,
         icon_url: perp.avatarURL
       }

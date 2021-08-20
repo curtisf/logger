@@ -31,7 +31,7 @@ module.exports = {
     const messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
-      embed: {
+      embeds: [{
         author: {
           name: cachedUser ? `${cachedUser.username}#${cachedUser.discriminator} ${cachedUser && cachedUser.nick ? `(${member.nick})` : ''}` : `Unknown User <@${cachedMessage.author_id}>`,
           icon_url: cachedUser ? cachedUser.avatarURL : 'https://logger.bot/staticfiles/red-x.png'
@@ -39,7 +39,7 @@ module.exports = {
         description: `Message deleted in <#${message.channel.id}>`,
         fields: [],
         color: 8530669
-      }
+      }]
     }
     let messageChunks = []
     if (cachedMessage.content) {
@@ -52,12 +52,12 @@ module.exports = {
       messageChunks.push('<no message content>')
     }
     messageChunks.forEach((chunk, i) => {
-      messageDeleteEvent.embed.fields.push({
+      messageDeleteEvent.embeds[0].fields.push({
         name: i === 0 ? 'Content' : 'Continued',
         value: chunk
       })
     })
-    messageDeleteEvent.embed.fields.push({
+    messageDeleteEvent.embeds[0].fields.push({
       name: 'Date',
       value: `<t:${Math.round(cachedMessage.ts / 1000)}:F>`
     }, {

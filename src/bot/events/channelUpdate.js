@@ -29,7 +29,7 @@ module.exports = {
     const channelUpdateEvent = {
       guildID: channel.guild.id,
       eventName: 'channelUpdate',
-      embed: {
+      embeds: [{
         author: {
           name: 'Unknown User',
           icon_url: 'https://logger.bot/staticfiles/red-x.png'
@@ -41,7 +41,7 @@ module.exports = {
           value: `<t:${Math.round(((channel.id / 4194304) + 1420070400000) / 1000)}:F>`,
           inline: true
         }]
-      }
+      }]
     }
     let channelOverwrites = channel.permissionOverwrites.map(o => o) // convert to array
     let oldOverwrites = oldChannel.permissionOverwrites.map(o => o)
@@ -79,12 +79,12 @@ module.exports = {
             oldTopic = escape(oldChannel.topic.replace(/~/g, '\\~'), ['angle brackets'])
           }
           if (newTopic === oldTopic) {
-            channelUpdateEvent.embed.fields.push({
+            channelUpdateEvent.embeds[0].fields.push({
               name: 'Topic',
               value: '<no topic set>'
             })
           } else {
-            channelUpdateEvent.embed.fields.push({
+            channelUpdateEvent.embeds[0].fields.push({
               name: 'Topic',
               value: `Now: \`${newTopic}\`\nWas: \`${oldTopic}\``
             })
@@ -93,7 +93,7 @@ module.exports = {
           continue
         }
         const changes = transformAuditLogEntry(changedKey, log.before[changedKey], log.after[changedKey])
-        channelUpdateEvent.embed.fields.push({
+        channelUpdateEvent.embeds[0].fields.push({
           name: toTitleCase(changedKey),
           value: `Now: ${changes.after}\nWas: ${changes.before}`
         })
@@ -102,21 +102,21 @@ module.exports = {
       if (Object.keys(log.after).length !== 0 && Object.keys(log.before).length === 0) {
         const nRole = channel.guild.roles.get(log.after.id)
         if (!nRole) return
-        channelUpdateEvent.embed.fields.push({
+        channelUpdateEvent.embeds[0].fields.push({
           name: 'Overwrite Created',
           value: `For: ${log.after.type === 0 ? `role ${nRole.name}` : `member <@${log.after.id}>`}`
         })
         if (log.after.type === 0) {
-          channelUpdateEvent.embed.color = nRole.color || 0x03d3fc
+          channelUpdateEvent.embeds[0].color = nRole.color || 0x03d3fc
         }
       } else if (Object.keys(log.before).length !== 0 && Object.keys(log.after).length === 0) {
-        channelUpdateEvent.embed.fields.push({
+        channelUpdateEvent.embeds[0].fields.push({
           name: 'Overwrite Removed',
-          value: `For: ${log.before.type === 0 ? `role ${channel.guild.roles.get(log.before.id).name}` : `member <@${log.before.id}>`}`
+          value: `For: ${log.before.type === 0 ? `role ${channel.guild.roles.get(log.before.id) ? channel.guild.roles.get(log.before.id).name : log.before.id}` : `member <@${log.before.id}>`}`
         })
         if (log.before.type === 0) {
           const role = channel.guild.roles.get(log.before.id)
-          channelUpdateEvent.embed.color = role.color || 0x03d3fc
+          channelUpdateEvent.embeds[0].color = role.color || 0x03d3fc
         }
       } else {
         channelOverwrites.forEach(newOverwrite => {
@@ -136,7 +136,7 @@ module.exports = {
             const role = channel.guild.roles.find(r => r.id === newOverwrite.id)
             if (!role) return
             overwriteName += role.name
-            if (role.color) channelUpdateEvent.embed.color = role.color
+            if (role.color) channelUpdateEvent.embeds[0].color = role.color
           }
           const field = {
             name: overwriteName,
@@ -161,22 +161,22 @@ module.exports = {
           })
           if (field.value) {
             if (newOverwrite.type === 1) field.value = `<@${newOverwrite.id}>` + field.value
-            channelUpdateEvent.embed.fields.push(field)
+            channelUpdateEvent.embeds[0].fields.push(field)
           }
         })
       }
     }
 
     if (log && user) {
-      channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
-      channelUpdateEvent.embed.author.icon_url = user.avatarURL
+      channelUpdateEvent.embeds[0].author.name = `${user.username}#${user.discriminator}`
+      channelUpdateEvent.embeds[0].author.icon_url = user.avatarURL
       if (channel.type === 13) {
-        channelUpdateEvent.embed.description = `Stage Channel **${channel.name}** was ${channel.topic === null ? 'closed' : 'opened'}`
+        channelUpdateEvent.embeds[0].description = `Stage Channel **${channel.name}** was ${channel.topic === null ? 'closed' : 'opened'}`
       }
-      channelUpdateEvent.embed.fields.push({ name: 'ID', value: `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\`` })
+      channelUpdateEvent.embeds[0].fields.push({ name: 'ID', value: `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\`` })
       await send(channelUpdateEvent)
     } else {
-      channelUpdateEvent.embed.fields.push({
+      channelUpdateEvent.embeds[0].fields.push({
         name: 'ID',
         value: `\`\`\`ini\nUser = Unknown, no audit log entry\nChannel = ${channel.id}\`\`\``
       })

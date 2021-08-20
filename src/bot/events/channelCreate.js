@@ -15,7 +15,7 @@ module.exports = {
     const channelCreateEvent = {
       guildID: newChannel.guild.id,
       eventName: 'channelCreate',
-      embed: {
+      embeds: [{
         author: {
           name: 'Unknown User',
           icon_url: 'https://logger.bot/staticfiles/red-x.png'
@@ -29,14 +29,14 @@ module.exports = {
           value: `\`\`\`ini\nUser = Unknown\nChannel = ${newChannel.id}\`\`\``
         }],
         color: 3553599
-      }
+      }]
     }
     if (newChannel.permissionOverwrites.size !== 0) {
       newChannel.permissionOverwrites.forEach(overwrite => {
         if (overwrite.type === 0) { // Should only be role anyways, but let's just be safe
           const role = newChannel.guild.roles.find(r => r.id === overwrite.id)
           if (!role || role.name === '@everyone') return
-          channelCreateEvent.embed.fields.push({
+          channelCreateEvent.embeds[0].fields.push({
             name: role.name,
             value: `Type: role\nPermissions: ${Object.keys(overwrite.json).filter(perm => overwrite.json[perm]).join(', ')}`
           })
@@ -50,9 +50,9 @@ module.exports = {
     const user = log.user
     if (user.bot && !global.bot.guildSettingsCache[newChannel.guild.id].isLogBots()) return
     const member = newChannel.guild.members.get(user.id)
-    channelCreateEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
-    channelCreateEvent.embed.author.icon_url = user.avatarURL
-    channelCreateEvent.embed.fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
+    channelCreateEvent.embeds[0].author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+    channelCreateEvent.embeds[0].author.icon_url = user.avatarURL
+    channelCreateEvent.embeds[0].fields[1].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${newChannel.id}\`\`\``
     await send(channelCreateEvent)
   }
 }

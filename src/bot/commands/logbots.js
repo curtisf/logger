@@ -5,7 +5,7 @@ module.exports = {
   func: async message => {
     const state = await toggleLogBots(message.channel.guild.id)
     await message.channel.createMessage({
-      embed: {
+      embeds: [{
         title: `${state ? 'I am now logging bot activity.' : 'I am no longer logging bot activity.'}`,
         color: 16711680,
         timestamp: new Date(),
@@ -18,7 +18,7 @@ module.exports = {
           icon_url: message.author.avatarURL
         },
         fields: []
-      }
+      }]
     })
   },
   name: 'logbots',

@@ -10,7 +10,7 @@ module.exports = {
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
-      embed: {
+      embeds: [{
         author: {
           name: `${member.username}#${member.discriminator}`,
           icon_url: member.avatarURL
@@ -33,7 +33,7 @@ module.exports = {
           inline: true
         }],
         color: 65280
-      }
+      }]
     }
     if (!member.username) { // No username? nope.
       return
@@ -51,13 +51,13 @@ module.exports = {
       }
       if (!usedInvite) {
         if (guild.features.includes('VANITY_URL')) {
-          GMAEvent.embed.fields.push({
+          GMAEvent.embeds[0].fields.push({
             name: 'Invite Used',
             value: 'Server vanity',
             inline: true
           })
         } else if (member.bot) {
-          GMAEvent.embed.fields.push({
+          GMAEvent.embeds[0].fields.push({
             name: 'Invite Used',
             value: 'OAuth flow',
             inline: true
@@ -65,7 +65,7 @@ module.exports = {
         }
       }
       if (usedInvite) {
-        GMAEvent.embed.fields.push({
+        GMAEvent.embeds[0].fields.push({
           name: 'Invite Used',
           value: `${usedInvite.code} with ${usedInvite.uses.toLocaleString()} uses`,
           inline: true
@@ -76,7 +76,7 @@ module.exports = {
       console.error(_)
       // They're denying the bot the permissions it needs.
     }
-    GMAEvent.embed.fields.push({
+    GMAEvent.embeds[0].fields.push({
       name: 'ID',
       value: `\`\`\`ini\nMember = ${member.id}\nGuild = ${guild.id}\`\`\``
     })

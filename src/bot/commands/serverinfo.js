@@ -40,7 +40,7 @@ module.exports = {
         name: 'Emojis',
         value: 'None'
       })
-      await message.channel.createMessage({ embed: embed })
+      await message.channel.createMessage({ embeds: [embed] })
     } else {
       const emojiObj = {
         0: []
@@ -73,9 +73,9 @@ module.exports = {
         if (emojiFields[i + 3]) emojiFieldsToUse.push(emojiFields[i + 3])
         if (i === 0) {
           embed.fields = embed.fields.concat(emojiFieldsToUse)
-          await message.channel.createMessage({ embed: embed })
+          await message.channel.createMessage({ embeds: [embed] })
         } else {
-          await message.channel.createMessage({ embed: { description: 'Emojis continued', fields: emojiFieldsToUse } })
+          await message.channel.createMessage({ embeds: [{ description: 'Emojis continued', fields: emojiFieldsToUse }] })
         }
       }
     }
