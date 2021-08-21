@@ -45,13 +45,14 @@ async function init () {
       users: false
     },
     rest: {
-      use_twilight: !!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST,
-      ...(!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST ? {
-        domain: process.env.TWILIGHT_HOST || 'localhost',
-        baseURL: '/api/v9',
-        port: process.env.TWILIGHT_PORT || 8080,
-        requestTimeout: 1000 * 60 * 60 // 1h time
-      } : {})
+      // use_twilight: !!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST,
+      // ...(!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST ? {
+      //   domain: process.env.TWILIGHT_HOST || 'localhost',
+      //   baseURL: '/api/v9',
+      //   port: process.env.TWILIGHT_PORT || 8080,
+      //   requestTimeout: 1000 * 60 * 60 // 1h time
+      // } : {}),
+      redisInstance: global.redis
     },
     restMode: true,
     messageLimit: 0,
