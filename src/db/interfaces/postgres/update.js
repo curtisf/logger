@@ -155,5 +155,5 @@ exports.clearEventLog = clearEventLog
 exports.clearEventByID = clearEventByID
 exports.setAllEventsOneId = setAllEventsOneId
 exports.setEventsLogId = setEventsLogId
-exports.setEventsRawLogs = setEventsRawLogs
+// exports.setEventsRawLogs = setEventsRawLogs
 exports.updateMessageByID = updateMessageByID
