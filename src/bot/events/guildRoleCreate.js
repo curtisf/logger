@@ -30,6 +30,7 @@ module.exports = {
       const log = logs.entries.find(e => e.targetID === role.id && (new Date().getTime() - new Date((e.id / 4194304) + 1420070400000).getTime()) < 3000)
       if (log) {
         const perp = log.user
+        if (!perp) return await send(guildRoleCreateEvent)
         if (log.reason) guildRoleCreateEvent.embeds[0].fields[1].value = log.reason
         guildRoleCreateEvent.embeds[0].fields[2].value = `\`\`\`ini\nRole = ${role.id}\nPerpetrator = ${perp.id}\`\`\``
         guildRoleCreateEvent.embeds[0].author = {

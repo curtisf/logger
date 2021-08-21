@@ -30,8 +30,9 @@ module.exports = {
     if (logs && logs.entries && logs.entries.length !== 0) {
       log = logs.entries.find(e => e.targetID === member.id && (Date.now() - ((e.id / 4194304) + 1420070400000)) < 3000)
     }
-    if (log) {
+    if (log && log.user) {
       const user = log.user
+      if (!user) return // !!!! not good
       event.eventName = 'guildMemberKick'
       event.embeds = [{
         author: {
