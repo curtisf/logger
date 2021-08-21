@@ -107,7 +107,8 @@ process.on('SIGINT', async () => {
 process.on('unhandledRejection', (e) => {
   if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
     console.error(e)
-    Sentry.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
+    // sentry catches these already, stop double reporting
+    // Sentry.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
   }
 })
 

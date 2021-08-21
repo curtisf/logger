@@ -40,10 +40,12 @@ module.exports = {
       name: 'Action',
       value: `${log.before[actionName] ? 'un' : 'now '}${actionName}` || 'Unknown'
     })
-    voiceStateUpdateEvent.embeds[0].fields[voiceStateUpdateEvent.embeds[0].fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
-    voiceStateUpdateEvent.embeds[0].footer = {
-      text: `${user.username}#${user.discriminator}`,
-      icon_url: user.avatarURL
+    if (user && user.id && user.username) {
+      voiceStateUpdateEvent.embeds[0].fields[voiceStateUpdateEvent.embeds[0].fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
+      voiceStateUpdateEvent.embeds[0].footer = {
+        text: `${user.username}#${user.discriminator}`,
+        icon_url: user.avatarURL
+      }
     }
     await send(voiceStateUpdateEvent)
   }

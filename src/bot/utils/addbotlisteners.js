@@ -14,7 +14,7 @@ module.exports = () => {
 
   global.bot.on('ratelimit-hit', info => {
     statAggregator.incrementEvent('ratelimit-hit')
-    console.warn(`[${cluster.worker.rangeForShard}] ratelimit hit, is ${!info.global && 'not '}global`)
+    console.warn(`[${cluster.worker.rangeForShard}] ratelimit hit, is ${!info.global && 'not '}global`, info.info)
   })
 
   const [on, once] = listenerIndexer()
