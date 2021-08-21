@@ -52,6 +52,7 @@ const eventStatistics = {
   nonWebhookSends: 0,
   'rest-hit': 0,
   'global-ratelimit-hit': 0,
+  'ratelimit-hit': 0,
   guildMemberBoostUpdate: 0
 }
 
