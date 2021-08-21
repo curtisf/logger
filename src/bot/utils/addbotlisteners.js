@@ -9,7 +9,7 @@ module.exports = () => {
     global.webhook.error(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
     console.warn(`[${cluster.worker.rangeForShard}] global ratelimit hit, time remaining: ${timeLeft}`)
     statAggregator.incrementEvent('global-ratelimit-hit')
-    global.redis.set('logger-global', timeLeft + 2000, 'EX', timeLeft + 2000)
+    global.redis.set('logger-global', Math.abs(timeLeft) + 2000, 'EX', Math.abs(timeLeft) + 2000)
   })
 
   global.bot.on('ratelimit-hit', info => {
