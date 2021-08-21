@@ -48,6 +48,7 @@ module.exports = {
         name: 'ID',
         value: `\`\`\`ini\nUser = ${member.id}\`\`\``
       })
+      if (!guildMemberUpdate.embeds[0].fields[0].value) return
       await send(guildMemberUpdate)
     } else if (oldMember?.pending && !member.pending && guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED')) {
       guildMemberUpdate.eventName = 'guildMemberVerify'

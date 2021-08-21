@@ -64,11 +64,13 @@ module.exports = {
     const log = logs.entries.find(e => e.targetID === channel.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
     if (log) { // if the audit log is less than 3 seconds off
       const user = log.user
-      if (user?.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
-      const member = channel.guild.members.get(user.id)
-      channelDeleteEvent.embeds[0].author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
-      channelDeleteEvent.embeds[0].author.icon_url = user.avatarURL
-      channelDeleteEvent.embeds[0].fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+      if (user && user?.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
+      if (user) {
+        const member = channel.guild.members.get(user.id)
+        channelDeleteEvent.embeds[0].author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+        channelDeleteEvent.embeds[0].author.icon_url = user.avatarURL
+        channelDeleteEvent.embeds[0].fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+      }
       await send(channelDeleteEvent)
     } else {
       await send(channelDeleteEvent)
