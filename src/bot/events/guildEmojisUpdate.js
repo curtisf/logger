@@ -63,7 +63,7 @@ module.exports = {
       const logs = await guild.getAuditLog({ limit: 5, actionType: num }).catch(() => {})
       if (!logs) return
       const log = logs.entries.find(e => e?.targetID === emoji.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
-      if (log) { // if the audit log is less than 3 seconds off
+      if (log && log.user) { // if the audit log is less than 3 seconds off
         const user = log.user
         guildEmojisUpdateEvent.embeds[0].author = {
           name: `${user.username}#${user.discriminator}`,
