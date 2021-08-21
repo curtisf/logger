@@ -115,6 +115,7 @@ module.exports = {
           name: 'ID',
           value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
         })
+        if (!guildMemberUpdate.embeds[0].fields[0].value) return
         await send(guildMemberUpdate)
       }
     }).catch(() => {})

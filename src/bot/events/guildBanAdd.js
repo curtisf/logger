@@ -45,6 +45,7 @@ module.exports = {
         global.logger.warn(`Guild Ban Add on ${guild.name} (${guild.id}) was not able to match a log.`)
         return
       }
+      if (!log.user) return
       const perp = log.user
       if (log.reason) guildBanAddEvent.embeds[0].fields[1].value = log.reason
       guildBanAddEvent.embeds[0].fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
