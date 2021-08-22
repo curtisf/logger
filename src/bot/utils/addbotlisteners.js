@@ -24,7 +24,7 @@ module.exports = () => {
     webhookErrorCount++
     lastRetryAfter = d.retryAfter
     if (webhookErrorCount % 50 === 0) {
-      console.warn(`${new Date().toISOString()} webhook ratelimit error mod 50 hit`, lastRetryAfter, webhookErrorCount)
+      console.warn(`${new Date().toISOString()} [${cluster.worker.rangeForShard}] webhook ratelimit error mod 50 hit`, lastRetryAfter, webhookErrorCount)
     }
     statAggregator.incrementEvent('webhook-ratelimit-hit')
   })
