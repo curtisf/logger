@@ -142,26 +142,39 @@ module.exports = {
             name: overwriteName,
             value: ''
           }
+          const fields = [{ name: overwriteName, value: '' }]
+          let counter = 0
           differentPerms.forEach(perm => { // This is black magic, but tl;dr it determines whether a perm was set to grant/deny/inherit
+            if (fields[counter].value.length >= 950) {
+              counter++
+              fields.push({
+                name: `${overwriteName} continued`,
+                value: ''
+              })
+            }
             if (newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
               if (newOverwrite.json[perm] === true && oldOverwrite.json[perm] === false) {
-                field.value += `\n${canUseExternal(channel.guild) ? '<:onswitch:827651433750855710>' : 'ALLOW'} ${perm}`
+                fields[counter].value += `\n${canUseExternal(channel.guild) ? '<:onswitch:827651433750855710>' : 'ALLOW'} ${perm}`
               } else if (newOverwrite.json[perm] === false && oldOverwrite.json[perm] === true) {
-                field.value += `\n${canUseExternal(channel.guild) ? '<:offswitch:827651237293981736>' : 'DENY'} ${perm}`
+                fields[counter].value += `\n${canUseExternal(channel.guild) ? '<:offswitch:827651237293981736>' : 'DENY'} ${perm}`
               }
             } else if (newOverwrite.json.hasOwnProperty(perm) && !oldOverwrite.json.hasOwnProperty(perm)) {
               if (newOverwrite.json[perm]) {
-                field.value += `\n${canUseExternal(channel.guild) ? '<:onswitch:827651433750855710>' : 'ALLOW'} ${perm}`
+                fields[counter].value += `\n${canUseExternal(channel.guild) ? '<:onswitch:827651433750855710>' : 'ALLOW'} ${perm}`
               } else {
-                field.value += `\n${canUseExternal(channel.guild) ? '<:offswitch:827651237293981736>' : 'DENY'} ${perm}`
+                fields[counter].value += `\n${canUseExternal(channel.guild) ? '<:offswitch:827651237293981736>' : 'DENY'} ${perm}`
               }
             } else if (!newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
-              field.value += `\n⚖️ neutral/inherit ${perm}`
+              fields[counter].value += `\n⚖️ neutral/inherit ${perm}`
             }
           })
-          if (field.value) {
-            if (newOverwrite.type === 1) field.value = `<@${newOverwrite.id}>` + field.value
-            channelUpdateEvent.embeds[0].fields.push(field)
+          for (let i = 0; i < fields.length; i++) {
+            if (fields[i].value) {
+              if (newOverwrite.type === 1) {
+                fields[i].name = `<@${newOverwrite.id}>` + field.value
+              }
+              channelUpdateEvent.embeds[0].fields.push(fields[i])
+            }
           }
         })
       }

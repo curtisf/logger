@@ -37,7 +37,7 @@ module.exports = async (guildID, channelID) => {
     return
   }
   for (let i = 0; i < webhooks.length; i++) {
-    if (webhooks[i].token && webhooks[i].channel_id === channelID) { // check for token because channel subscriptions count as webhooks
+    if (webhooks[i].token && webhooks[i].channel_id === channelID && webhooks[i].application_id === global.bot.user.id) { // check for token because channel subscriptions count as webhooks
       webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)
       global.logger.info(`G: ${guildID} C: ${channelID} found hook ${webhooks[i].id}, set cache`)
       return

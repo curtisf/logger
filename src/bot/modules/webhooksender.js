@@ -1,3 +1,4 @@
+const Sentry = require('@sentry/node')
 const { EVENTS_USING_AUDITLOGS } = require('../utils/constants')
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
@@ -50,7 +51,7 @@ module.exports = async pkg => {
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
     await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
-    if (!pkg.embeds[0].footer) {
+    if (!pkg.embeds[0].footer && !pkg.noFooter) {
       pkg.embeds[0].footer = {
         text: `${global.bot.user.username}#${global.bot.user.discriminator}`,
         icon_url: global.bot.user.avatarURL
@@ -83,6 +84,7 @@ module.exports = async pkg => {
           return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
         } else {
           console.error('Error while sending a message over webhook!', e, pkg, pkg.embeds[0].fields)
+          Sentry.captureException(e)
         }
       })
     } else {

@@ -41,42 +41,61 @@ module.exports = {
         }]
       }
       if (!newMessage.content) return // if no content why log it? normal users don't have image logging anyways
-      let nowChunks, beforeChunks
-      if (newMessage.content.length > 1000) {
-        nowChunks = chunkify(escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, ''))
+      let secondMessageUpdatePayload
+      if (newMessage.content.length + oldMessage.content.length > 4000) {
+        // handles large message nitro editing and helps make huge message edits look nicer.
+        messageUpdateEvent.embeds[0].fields.splice(1) // nuke all fields but essential message info
+        secondMessageUpdatePayload = JSON.parse(JSON.stringify(messageUpdateEvent)) // deep copy initial payload
+        messageUpdateEvent.embeds[0].description += `\n\n**__Now__**:\n${escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, '')}`
+        messageUpdateEvent.embeds[0].fields = []
+        delete secondMessageUpdatePayload.embeds[0].author
+        secondMessageUpdatePayload.embeds[0].description = `**__Previously__**:\n${oldMessage.content}`
+        secondMessageUpdatePayload.embeds[0].fields.push({
+          name: 'ID',
+          value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
+        })
+        messageUpdateEvent.noFooter = true
       } else {
-        nowChunks = [escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])]
-      }
+        let nowChunks, beforeChunks
+        if (newMessage.content.length > 1000) {
+          nowChunks = chunkify(escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, ''))
+        } else {
+          nowChunks = [escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])]
+        }
 
-      if (oldMessage.content.length > 1000) {
-        beforeChunks = chunkify(oldMessage.content.replace(/\"/g, '"').replace(/`/g, ''))
-      } else {
-        beforeChunks = [oldMessage.content]
-      }
-      if (nowChunks.length === 0) {
-        nowChunks.push('<no message content>')
-      }
-      if (beforeChunks.length === 0) {
-        beforeChunks.push('<no message content>')
-      }
-      nowChunks.forEach((chunk, i) => {
-        messageUpdateEvent.embeds[0].fields.push({
-          name: i === 0 ? 'Now' : 'Now Continued',
-          value: chunk
+        if (oldMessage.content.length > 1000) {
+          beforeChunks = chunkify(oldMessage.content.replace(/\"/g, '"').replace(/`/g, ''))
+        } else {
+          beforeChunks = [oldMessage.content]
+        }
+        if (nowChunks.length === 0) {
+          nowChunks.push('<no message content>')
+        }
+        if (beforeChunks.length === 0) {
+          beforeChunks.push('<no message content>')
+        }
+        nowChunks.forEach((chunk, i) => {
+          messageUpdateEvent.embeds[0].fields.push({
+            name: i === 0 ? 'Now' : 'Now Continued',
+            value: chunk
+          })
         })
-      })
-      beforeChunks.forEach((chunk, i) => {
-        messageUpdateEvent.embeds[0].fields.push({
-          name: i === 0 ? 'Previous' : 'Previous Continued',
-          value: chunk // previous is already escaped, don't escape again
+        beforeChunks.forEach((chunk, i) => {
+          messageUpdateEvent.embeds[0].fields.push({
+            name: i === 0 ? 'Previous' : 'Previous Continued',
+            value: chunk // previous is already escaped, don't escape again
+          })
         })
-      })
-      messageUpdateEvent.embeds[0].fields.push({
-        name: 'ID',
-        value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
-      })
+        messageUpdateEvent.embeds[0].fields.push({
+          name: 'ID',
+          value: `\`\`\`ini\nUser = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``
+        })
+      }
       await updateMessageByID(newMessage.id, newMessage.content)
       await send(messageUpdateEvent)
+      if (secondMessageUpdatePayload) {
+        await send(secondMessageUpdatePayload)
+      }
     }
   }
 }

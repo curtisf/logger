@@ -36,10 +36,10 @@ module.exports = {
       guildMemberUpdate.eventName = 'guildMemberNickUpdate'
       guildMemberUpdate.embeds[0].description = `${member.mention} ${member.nick ? `(now ${member.nick})` : ''} was updated`
       delete guildMemberUpdate.author
-      guildMemberUpdate.embeds[0].fields[0] = ({
+      guildMemberUpdate.embeds[0].fields[0] = {
         name: 'New Name',
         value: `${member.nick ? member.nick : member.username}#${member.discriminator}`
-      })
+      }
       guildMemberUpdate.embeds[0].fields.push({
         name: 'Old Name',
         value: `${oldMember.nick ? oldMember.nick : member.username}#${member.discriminator}`

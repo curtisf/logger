@@ -10,7 +10,8 @@ require('dotenv').config()
 
 if (process.env.SENTRY_URI) {
   Sentry.init({
-    dsn: process.env.SENTRY_URI
+    dsn: process.env.SENTRY_URI,
+    maxBreadcrumbs: 1
   })
 } else {
   global.logger.warn('No Sentry URI provided. Error logging will be restricted to messages only.')
@@ -50,7 +51,7 @@ async function init () {
         domain: process.env.TWILIGHT_HOST || 'localhost',
         baseURL: '/api/v9',
         port: process.env.TWILIGHT_PORT || 8080,
-        requestTimeout: 1000 * 60 * 60 // 1h time
+        requestTimeout: 1000 * 60 * 30 // 1h time
       } : {})
     },
     restMode: true,
@@ -76,6 +77,10 @@ async function init () {
   global.bot.commands = {}
   global.bot.ignoredChannels = []
   global.bot.guildSettingsCache = {}
+
+  if (!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST) {
+    global.logger.info('Using HTTP proxy...')
+  }
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
