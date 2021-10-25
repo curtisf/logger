@@ -44,7 +44,7 @@ async function cacheMessage (message) {
   } else {
     message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~'), ['angle brackets']))
   }
-  message.attachment_b64 = ''
+  message.attachment_b64 = message?.attachments.length ? aes.encrypt(message?.attachments.map(atc => atc.proxy_url).join('\n')) : ''
   batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
 }
 

@@ -25,7 +25,7 @@ function getMessage (messageID) {
     id: message[0],
     author_id: message[1],
     content: aes.decrypt(message[2]),
-    attachment_b64: '',
+    attachment_b64: message[3],
     ts: Date.parse(message[4])
   }
 }

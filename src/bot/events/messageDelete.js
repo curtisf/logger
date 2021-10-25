@@ -12,10 +12,12 @@ module.exports = {
     const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
     if (!guildSettings) await cacheGuild(message.channel.guild.id)
     if (global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) return
+
     let cachedMessage = await getMessageFromBatch(message.id)
     if (!cachedMessage) {
       cachedMessage = await getMessageFromDB(message.id)
     }
+
     if (!cachedMessage) return
     await deleteMessage(message.id)
     let cachedUser = global.bot.users.get(cachedMessage.author_id)
@@ -63,12 +65,15 @@ module.exports = {
     }, {
       name: 'ID',
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
+    }, {
+      name: 'Attachment Links',
+      value: cachedMessage.attachment_b64,
     })
     await send(messageDeleteEvent)
   }
 }
 
-function chunkify (toChunk) {
+function chunkify(toChunk) {
   const lenChunks = Math.ceil(toChunk.length / 1000)
   const chunksToReturn = []
   for (let i = 0; i < lenChunks; i++) {
