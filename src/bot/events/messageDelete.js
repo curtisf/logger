@@ -65,10 +65,14 @@ module.exports = {
     }, {
       name: 'ID',
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
-    }, {
-      name: 'Attachment Links',
-      value: cachedMessage.attachment_b64,
     })
+
+    if (cachedMessage.attachment_b64) {
+      messageDeleteEvent.embeds[0].fields.push({
+        name: 'Attachment Links',
+        value: cachedMessage.attachment_b64,
+      })
+    }
     await send(messageDeleteEvent)
   }
 }
