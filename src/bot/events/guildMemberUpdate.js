@@ -60,7 +60,7 @@ module.exports = {
       guildMemberUpdate.embeds[0].color = 0x1ced9a
       delete guildMemberUpdate.embeds[0].fields
       await send(guildMemberUpdate)
-    } else if (oldMember && oldMember.premiumSince !== member.premiumSince) {
+    } else if (oldMember && oldMember.premiumSince != member.premiumSince) {
       const embedCopy = guildMemberUpdate
       embedCopy.eventName = 'guildMemberBoostUpdate'
       embedCopy.embeds[0].description = `${member.mention} has ${member.premiumSince ? 'boosted' : 'stopped boosting'} the server.`
