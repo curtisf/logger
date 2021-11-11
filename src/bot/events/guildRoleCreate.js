@@ -22,7 +22,7 @@ module.exports = {
       }]
     }
     if (!guild.members.find(m => m.username === role.name)) { // if this isn't an auto role
-      if (role.managed && guild.members.find(m => m.username === role.name)) {
+      if (role.managed && role.tags.bot_id && guild.members.find(m => m.username === role.name)) {
         guildRoleCreateEvent.embeds[0].fields[1].value = 'Bot'
       }
       const logs = await guild.getAuditLog({ limit: 5, actionType: 30 }).catch(() => {})

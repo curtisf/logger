@@ -61,7 +61,7 @@ module.exports = {
       delete guildMemberUpdate.embeds[0].fields
       await send(guildMemberUpdate)
     } else if (oldMember && oldMember.roles && oldMember.premiumSince != member.premiumSince) {
-      const boostRole = guild.roles.find(r => r.name === 'Nitro Booster' && r.tags.premium_subscriber === true)
+      const boostRole = guild.roles.find(r => r?.tags?.premium_subscriber === true)
       if (!boostRole) return
       const embedCopy = guildMemberUpdate
       const oldMemberHasBoostRole = oldMember.roles.includes(boostRole.id)
