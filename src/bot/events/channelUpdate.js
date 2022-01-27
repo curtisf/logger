@@ -65,7 +65,7 @@ module.exports = {
       const oldPerms = Object.keys(oldOverwrite.json)
       let differentPerms = getDifference(newPerms, oldPerms)
       if (oldPerms.length > newPerms.length) differentPerms = getDifference(oldPerms, newPerms)
-      if (channel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString() === oldChannel.permissionOverwrites.map(o => `${o.allow}|${o.deny}`).toString()) return
+      if (JSON.stringify(channel.permissionOverwrites) == JSON.stringify(oldChannel.permissionOverwrites)) return
       let overwriteName = newOverwrite.type + ' '
       if (newOverwrite.type === 'member') {
         const member = channel.guild.members.get(newOverwrite.id)
