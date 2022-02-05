@@ -17,6 +17,7 @@ module.exports = webhookID => { // use to find bad shared webhooks
     })
     stream.on('end', () => {
       console.log('All data has been visited')
+      resolve()
     })
   })
 }
