@@ -1,6 +1,7 @@
 const listenerIndexer = require('../../miscellaneous/listenerIndexer')
 const eventMiddleware = require('../modules/eventmiddleware')
 const cluster = require('cluster')
+const sniffwebhook = require('./sniffwebhook')
 
 let webhookErrorCount = 0
 let lastRetryAfter
@@ -20,11 +21,17 @@ module.exports = () => {
     console.warn(`${new Date().toISOString()} [${cluster.worker.rangeForShard}] ratelimit hit, is ${!info.global && 'not '}global`, info.info)
   })
 
-  global.bot.on('webhook-ratelimit-hit', d => {
+  global.bot.on('webhook-ratelimit-hit', async d => {
     webhookErrorCount++
     lastRetryAfter = d.retryAfter
-    if (webhookErrorCount % 50 === 0) {
-      console.warn(`${new Date().toISOString()} [${cluster.worker.rangeForShard}] webhook ratelimit error mod 50 hit`, lastRetryAfter, webhookErrorCount)
+    if (webhookErrorCount % 10 === 0) {
+      console.warn(`${new Date().toISOString()} [${cluster.worker.rangeForShard}] webhook ratelimit error mod 10 hit rt after | error count | webhook id`, lastRetryAfter, webhookErrorCount, d.webhookID)
+      const troublesomeKey = await sniffwebhook(d.webhookID)
+      if (troublesomeKey) {
+        console.log(`Troublesome webhook 429ing key: ${troublesomeKey}`)
+      } else {
+        console.warn('Failed to match 429ing webhook key')
+      }
     }
     statAggregator.incrementEvent('webhook-ratelimit-hit')
   })
