@@ -46,6 +46,7 @@ async function init () {
       users: false
     },
     rest: {
+      ratelimiterOffset: 5,
       use_twilight: !!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST,
       ...(!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST ? {
         domain: process.env.TWILIGHT_HOST || 'localhost',
@@ -110,16 +111,16 @@ process.on('SIGINT', async () => {
 })
 
 process.on('unhandledRejection', (e) => {
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
-    console.error(e)
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('503 Service Temporarily Unavailable') && !e.message.includes('global ratelimit') && !e.message.includes('hang up')) {
+    global.logger.error_nosentry(e)
     // sentry catches these already, stop double reporting
     // Sentry.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
   }
 })
 
 process.on('uncaughtException', (e) => {
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
-    console.error(e)
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('503 Service Temporarily Unavailable') && !e.message.includes('global ratelimit') && !e.message.includes('hang up')) {
+    global.logger.error_nosentry(e)
     Sentry.captureException(e.stack, { level: 'fatal' })
   }
 })

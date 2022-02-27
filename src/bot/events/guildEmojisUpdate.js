@@ -46,7 +46,7 @@ module.exports = {
       guildEmojisUpdateEvent.embeds[0].fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
     } else {
       type = 'updated'
-      emoji = emojis.find(e => oldEmojis.find(o => o.id === e.id).name !== e.name)
+      emoji = emojis.find(e => oldEmojis.find(o => o.id === e.id)?.name !== e.name)
       if (!emoji) return
       guildEmojisUpdateEvent.embeds[0].fields[0].name = 'Updated emoji'
       guildEmojisUpdateEvent.embeds[0].fields[0].value = `Name = ${emoji.name}\nManaged = ${emoji.managed ? 'Yes' : 'No'}\nAnimated = ${emoji.animated ? 'Yes' : 'No'}`
@@ -54,6 +54,9 @@ module.exports = {
         url: `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
       }
       const oldEmoji = oldEmojis.find(o => o.id === emoji.id)
+      if (!oldEmoji) {
+        return
+      }
       if (emoji.name !== oldEmoji.name) {
         guildEmojisUpdateEvent.embeds[0].fields[0].value += `\nName was = ${oldEmoji.name}`
       }

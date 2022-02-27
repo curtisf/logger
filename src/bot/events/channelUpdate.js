@@ -116,7 +116,7 @@ module.exports = {
         })
         if (log.before.type === 0) {
           const role = channel.guild.roles.get(log.before.id)
-          channelUpdateEvent.embeds[0].color = role.color || 0x03d3fc
+          channelUpdateEvent.embeds[0].color = role?.color || 0x03d3fc
         }
       } else {
         channelOverwrites.forEach(newOverwrite => {
