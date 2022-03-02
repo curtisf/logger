@@ -2,11 +2,11 @@ const { Permission } = require('eris')
 const send = require('../modules/webhooksender')
 const escape = require('markdown-escape')
 const CHANNEL_TYPE_MAP = {
-  0: 'Text Channel',
-  2: 'Voice Channel',
-  4: 'Category Channel',
-  5: 'Announcement Channel',
-  13: 'Stage Channel'
+  0: 'Text channel',
+  2: 'Voice channel',
+  4: 'Category channel',
+  5: 'Announcement channel',
+  13: 'Stage channel'
 }
 
 const canUseExternal = guild => {
@@ -35,7 +35,7 @@ module.exports = {
           icon_url: 'https://logger.bot/staticfiles/red-x.png'
         },
         color: 0x03d3fc,
-        description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'Unsupported channel type'} was updated (${channel.name})`,
+        description: `${CHANNEL_TYPE_MAP[channel.type] ? CHANNEL_TYPE_MAP[channel.type] : 'unsupported channel'} <#${channel.id}> was updated (${escape(channel.name)})`,
         fields: [{
           name: 'Creation date',
           value: `<t:${Math.round(((channel.id / 4194304) + 1420070400000) / 1000)}:F>`,
@@ -70,24 +70,39 @@ module.exports = {
       const toIter = Object.keys(log.before).length >= Object.keys(log.after).length ? log.before : log.after
       for (const changedKey in toIter) {
         if (changedKey === 'topic') {
-          let newTopic = '<no topic set>'
-          let oldTopic = '<no topic set>'
-          if (channel.topic !== null && channel.topic.trim()) {
-            newTopic = escape(channel.topic.replace(/~/g, '\\~'), ['angle brackets'])
-          }
-          if (oldChannel.topic !== null && oldChannel.topic.trim()) {
-            oldTopic = escape(oldChannel.topic.replace(/~/g, '\\~'), ['angle brackets'])
-          }
-          if (newTopic === oldTopic) {
-            channelUpdateEvent.embeds[0].fields.push({
-              name: 'Topic',
-              value: '<no topic set>'
-            })
+          if ((channel.topic?.length || 0) + (oldChannel.topic?.length || 0) > 1000) {
+            let newTopic = '<no topic set>'
+            let oldTopic = '<no topic set>'
+            if (channel.topic !== null && channel.topic.trim()) {
+              newTopic = escape(channel.topic.replace(/~/g, '\\~'), ['angle brackets'])
+            }
+            if (oldChannel.topic !== null && oldChannel.topic.trim()) {
+              oldTopic = escape(oldChannel.topic.replace(/~/g, '\\~'), ['angle brackets'])
+            }
+            if (newTopic === oldTopic) {
+              continue
+            }
+            channelUpdateEvent.embeds[0].description += `\n\n**__New topic__**\n\`${newTopic}\`\n\n**__Old topic__**\n\`${oldTopic}\``
           } else {
-            channelUpdateEvent.embeds[0].fields.push({
-              name: 'Topic',
-              value: `Now: \`${newTopic}\`\nWas: \`${oldTopic}\``
-            })
+            let newTopic = '<no topic set>'
+            let oldTopic = '<no topic set>'
+            if (channel.topic !== null && channel.topic.trim()) {
+              newTopic = escape(channel.topic.replace(/~/g, '\\~'), ['angle brackets'])
+            }
+            if (oldChannel.topic !== null && oldChannel.topic.trim()) {
+              oldTopic = escape(oldChannel.topic.replace(/~/g, '\\~'), ['angle brackets'])
+            }
+            if (newTopic === oldTopic) {
+              channelUpdateEvent.embeds[0].fields.push({
+                name: 'Topic',
+                value: '<no topic set>'
+              })
+            } else {
+              channelUpdateEvent.embeds[0].fields.push({
+                name: 'Topic',
+                value: `Now: \`${newTopic}\`\nWas: \`${oldTopic}\``
+              })
+            }
           }
           // using `` to surround topic because topic can be just spaces
           continue
