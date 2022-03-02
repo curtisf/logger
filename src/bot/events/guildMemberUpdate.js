@@ -1,7 +1,7 @@
 const send = require('../modules/webhooksender')
 const cacheGuild = require('../utils/cacheGuild')
 const arrayCompare = require('../utils/arraycompare')
-const { escape } = require('querystring')
+const markdownEscape = require('markdown-escape')
 
 const canUseExternal = guild => {
   const logChannelID = global.bot.guildSettingsCache[guild.id].event_logs.guildMemberUpdate
@@ -140,7 +140,7 @@ module.exports = {
       if (possibleTimeoutLog.reason) {
         guildMemberUpdate.embeds[0].fields.push({
           name: 'Reason',
-          value: escape(possibleTimeoutLog.reason)
+          value: markdownEscape(possibleTimeoutLog.reason)
         })
       }
       if (member.communicationDisabledUntil) {
