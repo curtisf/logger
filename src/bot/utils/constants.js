@@ -43,10 +43,21 @@ exports.EVENTS_USING_AUDITLOGS = [
   'guildEmojisUpdate'
 ]
 
+exports.EMBED_COLORS = {
+  RED: 0xbb2124,
+  YELLOW_ORANGE: 0xffaf24,
+  GREEN: 0x22bb33,
+  PURPLED_BLUE: 0x3838fc,
+  CLEAR: 0x36393f // clear for dark mode users
+}
+
 exports.PRESET_EVENT_MAP = {
   voice: ['voiceChannelLeave', 'voiceChannelJoin', 'voiceChannelSwitch'],
   messages: ['messageUpdate', 'messageDelete', 'messageDeleteBulk'],
-  mod: ['guildBanAdd', 'guildBanRemove', 'guildMemberUpdate', 'guildMemberKick', 'guildMemberNickUpdate'],
+  member: ['guildMemberUpdate', 'guildMemberNickUpdate', 'guildMemberVerify', 'guildMemberBoostUpdate'],
+  moderation: ['guildBanAdd', 'guildBanRemove', 'guildMemberKick'],
   joinlog: ['guildMemberAdd', 'guildMemberRemove'],
-  server: ['channelCreate', 'channelUpdate', 'channelDelete', 'guildRoleUpdate', 'guildRoleCreate', 'guildRoleDelete', 'guildUpdate']
+  server: ['guildUpdate'],
+  role: ['guildRoleUpdate', 'guildRoleCreate', 'guildRoleDelete'],
+  channel: ['channelCreate', 'channelUpdate', 'channelDelete']
 }
