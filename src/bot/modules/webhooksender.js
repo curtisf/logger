@@ -26,7 +26,7 @@ module.exports = async pkg => {
   const guild = global.bot.guilds.get(pkg.guildID)
   if (!guild) {
     console.error('Invalid guild ID sent in package!', pkg.guildID, pkg, pkg.embeds)
-    global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
+    // global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
@@ -77,7 +77,7 @@ module.exports = async pkg => {
         if (e && e.message && e.message.includes('Request timed out')) return
         if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500' || e.code == '503' || (e && e.message && e.message.includes('Internal Server Error')))) {
           global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-          global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
+          // global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
         }
         if (e.code == '10015') { // Webhook doesn't exist anymore.
           await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)

@@ -60,10 +60,15 @@ module.exports = {
       guildMemberUpdate.embeds[0].color = 0x1ced9a
       delete guildMemberUpdate.embeds[0].fields
       await send(guildMemberUpdate)
-    } else if (oldMember && oldMember.premiumSince !== member.premiumSince) {
+    } else if (oldMember && oldMember.roles && oldMember.premiumSince != member.premiumSince) {
+      const boostRole = guild.roles.find(r => r?.tags?.premium_subscriber === true)
+      if (!boostRole) return
       const embedCopy = guildMemberUpdate
+      const oldMemberHasBoostRole = oldMember.roles.includes(boostRole.id)
+      const newMemberHasBoostRole = member.roles.includes(boostRole.id)
+      if (oldMemberHasBoostRole === newMemberHasBoostRole) return // something bugged and this was called when there wasn't really a boost update... although this doesn't log subsequent boosts by a current booster.
       embedCopy.eventName = 'guildMemberBoostUpdate'
-      embedCopy.embeds[0].description = `${member.mention} has ${member.premiumSince ? 'boosted' : 'stopped boosting'} the server.`
+      embedCopy.embeds[0].description = `${member.mention} has ${newMemberHasBoostRole ? 'boosted' : 'stopped boosting'} the server.`
       embedCopy.embeds[0].author = {
         name: `${member.username}#${member.discriminator}`,
         icon_url: member.avatarURL
