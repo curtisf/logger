@@ -52,12 +52,13 @@ exports.EMBED_COLORS = {
 }
 
 exports.PRESET_EVENT_MAP = {
-  voice: ['voiceChannelLeave', 'voiceChannelJoin', 'voiceChannelSwitch'],
-  messages: ['messageUpdate', 'messageDelete', 'messageDeleteBulk'],
+  voice: ['voiceChannelLeave', 'voiceChannelJoin', 'voiceChannelSwitch', 'voiceStateUpdate'],
+  message: ['messageUpdate', 'messageDelete', 'messageDeleteBulk'],
   member: ['guildMemberUpdate', 'guildMemberNickUpdate', 'guildMemberVerify', 'guildMemberBoostUpdate'],
   moderation: ['guildBanAdd', 'guildBanRemove', 'guildMemberKick'],
   joinlog: ['guildMemberAdd', 'guildMemberRemove'],
   server: ['guildUpdate'],
   role: ['guildRoleUpdate', 'guildRoleCreate', 'guildRoleDelete'],
-  channel: ['channelCreate', 'channelUpdate', 'channelDelete']
+  channel: ['channelCreate', 'channelUpdate', 'channelDelete'],
+  all: this.ALL_EVENTS
 }

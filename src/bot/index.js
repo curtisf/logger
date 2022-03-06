@@ -46,7 +46,6 @@ async function init () {
       users: false
     },
     rest: {
-      ratelimiterOffset: 5,
       use_twilight: !!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST,
       ...(!!process.env.TWILIGHT_PORT || !!process.env.TWILIGHT_HOST ? {
         domain: process.env.TWILIGHT_HOST || 'localhost',
@@ -88,7 +87,10 @@ async function init () {
 
   addBotListeners()
 
-  require('../miscellaneous/bezerk')
+  if (process.env.BEZERK_URI && process.env.BEZERK_SECRET) {
+    global.logger.info('Using bridge for website')
+    require('../miscellaneous/bezerk')
+  }
 
   connect()
 }

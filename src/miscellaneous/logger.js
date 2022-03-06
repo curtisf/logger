@@ -23,5 +23,5 @@ module.exports = {
   },
   warn: (...info) => console.log(chalk`${new Date().toUTCString()} {bold.yellow WARN}: `, ...info),
   info: (...info) => console.log(chalk`${new Date().toUTCString()} {bold.blue INFO}: `, ...info.map(m => chalk`{white ${m}}`)),
-  debug: (...info) => console.log(chalk`${new Date().toUTCString()} {bgGreen DEBUG}: `, ...info.map(m => chalk`{bgGreen ${m}}`))
+  debug: (...info) => console.log(chalk`${new Date().toUTCString()} {bgGreen DEBUG}: `, ...info.map(m => chalk`{black.bgWhite ${m}}`))
 }

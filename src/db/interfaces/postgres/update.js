@@ -132,6 +132,11 @@ async function ignoreChannel (guildID, channelID) {
   return disabled
 }
 
+async function clearIgnoredChannels (guildID) {
+  global.bot.guildSettingsCache[guildID].ignoredChannels = []
+  await pool.query('UPDATE guilds SET ignored_channels=$1 WHERE id=$2', [[], guildID])
+}
+
 async function toggleLogBots (guildID) {
   const doc = await getDoc(guildID)
   await pool.query('UPDATE guilds SET log_bots=$1 WHERE id=$2', [!doc.log_bots, guildID])
@@ -155,5 +160,6 @@ exports.clearEventLog = clearEventLog
 exports.clearEventByID = clearEventByID
 exports.setAllEventsOneId = setAllEventsOneId
 exports.setEventsLogId = setEventsLogId
+exports.clearIgnoredChannels = clearIgnoredChannels
 // exports.setEventsRawLogs = setEventsRawLogs
 exports.updateMessageByID = updateMessageByID
