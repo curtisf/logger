@@ -33,7 +33,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
           label: 'ALL',
           description: 'Log ALL events',
           value: 'all',
-          default: !Object.keys(guildEvents).find(geKey => !guildEvents[geKey])
+          default: !Object.keys(guildEvents).find(geKey => guildEvents[geKey] !== interaction.channel.id)
         }, {
           label: 'Channel Events',
           description: 'Channel created, deleted, updated (name, permission overwrites)',
@@ -166,7 +166,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
           label: 'ALL',
           description: 'Log ALL events',
           value: 'all',
-          default: !Object.keys(guildEvents).find(geKey => !guildEvents[geKey])
+          default: !Object.keys(guildEvents).find(geKey => guildEvents[geKey] !== interaction.channel.id)
         },
         {
           label: 'Channel Create',

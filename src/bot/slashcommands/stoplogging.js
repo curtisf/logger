@@ -1,3 +1,4 @@
+const Eris = require('eris')
 const { clearEventByID, setAllEventsOneId } = require('../../db/interfaces/postgres/update')
 const { EMBED_COLORS } = require('../utils/constants.js')
 const { getAuthorField, getEmbedFooter } = require('../utils/embeds.js')
@@ -20,7 +21,8 @@ module.exports = {
           color: EMBED_COLORS.GREEN,
           author: getAuthorField(interaction.member.user),
           footer: getEmbedFooter(global.bot.user)
-        }
+        },
+        flags: Eris.Constants.MessageFlags.EPHEMERAL
       }).catch(() => {})
     } else {
       const eventsLoggingHere = global.bot.guildSettingsCache[interaction.guildID].eventLogByNames(channelToStopLogging || interaction.channel.id)
@@ -35,7 +37,8 @@ module.exports = {
             color: EMBED_COLORS.YELLOW_ORANGE,
             author: getAuthorField(interaction.member.user),
             footer: getEmbedFooter(global.bot.user)
-          }
+          },
+          flags: Eris.Constants.MessageFlags.EPHEMERAL
         }).catch(() => {})
         return
       }
@@ -53,7 +56,8 @@ module.exports = {
           color: EMBED_COLORS.GREEN,
           author: getAuthorField(interaction.member.user),
           footer: getEmbedFooter(global.bot.user)
-        }
+        },
+        flags: Eris.Constants.MessageFlags.EPHEMERAL
       }).catch(() => {})
     }
   }
