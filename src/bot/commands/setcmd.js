@@ -139,117 +139,117 @@ module.exports = {
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Channel Create',
-                value: 'channel_create'
+                value: 'channelCreate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Channel Update',
-                value: 'channel_update'
+                value: 'channelUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Channel Delete',
-                value: 'channel_delete'
+                value: 'channelDelete'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Banned',
-                value: 'ban_add'
+                value: 'guildBanAdd'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Unbanned',
-                value: 'ban_remove'
+                value: 'guildBanRemove'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Role Create',
-                value: 'role_create'
+                value: 'guildRoleCreate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Role Delete',
-                value: 'role_delete'
+                value: 'guildRoleDelete'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Role Update',
-                value: 'role_update'
+                value: 'guildRoleUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Server Settings Change',
-                value: 'guild_update'
+                value: 'guildUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Server Emojis Change',
-                value: 'emojis_update'
+                value: 'guildEmojisUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Message Delete',
-                value: 'message_delete'
+                value: 'messageDelete'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Bulk Message Delete',
-                value: 'message_delete_bulk'
+                value: 'messageDeleteBulk'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Message Edit',
-                value: 'message_update'
+                value: 'messageUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Join',
-                value: 'member_add'
+                value: 'guildMemberAdd'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Kick',
-                value: 'member_kick'
+                value: 'guildMemberKick'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Leave',
-                value: 'member_remove'
+                value: 'guildMemberRemove'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Nickname Update',
-                value: 'member_nick_update'
+                value: 'guildMemberNickUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Role Add/Remove',
-                value: 'member_update'
+                value: 'guildMemberUpdate'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Gate Verify',
-                value: 'member_verify'
+                value: 'guildMemberVerify'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Voice Channel Leave',
-                value: 'voice_channel_leave'
+                value: 'voiceChannelLeave'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Voice Channel Join',
-                value: 'voice_channel_join'
+                value: 'voiceChannelJoin'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Voice Channel Moved',
-                value: 'voice_channel_switch'
+                value: 'voiceChannelSwitch'
               },
               {
                 type: ERIS_CONSTANTS.ApplicationCommandOptionTypes.STRING,
                 name: 'Member Voice Muted/Deafened',
-                value: 'voice_state_update'
+                value: 'voiceStateUpdate'
               }
             ]
           },
