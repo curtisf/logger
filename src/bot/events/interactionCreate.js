@@ -65,7 +65,7 @@ module.exports = {
             const missingPermissions = command.userPerms.filter(bpName => !userChannelPerms[bpName])
             if (missingPermissions.length !== 0) {
               interaction.createMessage({
-                embed: {
+                embeds: [{
                   title: 'Missing Permissions',
                   color: EMBED_COLORS.YELLOW_ORANGE,
                   description: `You are missing the following permissions to run ${command.name}: ${missingPermissions.map(perm => `\`${perm}\``).join(', ')}`,
@@ -74,7 +74,7 @@ module.exports = {
                   thumbnail: {
                     url: interaction.member.user.dynamicAvatarURL(null, 64)
                   }
-                },
+                }],
                 flags: Eris.Constants.MessageFlags.EPHEMERAL
               }).catch(() => {})
               return
@@ -85,7 +85,7 @@ module.exports = {
             const missingPermissions = command.botPerms.filter(bpName => !botChannelPermissions[bpName])
             if (missingPermissions.length !== 0) {
               interaction.createMessage({
-                embed: {
+                embeds: [{
                   title: 'Bot Missing Permissions',
                   color: EMBED_COLORS.YELLOW_ORANGE,
                   description: `I need the following permissions to run ${command.name}: ${missingPermissions.map(perm => `\`${perm}\``).join(', ')}`,
@@ -94,7 +94,7 @@ module.exports = {
                   thumbnail: {
                     url: global.bot.user.dynamicAvatarURL(null, 64)
                   }
-                },
+                }],
                 flags: Eris.Constants.MessageFlags.EPHEMERAL
               }).catch(() => {})
               return

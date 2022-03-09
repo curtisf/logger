@@ -14,7 +14,7 @@ module.exports = {
     if (shouldStopLoggingEverything) {
       await setAllEventsOneId(interaction.guildID, '')
       interaction.createMessage({
-        embed: {
+        embeds: [{
           title: 'Success',
           description: 'All events have been unset, the bot will stop logging.',
           thumbnail: {
@@ -23,14 +23,14 @@ module.exports = {
           color: EMBED_COLORS.GREEN,
           author: getAuthorField(interaction.member.user),
           footer: getEmbedFooter(global.bot.user)
-        },
+        }],
         flags: Eris.Constants.MessageFlags.EPHEMERAL
       }).catch(() => {})
     } else {
       const eventsLoggingHere = global.bot.guildSettingsCache[interaction.guildID].eventLogByNames(channelToStopLogging || interaction.channel.id)
       if (eventsLoggingHere.length === 0) {
         interaction.createMessage({
-          embed: {
+          embeds: [{
             title: 'Warning',
             description: `No events were logging to <#${channelToStopLogging || interaction.channel.id}>. Use \`/setup list\` to review the current logging setup.`,
             thumbnail: {
@@ -39,14 +39,14 @@ module.exports = {
             color: EMBED_COLORS.YELLOW_ORANGE,
             author: getAuthorField(interaction.member.user),
             footer: getEmbedFooter(global.bot.user)
-          },
+          }],
           flags: Eris.Constants.MessageFlags.EPHEMERAL
         }).catch(() => {})
         return
       }
       await clearEventByID(interaction.guildID, channelToStopLogging || interaction.channel.id)
       interaction.createMessage({
-        embed: {
+        embeds: [{
           description: `All events logging to <#${channelToStopLogging || interaction.channel.id}> (${channelToStopLogging || interaction.channel.id}) have been unset.`,
           thumbnail: {
             url: interaction.member.user.dynamicAvatarURL(null, 64)
@@ -58,7 +58,7 @@ module.exports = {
           color: EMBED_COLORS.GREEN,
           author: getAuthorField(interaction.member.user),
           footer: getEmbedFooter(global.bot.user)
-        },
+        }],
         flags: Eris.Constants.MessageFlags.EPHEMERAL
       }).catch(() => {})
     }

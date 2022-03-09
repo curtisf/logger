@@ -5,7 +5,7 @@ module.exports = {
   name: 'clearmydata',
   func: async interaction => {
     interaction.createMessage({
-      embed: {
+      embeds: [{
         title: 'Action needed:',
         description: 'To clear your data (messages), please join [my support server](https://discord.gg/ed7Gaa3) and ask in the bot support channel OR join the server and private message `James Bond#0007`. Remember: all messages stored are removed automatically after two days from the database.',
         color: 16711680,
@@ -16,7 +16,7 @@ module.exports = {
         },
         author: getAuthorField(interaction.member.user),
         fields: []
-      },
+      }],
       flags: Eris.Constants.MessageFlags.EPHEMERAL
     }).catch(() => { })
   }

@@ -55,13 +55,13 @@ module.exports = {
       value: perms.length !== 0 ? perms.join(', ') : 'None'
     }]
     interaction.createMessage({
-      embed: {
+      embeds: [{
         color: roles.length !== 0 ? roles[0].color : EMBED_COLORS.PURPLED_BLUE,
         thumbnail: {
           url: member.user.dynamicAvatarURL(null, 64)
         },
         fields: fields
-      }
+      }]
     }).catch(() => { })
   }
 }

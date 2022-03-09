@@ -84,11 +84,11 @@ module.exports = {
         if (emojiFields[i + 3]) emojiFieldsToUse.push(emojiFields[i + 3])
         if (i === 0) {
           embed.fields = embed.fields.concat(emojiFieldsToUse)
-          interaction.createMessage({ embed }).catch(e => {
+          interaction.createMessage({ embeds: [embed] }).catch(e => {
             global.logger.error('Failure to send a legal serverinfo embed', e)
           })
         } else {
-          interaction.createMessage({ embed: { description: 'Emojis continued', fields: emojiFieldsToUse } }).catch(e => {
+          interaction.createMessage({ embeds: [{ description: 'Emojis continued', fields: emojiFieldsToUse }] }).catch(e => {
             global.logger.error('Failure to send serverinfo emoji continuation embed', e)
           })
         }
