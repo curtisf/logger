@@ -4,7 +4,8 @@ const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 
 module.exports = {
   name: 'logbots',
-  perms: ['manageWebhooks', 'manageChannels'],
+  botPerms: ['manageWebhooks', 'manageChannels'],
+  userPerms: ['manageWebhooks', 'manageChannels'],
   func: async interaction => {
     try {
       const isLoggingBots = await toggleLogBots(interaction.guildID)

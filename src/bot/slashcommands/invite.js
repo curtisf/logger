@@ -1,3 +1,4 @@
+const Eris = require('eris')
 const { EMBED_COLORS } = require('../utils/constants.js')
 const { getEmbedFooter } = require('../utils/embeds')
 
@@ -20,7 +21,8 @@ module.exports = {
           value: `Use [this invite link](https://discord.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot+applications.commands&permissions=537218224) to invite me with the permissions required for join logging. \`Manage Channels\` (can be channel permission overwrites) and \`Manage Server\` are **required** for invite logging on join because Discord does not send invite information to the bot without it. (Manage Channels: receives invites made for channels realtime | Manage Server: to fetch server invites)`
         }],
         footer: getEmbedFooter(global.bot.user)
-      }
+      },
+      flags: Eris.Constants.MessageFlags.EPHEMERAL
     })
   }
 }

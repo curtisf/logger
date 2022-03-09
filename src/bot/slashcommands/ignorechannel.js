@@ -4,21 +4,10 @@ const { getAuthorField, getEmbedFooter } = require('../utils/embeds.js')
 
 module.exports = {
   name: 'ignorechannel',
-  perms: ['manageWebhooks', 'manageChannels'],
+  userPerms: ['manageWebhooks', 'manageChannels'],
+  botPerms: ['manageWebhooks', 'manageChannels'],
+  noThread: true,
   func: async interaction => {
-    const manageWebhooksUser = global.bot.getChannel(interaction.channel.id).permissionsOf(interaction.member.user.id).json.manageWebhooks
-    if (!manageWebhooksUser) {
-      return interaction.createMessage({
-        embed: {
-          title: 'Unsuccessful',
-          description: 'You must have Manage Webhooks permission to configure logging behavior.',
-          thumbnail: {
-            url: interaction.member.user.dynamicAvatarURL(null, 64)
-          },
-          color: EMBED_COLORS.RED
-        }
-      }).catch(_ => {})
-    }
     const listIgnoredChannelsOption = interaction.data.options?.find(o => o.name === 'optional')?.value === 'list'
     const resetIgnoredChannelsOption = interaction.data.options?.find(o => o.name === 'optional')?.value === 'reset'
     if (listIgnoredChannelsOption) {

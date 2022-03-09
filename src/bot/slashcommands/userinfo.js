@@ -23,7 +23,7 @@ module.exports = {
       return
     }
     let member = interaction.member
-    const userInteractionOpt = interaction.data.options.find(o => o.name === 'user')
+    const userInteractionOpt = interaction.data.options?.find(o => o.name === 'user')
     if (userInteractionOpt) {
       if (!interaction.data.resolved.members.get(userInteractionOpt.value)) {
         global.logger.warn('Missing resolved member for userinfo in slash command')

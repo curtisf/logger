@@ -1,6 +1,9 @@
 const fs = require('fs')
 const path = require('path')
 const Eris = require('eris')
+const { EMBED_COLORS } = require('../utils/constants')
+const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
+const { NewsThreadChannel, PrivateThreadChannel, PublicThreadChannel } = require('eris')
 
 let slashCommands = fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).map(filename => {
   return require(path.resolve('src', 'bot', 'slashcommands', filename))
@@ -41,6 +44,62 @@ module.exports = {
         }
         const command = slashCommands.find(c => c.name === interaction.data.name)
         if (command) {
+          if (command.noThread && (interaction.channel instanceof NewsThreadChannel || interaction.channel instanceof PrivateThreadChannel || interaction.channel instanceof PublicThreadChannel)) {
+            interaction.createMessage({
+              embeds: [{
+                title: 'Unable to run',
+                color: EMBED_COLORS.YELLOW_ORANGE,
+                description: `__${command.name}__ cannot be ran in a thread.`,
+                footer: getEmbedFooter(global.bot.user),
+                author: getAuthorField(interaction.member.user),
+                thumbnail: {
+                  url: interaction.member.user.dynamicAvatarURL(null, 64)
+                }
+              }],
+              flags: Eris.Constants.MessageFlags.EPHEMERAL
+            }).catch(() => {})
+            return
+          }
+          if (command.userPerms && command.userPerms.length !== 0) {
+            const userChannelPerms = interaction.channel.permissionsOf(interaction.member.user.id).json
+            const missingPermissions = command.userPerms.filter(bpName => !userChannelPerms[bpName])
+            if (missingPermissions.length !== 0) {
+              interaction.createMessage({
+                embed: {
+                  title: 'Missing Permissions',
+                  color: EMBED_COLORS.YELLOW_ORANGE,
+                  description: `You are missing the following permissions to run ${command.name}: ${missingPermissions.map(perm => `\`${perm}\``).join(', ')}`,
+                  footer: getEmbedFooter(global.bot.user),
+                  author: getAuthorField(interaction.member.user),
+                  thumbnail: {
+                    url: interaction.member.user.dynamicAvatarURL(null, 64)
+                  }
+                },
+                flags: Eris.Constants.MessageFlags.EPHEMERAL
+              }).catch(() => {})
+              return
+            }
+          }
+          if (command.botPerms && command.botPerms.length !== 0) {
+            const botChannelPermissions = interaction.channel.permissionsOf(global.bot.user.id).json
+            const missingPermissions = command.botPerms.filter(bpName => !botChannelPermissions[bpName])
+            if (missingPermissions.length !== 0) {
+              interaction.createMessage({
+                embed: {
+                  title: 'Bot Missing Permissions',
+                  color: EMBED_COLORS.YELLOW_ORANGE,
+                  description: `I need the following permissions to run ${command.name}: ${missingPermissions.map(perm => `\`${perm}\``).join(', ')}`,
+                  footer: getEmbedFooter(global.bot.user),
+                  author: getAuthorField(interaction.member.user),
+                  thumbnail: {
+                    url: global.bot.user.dynamicAvatarURL(null, 64)
+                  }
+                },
+                flags: Eris.Constants.MessageFlags.EPHEMERAL
+              }).catch(() => {})
+              return
+            }
+          }
           const guild = global.bot.guilds.get(interaction.guildID)
           if (guild) {
             global.logger.info(`${interaction.member.username}#${interaction.member.discriminator} (${interaction.member.id}) in ${interaction.channel.id} sent /${command.name}. The guild is called "${guild.name}", owned by ${guild.ownerID} and has ${guild.memberCount} members.`)

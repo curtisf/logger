@@ -5,7 +5,9 @@ const { getAuthorField, getEmbedFooter } = require('../utils/embeds.js')
 
 module.exports = {
   name: 'stoplogging',
-  perms: ['manageWebhooks', 'manageChannels'],
+  botPerms: ['manageWebhooks', 'manageChannels'],
+  userPerms: ['manageWebhooks', 'manageChannels'],
+  noThread: true,
   func: async interaction => {
     const channelToStopLogging = interaction.data.options?.find(o => o.name === 'channel')?.value
     const shouldStopLoggingEverything = interaction.data.options?.find(o => o.name === 'other')
