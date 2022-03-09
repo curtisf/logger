@@ -86,9 +86,9 @@ async function handlePresetSetup (interaction, recursionUUID) {
       }
     }
     if (recursionUUID) {
-      await interaction.editOriginalMessage({ embed: setupEmbed, flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
+      await interaction.editOriginalMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     } else {
-      await interaction.createMessage({ embed: setupEmbed, flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
+      await interaction.createMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     }
   } catch (e) {
     global.logger.error('error handling preset menu', e)
@@ -126,7 +126,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
   if (!missingPermissions) return // null is returned if the log channel cannot be found
   else if (missingPermissions.length !== 0) {
     await interaction.editOriginalMessage({
-      embed: {
+      embeds: [{
         thumbnail: {
           url: global.bot.user.dynamicAvatarURL(null, 64)
         },
@@ -134,7 +134,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
         color: EMBED_COLORS.YELLOW_ORANGE,
         footer: getEmbedFooter(global.bot.user),
         author: getAuthorField(interaction.member.user)
-      },
+      }],
       flags: Eris.Constants.MessageFlags.EPHEMERAL
     })
     return
@@ -375,9 +375,9 @@ async function handleIndividualSetup (interaction, recursionUUID) {
       }
     }
     if (recursionUUID) {
-      await interaction.editOriginalMessage({ embed: setupEmbed, flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
+      await interaction.editOriginalMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     } else {
-      await interaction.createMessage({ embed: setupEmbed, flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
+      await interaction.createMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     }
   } catch (e) {
     global.logger.error('Error handling preset menu', e)
@@ -412,7 +412,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
   if (!missingPermissions) return // null is returned if the log channel cannot be found
   else if (missingPermissions.length !== 0) {
     await interaction.editOriginalMessage({
-      embed: {
+      embeds: [{
         thumbnail: {
           url: global.bot.user.dynamicAvatarURL(null, 64)
         },
@@ -420,7 +420,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
         color: EMBED_COLORS.YELLOW_ORANGE,
         footer: getEmbedFooter(global.bot.user),
         author: getAuthorField(interaction.member.user)
-      },
+      }],
       flags: Eris.Constants.MessageFlags.EPHEMERAL
     })
     return
@@ -445,12 +445,12 @@ async function handleListLogSetup (interaction) {
     }
   }
   interaction.createMessage({
-    embed: {
+    embeds: [{
       title: 'Logging Channels',
       author: getAuthorField(interaction.member.user),
       description: logLines.length !== 0 ? logLines.join('\n') : 'I am not logging any events to this server, see `/setup` or `/help` for setup help.',
       color: EMBED_COLORS.PURPLED_BLUE
-    },
+    }],
     flags: Eris.Constants.MessageFlags.EPHEMERAL
   }).catch(() => {})
 }
