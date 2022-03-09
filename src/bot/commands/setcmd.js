@@ -274,7 +274,7 @@ module.exports = {
         message.channel.createMessage({ content: 'OK set guild commands', messageReference: { messageID: message.id } })
         global.logger.info(`Guild set ${commands.length} slash commands successfully`)
       } else if (suffix === 'global') {
-        await global.bot.bulkEditGuildCommands(message.channel.guild.id, commands)
+        await global.bot.bulkEditCommands(message.channel.guild.id, commands)
         message.channel.createMessage({ content: 'OK set global commands', messageReference: { messageID: message.id } })
         global.logger.info(`Globally set ${commands.length} slash commands successfully`)
       } else {
