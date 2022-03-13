@@ -120,10 +120,6 @@ module.exports = {
         description: 'Receive an embed with customized invite links for your logging purpose'
       },
       {
-        name: 'reloadinteractions',
-        description: 'Make the bot reload interactions'
-      },
-      {
         name: 'logbots',
         description: 'Toggle logging messages created or edited by bots (default: DISABLED because of spam)'
       },
