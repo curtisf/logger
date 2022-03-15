@@ -3,6 +3,8 @@ const clearEventByID = require('../../db/interfaces/postgres/update').clearEvent
 const statAggregator = require('./statAggregator')
 const cacheGuild = require('../utils/cacheGuild')
 
+const logChannelLocks = {}
+
 module.exports = async (guildID, channelID) => {
   if (!global.bot.guilds.get(guildID)) return // if not in that guild anymore, stop.
   const perms = global.bot.getChannel(channelID)?.permissionsOf(global.bot.user.id).json
@@ -12,6 +14,14 @@ module.exports = async (guildID, channelID) => {
   const guild = global.bot.guilds.get(guildID)
   if (!guild) {
     return
+  }
+  if (logChannelLocks[channelID]) {
+    return
+  } else {
+    logChannelLocks[channelID] = true
+    setTimeout(() => {
+      delete logChannelLocks[channelID]
+    }, 30000) // release cacher after 30 seconds for a guild
   }
   let logChannel
   try {

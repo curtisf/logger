@@ -86,7 +86,7 @@ module.exports = {
     const logs = await guild.getAuditLog({ limit: 5 })
     if (!logs.entries[0]) return
     const possibleRoleLog = logs.entries.find(e => e.targetID === member.id && e.actionType === 25 && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
-    const possibleTimeoutLog = logs.entries.find(e => e.targetID === member.id && e.actionType === 24 && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+    const possibleTimeoutLog = logs.entries.find(e => e.targetID === member.id && e.actionType === 24 && (e.before.communication_disabled_until || e.after.communication_disabled_until) && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
     if (possibleRoleLog) {
       possibleRoleLog.guild = []
       const user = possibleRoleLog.user
@@ -111,6 +111,9 @@ module.exports = {
         name: 'Changes',
         value: `${added.map(role => `${canUseExternal(guild) ? '<:greenplus:562826499929931776>' : '➕'} **${role.name}**`).join('\n')}${removed.map((role, i) => `${i === 0 && added.length !== 0 ? '\n' : ''}\n:x: **${role.name}**`).join('\n')}`
       }]
+      if (guildMemberUpdate.embeds[0].fields[0].value.length > 1000) {
+        guildMemberUpdate.embeds[0].fields[0].value = guildMemberUpdate.embeds[0].fields[0].value.substring(0, 1020) + '...'
+      }
       guildMemberUpdate.embeds[0].color = roleColor
       guildMemberUpdate.embeds[0].footer = {
         text: `${user.username}#${user.discriminator}`,

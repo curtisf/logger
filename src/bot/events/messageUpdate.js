@@ -57,13 +57,14 @@ module.exports = {
         messageUpdateEvent.noFooter = true
       } else {
         let nowChunks, beforeChunks
-        if (newMessage.content.length > 1000) {
-          nowChunks = chunkify(escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, ''))
+        const escapedNewContents = escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets']).replace(/\"/g, '"').replace(/`/g, '')
+        if (escapedNewContents.length > 1000) {
+          nowChunks = chunkify(escapedNewContents)
         } else {
-          nowChunks = [escape(newMessage.content.replace(/~/g, '\\~'), ['angle brackets'])]
+          nowChunks = [escapedNewContents]
         }
 
-        if (oldMessage.content.length > 1000) {
+        if (oldMessage.content.length > 1000) { // already escaped in db
           beforeChunks = chunkify(oldMessage.content.replace(/\"/g, '"').replace(/`/g, ''))
         } else {
           beforeChunks = [oldMessage.content]
