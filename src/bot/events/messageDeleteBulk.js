@@ -43,7 +43,7 @@ async function paste (messages, guildID) {
         if (!err && res.body && res.statusCode === 200 && res.body.key) {
           messageDeleteBulkEvent.embeds[0].fields.push({
             name: 'Link',
-            value: `https://haste.logger.bot/${res.body.key}.txt`
+            value: `https://hastebin.skyra.pw/${res.body.key}.txt`
           })
           send(messageDeleteBulkEvent)
         } else {

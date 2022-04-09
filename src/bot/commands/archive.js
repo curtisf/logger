@@ -14,7 +14,7 @@ module.exports = {
         .send(pasteString || 'No messages were able to be archived')
         .end((err, res) => {
           if (!err && res.statusCode === 200 && res.body.key) {
-            message.channel.createMessage(`<@${message.author.id}>, **${messages.length}** message(s) could be archived. Link: https://haste.logger.bot/${res.body.key}.txt`)
+            message.channel.createMessage(`<@${message.author.id}>, **${messages.length}** message(s) could be archived. Link: https://hastebin.skyra.pw/${res.body.key}.txt`)
           } else {
             global.logger.error(err, res.body)
             global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
