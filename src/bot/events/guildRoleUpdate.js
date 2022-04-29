@@ -16,7 +16,7 @@ module.exports = {
     }
     const oldKeys = Object.keys(oldRole)
     oldKeys.forEach(prop => {
-      if (role[prop] !== oldRole[prop] && prop !== 'position' && prop !== 'permissions') {
+      if (role[prop] !== oldRole[prop] && prop !== 'position' && prop !== 'permissions' && prop !== 'tags') {
         if (prop === 'color') {
           guildRoleUpdateEvent.embeds[0].fields.unshift({
             name: toTitleCase(prop),

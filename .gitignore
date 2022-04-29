@@ -2,4 +2,3 @@ node_modules/
 .env
 src/miscellaneous/migratenicknames.js
 test.js
-src/bot/slashcommands

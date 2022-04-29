@@ -1,4 +1,3 @@
-const Sentry = require('@sentry/node')
 const { EVENTS_USING_AUDITLOGS } = require('../utils/constants')
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
@@ -74,7 +73,7 @@ module.exports = async pkg => {
           users: false
         }
       }).catch(async e => {
-        if (e && e.message && e.message.includes('Request timed out')) return
+        if (e && e.message && (e.message.includes('Request timed out') || e.message.includes('503 Service Temporarily') || e.message.includes('Internal Server Error'))) return
         if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500' || e.code == '503' || (e && e.message && e.message.includes('Internal Server Error')))) {
           global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
           // global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
@@ -83,8 +82,7 @@ module.exports = async pkg => {
           await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
           return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
         } else {
-          console.error('Error while sending a message over webhook!', e, pkg, pkg.embeds[0].fields)
-          Sentry.captureException(e)
+          global.logger.error('Error while sending a message over webhook!', e, pkg, pkg.embeds[0].fields)
         }
       })
     } else {

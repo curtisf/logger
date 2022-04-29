@@ -1,7 +1,7 @@
 {
   "name": "loggerv3",
-  "version": "3.2.0",
-  "description": "Logger version 3, serving over 120,000 Discord servers",
+  "version": "3.3.0",
+  "description": "Logger version 3, serving over 180,000 Discord servers",
   "main": "index.js",
   "scripts": {
     "test": "standard",
@@ -30,11 +30,12 @@
     "pg-format": "^1.0.4",
     "redis": "^3.0.2",
     "redlock": "^4.1.0",
-    "standard": "^14.3.4",
     "superagent": "^6.1.0",
+    "uuid": "^8.3.2",
     "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^7.9.0"
+    "eslint": "^7.9.0",
+    "standard": "^16.0.4"
   }
 }
