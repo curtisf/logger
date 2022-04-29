@@ -27,6 +27,7 @@ const eventLogs = {
   voiceStateUpdate: '',
   voiceChannelSwitch: '',
   guildEmojisUpdate: '',
+  guildStickersUpdate: '',
   guildMemberNickUpdate: '',
   guildMemberBoostUpdate: ''
 }

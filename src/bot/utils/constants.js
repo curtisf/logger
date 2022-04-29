@@ -22,6 +22,7 @@ exports.ALL_EVENTS = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildEmojisUpdate',
+  'guildStickersUpdate',
   'guildMemberBoostUpdate'
 ]
 
@@ -40,7 +41,8 @@ exports.EVENTS_USING_AUDITLOGS = [
   'guildMemberRemove',
   'guildMemberUpdate',
   'voiceStateUpdate',
-  'guildEmojisUpdate'
+  'guildEmojisUpdate',
+  'guildStickersUpdate'
 ]
 
 exports.PRESET_EVENT_MAP = {
