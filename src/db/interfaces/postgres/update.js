@@ -29,6 +29,7 @@ const eventList = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildEmojisUpdate',
+  'guildStickersUpdate',
   'guildMemberNickUpdate'
 ]
 
@@ -54,6 +55,7 @@ const eventLogs = {
   voiceStateUpdate: '',
   voiceChannelSwitch: '',
   guildEmojisUpdate: '',
+  guildStickersUpdate: '',
   guildMemberNickUpdate: '',
   guildMemberBoostUpdate: '',
   guildMemberVerify: '' // I am a moron for having an object representing
