@@ -40,11 +40,18 @@ async function createGuild (guild) {
 }
 
 async function cacheMessage (message) {
+  let content = '';
   if (!message.content) {
-    message.content = aes.encrypt('None')
+    content = 'None';
   } else {
-    message.content = aes.encrypt(escape(message.content.replace(/~/g, '\\~'), ['angle brackets']))
+    content = escape(message.content.replace(/~/g, '\\~'), ['angle brackets'])
   }
+
+  if(message.stickerItems) {
+    content += '\n' + message.stickerItems.map(s => `Sticker: [ ${s.name} ] - https://media.discordapp.net/stickers/${s.id}.png?size=320`).join('\n')
+  }
+
+  message.content = aes.encrypt(content)
   message.attachment_b64 = message?.attachments.length ? aes.encrypt(message?.attachments.map(atc => atc.proxy_url).join('\n')) : ''
   batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
 }
