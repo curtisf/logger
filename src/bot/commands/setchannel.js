@@ -26,6 +26,7 @@ const eventList = [
   'guildMemberNickUpdate',
   'guildMemberVerify',
   'guildEmojisUpdate',
+  'guildStickersUpdate',
   'guildMemberBoostUpdate'
 ]
 
