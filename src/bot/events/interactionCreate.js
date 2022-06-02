@@ -31,7 +31,7 @@ module.exports = {
         }
       } else if (interaction instanceof Eris.CommandInteraction) {
         const channel = global.bot.getChannel(interaction.channel.id)
-        if (!channel || !channel.permissionsOf(global.bot.user.id).json.viewChannel) return // no need to check send messages because replies are made using webhooks
+        if (!channel || !channel.permissionsOf(global.bot.user.id).json.viewChannel || channel instanceof Eris.TextVoiceChannel) return // no need to check send messages because replies are made using webhooks
         if (interaction.data.name === 'reloadinteractions' && interaction.member.user.id === process.env.CREATOR_IDS) {
           fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).forEach(filename => {
             delete require.cache[require.resolve(path.resolve('src', 'bot', 'slashcommands', filename))]

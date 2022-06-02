@@ -21,7 +21,7 @@
     "aes256": "^1.0.4",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
-    "eris": "0.16.1",
+    "eris": "github:abalabahaha/eris#dev",
     "ioredis": "^4.17.3",
     "markdown-escape": "^1.1.0",
     "moment-timezone": "^0.5.33",
