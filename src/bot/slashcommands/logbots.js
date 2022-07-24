@@ -1,4 +1,4 @@
-const { toggleLogBots } = require('../../db/interfaces/postgres/update')
+const { toggleLogBots } = require('../../db/interfaces/sqlite')
 const { EMBED_COLORS } = require('../utils/constants')
 const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 
@@ -21,7 +21,7 @@ module.exports = {
         }]
       }).catch(() => {})
     } catch (e) {
-      global.logger.error(e)
+      global.signale.error(e)
       interaction.createMessage({
         embeds: [{
           title: 'Error',

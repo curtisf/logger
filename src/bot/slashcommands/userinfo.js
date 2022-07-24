@@ -19,14 +19,14 @@ module.exports = {
     const perms = []
     const guild = global.bot.guilds.get(interaction.guildID)
     if (!guild) {
-      global.logger.warn('Missing guild in userinfo slash command')
+      global.signale.warn('Missing guild in userinfo slash command')
       return
     }
     let member = interaction.member
     const userInteractionOpt = interaction.data.options?.find(o => o.name === 'user')
     if (userInteractionOpt) {
       if (!interaction.data.resolved.members.get(userInteractionOpt.value)) {
-        global.logger.warn('Missing resolved member for userinfo in slash command')
+        global.signale.warn('Missing resolved member for userinfo in slash command')
         return
       }
       member = interaction.data.resolved.members.get(userInteractionOpt.value)

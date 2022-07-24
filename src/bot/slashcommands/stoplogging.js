@@ -1,5 +1,5 @@
 const Eris = require('eris')
-const { clearEventByID, setAllEventsOneId } = require('../../db/interfaces/postgres/update')
+const { clearEventByID, setAllEventsOneId } = require('../../db/interfaces/sqlite')
 const { EMBED_COLORS } = require('../utils/constants.js')
 const { getAuthorField, getEmbedFooter } = require('../utils/embeds.js')
 

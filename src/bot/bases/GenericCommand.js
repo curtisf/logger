@@ -1,16 +1,16 @@
 class GenericCommand {
   constructor (data) {
     if (data.disabled) return
-    if (!data.name) global.logger.fatal('A command is missing a name! Verify all commands are properly structured and try again.')
-    else if (!data.func) global.logger.fatal(`Command ${data.name} doesn't have a function to execute!`)
+    if (!data.name) global.signale.fatal('A command is missing a name! Verify all commands are properly structured and try again.')
+    else if (!data.func) global.signale.fatal(`Command ${data.name} doesn't have a function to execute!`)
 
     if (!data.quickHelp && !data.hidden) {
-      global.logger.warn(`Command ${data.name} is missing a quick help section.`)
+      global.signale.warn(`Command ${data.name} is missing a quick help section.`)
       data.quickHelp = 'None provided'
     }
 
     if (!data.examples && !data.hidden) {
-      global.logger.warn(`Command ${data.name} is missing examples.`)
+      global.signale.warn(`Command ${data.name} is missing examples.`)
       data.examples = 'None provided'
     }
 

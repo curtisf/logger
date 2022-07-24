@@ -9,7 +9,7 @@ module.exports = async (event, type) => {
       const guildId = getGuildIdByEvent(event.name, args)
 
       if (!guildId) {
-        global.logger.warn(`While executing event ${event.name}, a guild ID was not returned!`)
+        global.signale.warn(`While executing event ${event.name}, a guild ID was not returned!`)
       } else if (guildId === true) { // when true, don't fetch event logs
         await event.handle.apply(this, args)
       } else {

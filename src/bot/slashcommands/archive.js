@@ -37,40 +37,23 @@ module.exports = {
         }]
       })
     } catch (_) {}
-    sa
-      .post(process.env.PASTE_CREATE_ENDPOINT)
-      .set('Authorization', process.env.PASTE_CREATE_TOKEN)
-      .set('Content-Type', 'text/plain')
-      .send(pasteString || 'No messages were able to be archived')
-      .end((err, res) => {
-        if (!err && res.statusCode === 200 && res.body.key) {
-          interaction.editOriginalMessage({
-            embeds: [{
-              title: 'Success',
-              description: `Archived ${fetchedMessages.length} messages: https://haste.logger.bot/${res.body.key}.txt`,
-              thumbnail: {
-                url: interaction.member.user.dynamicAvatarURL(null, 64)
-              },
-              color: EMBED_COLORS.GREEN,
-              footer: getEmbedFooter(global.bot.user),
-              author: getAuthorField(interaction.member.user)
-            }]
-          }).catch(() => {})
-        } else {
-          interaction.editOriginalMessage({
-            embeds: [{
-              title: 'Error',
-              description: 'The archive service returned an error, please try again later!',
-              thumbnail: {
-                url: interaction.member.user.dynamicAvatarURL(null, 64)
-              },
-              color: EMBED_COLORS.RED,
-              footer: getEmbedFooter(global.bot.user)
-            }]
-          }).catch(() => {})
-          global.logger.error(err, res.body)
-          global.webhook.error('An error has occurred while posting to the paste website. Check logs for more.')
-        }
-      })
+    const uploadBuffer = Buffer.alloc(pasteString.length)
+    uploadBuffer.write(pasteString)
+    interaction.editOriginalMessage({
+      embeds: [{
+        title: 'Success',
+        description: `Archived ${fetchedMessages.length} messages`,
+        thumbnail: {
+          url: interaction.member.user.dynamicAvatarURL(null, 64)
+        },
+        color: EMBED_COLORS.GREEN,
+        footer: getEmbedFooter(global.bot.user),
+        author: getAuthorField(interaction.member.user)
+      }],
+      file: {
+        name: 'upload.txt',
+        file: uploadBuffer
+      }
+    }).catch(() => {})
   }
 }

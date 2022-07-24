@@ -82,7 +82,7 @@ function sendBulkLog (senderPkg, embeds, guildSettings) {
   }).catch(async e => {
     if (e && e.message && e.message.includes('Request timed out')) return
     if (e && e.code && !(e.code == '50035' || e.code == '10015' || e.code == '500')) {
-      global.logger.warn(`Got ${e.code} while sending webhook to ${senderPkg.guildID} (${global.bot.guilds.get(senderPkg.guildID) ? global.bot.guilds.get(senderPkg.guildID).name : 'Could not find guild!'})`)
+      global.signale.warn(`Got ${e.code} while sending webhook to ${senderPkg.guildID} (${global.bot.guilds.get(senderPkg.guildID) ? global.bot.guilds.get(senderPkg.guildID).name : 'Could not find guild!'})`)
       // global.webhook.warn(`Got ${e.code} while sending webhook to ${senderPkg.guildID} (${global.bot.guilds.get(senderPkg.guildID) ? global.bot.guilds.get(senderPkg.guildID).name : 'Could not find guild!'})`)
     }
     if (e.code == '10015') { // Webhook doesn't exist anymore.

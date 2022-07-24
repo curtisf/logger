@@ -42,7 +42,7 @@ if (global.envInfo.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(global.envInfo.ST
               value: statsObj.commandUsage[commandName] === 0 ? 1 : statsObj.commandUsage[commandName]
             })
           } catch (error) {
-            global.logger.error(`command send error: ${commandName}`)
+            global.signale.error(`command send error: ${commandName}`)
           }
         }
       }
@@ -57,7 +57,7 @@ if (global.envInfo.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(global.envInfo.ST
               value: statsObj.miscUsage[miscName] === 0 ? 1 : statsObj.miscUsage[miscName]
             })
           } catch (error) {
-            global.logger.error(`misc event send error: ${miscName}`)
+            global.signale.error(`misc event send error: ${miscName}`)
           }
         }
       }
@@ -70,7 +70,7 @@ if (global.envInfo.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(global.envInfo.ST
 module.exports = async worker => {
   allWorkers.push(worker)
   worker.on('online', () => {
-    global.logger.startup(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
+    global.signale.startup(`WORKER ${worker.id} started hosting ${worker.rangeForShard}`)
     worker.send({
       type: 'startup',
       processType: 'bot',
@@ -128,13 +128,13 @@ module.exports = async worker => {
   worker.on('exit', code => {
     allWorkers.splice(allWorkers.indexOf(worker), 1)
     if (code === 0) {
-      global.logger.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
+      global.signale.info(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
       global.webhook.generic(`Worker ${worker.id} hosting ${worker.shardStart}-${worker.shardStart} successfully killed.`)
     } else if (workerCrashes[worker.rangeForShard] >= 2) {
-      global.logger.error(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop.`)
+      global.signale.error(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop.`)
       global.webhook.fatal(`Worker ${worker.id} hosting ${worker.rangeForShard} will not be respawned due to a detected boot loop. | ${worker.id}`)
     } else {
-      global.logger.error(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
+      global.signale.error(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
       global.webhook.fatal(`Worker ${worker.id} died with code ${code}, hosting ${worker.rangeForShard}. Attempting to respawn a replacement.`)
       Object.assign(nw, {
         type: 'startup',

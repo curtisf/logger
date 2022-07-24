@@ -37,12 +37,12 @@ module.exports = {
     setTimeout(async () => {
       const logs = await guild.getAuditLog({ limit: 10, actionType: 22 }).catch(() => {})
       if (!logs) {
-        global.logger.warn(`Guild Ban Add was unable to fetch audit logs in guild ${guild.name} (${guild.id})`)
+        global.signale.warn(`Guild Ban Add was unable to fetch audit logs in guild ${guild.name} (${guild.id})`)
         return
       }
       const log = logs.entries.find(e => e.targetID === user.id && actionStartedTime.getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 60000)
       if (!log) {
-        global.logger.warn(`Guild Ban Add on ${guild.name} (${guild.id}) was not able to match a log.`)
+        global.signale.warn(`Guild Ban Add on ${guild.name} (${guild.id}) was not able to match a log.`)
         return
       }
       if (!log.user) return

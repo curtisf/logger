@@ -3,7 +3,7 @@ module.exports = {
   func: async interaction => {
     const guild = global.bot.guilds.get(interaction.guildID)
     if (!guild) {
-      global.logger.warn('Missing guild in serverinfo slash command')
+      global.signale.warn('Missing guild in serverinfo slash command')
       return
     }
     const fields = []
@@ -12,7 +12,7 @@ module.exports = {
       try {
         owner = await global.bot.getRESTUser(guild.ownerID)
       } catch (_) {
-        global.logger.warn('Failure to find guild owner in serverinfo') // not fatal, no need to terminate
+        global.signale.warn('Failure to find guild owner in serverinfo') // not fatal, no need to terminate
       }
     }
     const embed = {
@@ -85,11 +85,11 @@ module.exports = {
         if (i === 0) {
           embed.fields = embed.fields.concat(emojiFieldsToUse)
           interaction.createMessage({ embeds: [embed] }).catch(e => {
-            global.logger.error('Failure to send a legal serverinfo embed', e)
+            global.signale.error('Failure to send a legal serverinfo embed', e)
           })
         } else {
           interaction.createMessage({ embeds: [{ description: 'Emojis continued', fields: emojiFieldsToUse }] }).catch(e => {
-            global.logger.error('Failure to send serverinfo emoji continuation embed', e)
+            global.signale.error('Failure to send serverinfo emoji continuation embed', e)
           })
         }
       }

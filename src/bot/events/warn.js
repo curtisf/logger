@@ -5,6 +5,6 @@ module.exports = {
     if (typeof w === 'string') {
       if (w?.includes('Invalid session')) return
     }
-    global.logger.warn(`[ERIS] - ${w}`)
+    global.signale.warn(`[ERIS] - ${w}`)
   }
 }

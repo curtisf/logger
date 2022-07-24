@@ -1,6 +1,6 @@
 const Eris = require('eris')
 const { v4: uuidv4 } = require('uuid')
-const { setEventsLogId } = require('../../db/interfaces/postgres/update')
+const { setEventsLogId } = require('../../db/interfaces/sqlite')
 const { EMBED_COLORS, PRESET_EVENT_MAP, ALL_EVENTS } = require('../utils/constants')
 const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 
@@ -91,7 +91,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
       await interaction.createMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     }
   } catch (e) {
-    global.logger.error('error handling preset menu', e)
+    global.signale.error('error handling preset menu', e)
     return
   }
 
@@ -144,7 +144,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
     await setEventsLogId(interaction.guildID, interaction.channel.id, eventsToLog)
     await setEventsLogId(interaction.guildID, '', eventsToRemove)
   } catch (e) {
-    global.logger.error('Setup failure to update guild document settings for guild', interaction.guildID, e)
+    global.signale.error('Setup failure to update guild document settings for guild', interaction.guildID, e)
     return
   }
   handlePresetSetup(interaction, followupUUID)
@@ -380,7 +380,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
       await interaction.createMessage({ embeds: [setupEmbed], flags: Eris.Constants.MessageFlags.EPHEMERAL, components })
     }
   } catch (e) {
-    global.logger.error('Error handling preset menu', e)
+    global.signale.error('Error handling preset menu', e)
     return
   }
 
@@ -430,7 +430,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
     await setEventsLogId(interaction.guildID, interaction.channel.id, eventsToLog)
     await setEventsLogId(interaction.guildID, '', eventsToRemove)
   } catch (e) {
-    global.logger.error('Setup failure to update guild document settings for guild', interaction.guildID, e)
+    global.signale.error('Setup failure to update guild document settings for guild', interaction.guildID, e)
     return
   }
   handleIndividualSetup(interaction, followupUUID)

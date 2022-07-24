@@ -5,7 +5,7 @@ const { EMBED_COLORS } = require('../utils/constants')
 const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 const { NewsThreadChannel, PrivateThreadChannel, PublicThreadChannel } = require('eris')
 
-let slashCommands = fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).map(filename => {
+const slashCommands = fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).map(filename => {
   return require(path.resolve('src', 'bot', 'slashcommands', filename))
 })
 
@@ -32,16 +32,6 @@ module.exports = {
       } else if (interaction instanceof Eris.CommandInteraction) {
         const channel = global.bot.getChannel(interaction.channel.id)
         if (!channel || !channel.permissionsOf(global.bot.user.id).json.viewChannel || channel instanceof Eris.TextVoiceChannel) return // no need to check send messages because replies are made using webhooks
-        if (interaction.data.name === 'reloadinteractions' && interaction.member.user.id === process.env.CREATOR_IDS) {
-          fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).forEach(filename => {
-            delete require.cache[require.resolve(path.resolve('src', 'bot', 'slashcommands', filename))]
-          })
-          slashCommands = fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).map(filename => {
-            return require(path.resolve('src', 'bot', 'slashcommands', filename))
-          })
-          interaction.createMessage({ content: '🆗 reloaded slash commands', flags: Eris.Constants.MessageFlags.EPHEMERAL }).catch(() => {})
-          resolve()
-        }
         const command = slashCommands.find(c => c.name === interaction.data.name)
         if (command) {
           if (command.noThread && (interaction.channel instanceof NewsThreadChannel || interaction.channel instanceof PrivateThreadChannel || interaction.channel instanceof PublicThreadChannel)) {
@@ -102,15 +92,15 @@ module.exports = {
           }
           const guild = global.bot.guilds.get(interaction.guildID)
           if (guild) {
-            global.logger.info(`${interaction.member.username}#${interaction.member.discriminator} (${interaction.member.id}) in ${interaction.channel.id} sent /${command.name}. The guild is called "${guild.name}", owned by ${guild.ownerID} and has ${guild.memberCount} members.`)
+            global.signale.info(`${interaction.member.username}#${interaction.member.discriminator} (${interaction.member.id}) in ${interaction.channel.id} sent /${command.name}. The guild is called "${guild.name}", owned by ${guild.ownerID} and has ${guild.memberCount} members.`)
             try {
               command.func(interaction)
             } catch (commandError) {
-              global.logger.error(commandError) // we do want this to reach sentry if failed
+              global.signale.error(commandError) // we do want this to reach sentry if failed
               resolve() // it hurts to use a promise like this
             }
           } else {
-            global.logger.warn('Interaction was used but the guild ID sent is not in cache!')
+            global.signale.warn('Interaction was used but the guild ID sent is not in cache!')
           }
         }
       }

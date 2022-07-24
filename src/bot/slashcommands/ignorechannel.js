@@ -1,4 +1,4 @@
-const { ignoreChannel, clearIgnoredChannels } = require('../../db/interfaces/postgres/update')
+const { ignoreChannel, clearIgnoredChannels } = require('../../db/interfaces/sqlite')
 const { EMBED_COLORS } = require('../utils/constants.js')
 const { getAuthorField, getEmbedFooter } = require('../utils/embeds.js')
 
@@ -20,7 +20,7 @@ module.exports = {
           author: getAuthorField(interaction.member.user),
           footer: getEmbedFooter(global.bot.user)
         }]
-      }).catch(global.logger.error)
+      }).catch(global.signale.error)
     } else if (resetIgnoredChannelsOption) {
       await clearIgnoredChannels(interaction.guildID)
       interaction.createMessage({

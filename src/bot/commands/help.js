@@ -81,7 +81,7 @@ module.exports = {
         await message.addReaction('📜')
       } catch (_) {
         message.addReaction('❌').catch(() => {})
-        message.channel.createMessage(`<@${message.author.id}>, I can't send you a help DM! Open your DMs to fix this or use \`${process.env.GLOBAL_BOT_PREFIX}help commandname\``).catch(() => {})
+        message.channel.createMessage(`<@${message.author.id}>, I can't send you a help DM! Open your DMs to fix this or use \`${global.envInfo.GLOBAL_BOT_PREFIX}help commandname\``).catch(() => {})
       }
     }
   },
