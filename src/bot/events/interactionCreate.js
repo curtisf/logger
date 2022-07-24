@@ -1,13 +1,21 @@
-const fs = require('fs')
-const path = require('path')
 const Eris = require('eris')
 const { EMBED_COLORS } = require('../utils/constants')
 const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 const { NewsThreadChannel, PrivateThreadChannel, PublicThreadChannel } = require('eris')
 
-const slashCommands = fs.readdirSync(path.resolve('src', 'bot', 'slashcommands')).map(filename => {
-  return require(path.resolve('src', 'bot', 'slashcommands', filename))
-})
+const slashCommands = [ // pkg makes me hardcode instead of using `path`
+  require('../slashcommands/archive.js'),
+  require('../slashcommands/clearmydata.js'),
+  require('../slashcommands/help.js'),
+  require('../slashcommands/ignorechannel.js'),
+  require('../slashcommands/invite.js'),
+  require('../slashcommands/logbots.js'),
+  require('../slashcommands/ping.js'),
+  require('../slashcommands/serverinfo.js'),
+  require('../slashcommands/setup.js'),
+  require('../slashcommands/stoplogging.js'),
+  require('../slashcommands/userinfo.js')
+]
 
 const waitingCustomIDs = new Map()
 const waitingTimeouts = new Map()
