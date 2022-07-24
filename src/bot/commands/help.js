@@ -4,7 +4,8 @@ module.exports = {
     try {
       DMC = await message.author.getDMChannel()
     } catch (e) {
-      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`).catch(() => {})
+      message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`).catch(() => {})
+      return
     }
 
     if (suffix) {
@@ -12,7 +13,7 @@ module.exports = {
         return message.channel.createMessage(`<@${message.author.id}>, that isn't a valid command. Use \`${global.envInfo.GLOBAL_BOT_PREFIX}help\` to see all commands.`)
       }
       await message.channel.createMessage({
-        embed: {
+        embeds: [{
           title: `Help for ${suffix}`,
           description: global.bot.commands[suffix].quickHelp,
           fields: [{
@@ -20,7 +21,7 @@ module.exports = {
             value: global.bot.commands[suffix].examples
           }],
           color: 0xFFFFFF
-        }
+        }]
       })
     } else {
       const embed = {
@@ -50,10 +51,10 @@ module.exports = {
       })
       try {
         await DMC.createMessage({
-          embed: embed
+          embeds: [embed]
         })
         await DMC.createMessage({
-          embed: {
+          embeds: [{
             description: 'Continued help information...',
             fields: [{
               name: 'Open Source',
@@ -75,12 +76,12 @@ module.exports = {
               name: 'Patreon',
               value: 'If you like me and want to support my owner (or want cool patron bot features), check out [my Patreon page](https://patreon.com/logger)\nSome of what Patrons get: image logging, see who deletes messages, ignore users, see archive and bulk delete logs in a prettified manner, archive up to 10,000 messages, messages are saved longer'
             }]
-          }
+          }]
         })
         await message.addReaction('📜')
       } catch (_) {
-        console.log(_)
-        message.addReaction('❌')
+        message.addReaction('❌').catch(() => {})
+        message.channel.createMessage(`<@${message.author.id}>, I can't send you a help DM! Open your DMs to fix this or use \`${process.env.GLOBAL_BOT_PREFIX}help commandname\``).catch(() => {})
       }
     }
   },

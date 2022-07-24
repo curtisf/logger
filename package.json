@@ -1,14 +1,15 @@
 {
   "name": "loggerv3",
-  "version": "3.1.0",
-  "description": "Logger version 3, serving over 30,000 Discord servers",
+  "version": "3.3.0",
+  "description": "Logger version 3 exe selfhost",
   "bin": "./startbot.js",
   "pkg": {
     "assets": [
       "src/**/*",
       "src/**/**/*",
       "*"
-    ]
+    ],
+    "outputPath": "dist"
   },
   "scripts": {
     "test": "standard",
@@ -24,13 +25,14 @@
   "author": "Curtis Fowler",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@sentry/node": "^6.11.0",
     "aes256": "^1.0.4",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
     "cluster": "^0.7.7",
     "dotenv": "^8.2.0",
-    "eris": "^0.15.0",
+    "eris": "^0.17.1",
     "express": "^4.17.1",
     "ioredis": "^4.17.3",
     "markdown-escape": "^1.1.0",

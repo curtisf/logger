@@ -3,7 +3,8 @@ const CHANNEL_TYPE_MAP = {
   0: 'Text channel',
   2: 'Voice channel',
   4: 'Category',
-  5: 'Announcement'
+  5: 'Announcement',
+  13: 'Stage Channel'
 }
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
     const channelDeleteEvent = {
       guildID: channel.guild.id,
       eventName: 'channelDelete',
-      embed: {
+      embeds: [{
         author: {
           name: 'Unknown User',
           icon_url: 'https://logger.bot/staticfiles/red-x.png'
@@ -25,7 +26,7 @@ module.exports = {
           value: channel.name
         }, {
           name: 'Creation date',
-          value: new Date(channel.createdAt).toUTCString()
+          value: `<t:${Math.round(((channel.id / 4194304) + 1420070400000) / 1000)}:F>`
         },
         {
           name: 'Position',
@@ -35,31 +36,32 @@ module.exports = {
           value: `\`\`\`ini\nUser = Unknown\nChannel = ${channel.id}\`\`\``
         }],
         color: 3553599
-      }
+      }]
     }
     if (channel.permissionOverwrites.size !== 0) {
       channel.permissionOverwrites.forEach(overwrite => {
-        if (overwrite.type === 'role') { // Should only be role anyways, but let's just be safe
+        if (overwrite.type === 0) { // Should only be role anyways, but let's just be safe
           const role = channel.guild.roles.find(r => r.id === overwrite.id)
-          if (role.name === '@everyone') return
-          channelDeleteEvent.embed.fields.push({
+          if (!role || role.name === '@everyone') return
+          channelDeleteEvent.embeds[0].fields.push({
             name: role.name,
             value: `Type: role\nPermissions: ${Object.keys(overwrite.json).filter(perm => overwrite.json[perm]).join(', ')}`
           })
         }
       })
     }
-    const logs = await channel.guild.getAuditLogs(5, null, 12).catch(() => {})
+    const logs = await channel.guild.getAuditLog({ limit: 5, actionType: 12 }).catch(() => {})
     if (!logs) return
-    const log = logs.entries.find(e => e.targetID === channel.id)
-    if (!log) return
-    const user = log.user
-    if (user.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
-    const member = channel.guild.members.get(user.id)
-    if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
-      channelDeleteEvent.embed.author.icon_url = user.avatarURL
-      channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+    const log = logs.entries.find(e => e.targetID === channel.id && Date.now() - ((e.id / 4194304) + 1420070400000) < 3000)
+    if (log) { // if the audit log is less than 3 seconds off
+      const user = log.user
+      if (user && user?.bot && !global.bot.guildSettingsCache[channel.guild.id].isLogBots()) return
+      if (user) {
+        const member = channel.guild.members.get(user.id)
+        channelDeleteEvent.embeds[0].author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
+        channelDeleteEvent.embeds[0].author.icon_url = user.avatarURL
+        channelDeleteEvent.embeds[0].fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
+      }
       await send(channelDeleteEvent)
     } else {
       await send(channelDeleteEvent)

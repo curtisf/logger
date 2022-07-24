@@ -1,6 +1,4 @@
 const Eris = require('eris')
-const raven = require('raven')
-const Raven = require('raven')
 global.signale = require('signale')
 const fs = require('fs')
 const path = require('path')
@@ -11,10 +9,9 @@ precheckReqs().then(() => {
   init()
 })
 const indexCommands = require('../miscellaneous/commandIndexer')
-const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
-const eventMiddleware = require('./modules/eventmiddleware')
 const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
+const addBotListeners = require('./utils/addbotlisteners')
 
 function precheckReqs () {
   return new Promise((resolve, reject) => {
@@ -59,7 +56,15 @@ async function init () {
     messageLimit: 0,
     autoreconnect: true,
     getAllUsers: true,
-    intents: 719
+    intents: [
+      'guilds',
+      'guildVoiceStates',
+      'guildEmojis',
+      'guildInvites',
+      'guildMembers',
+      'guildMessages',
+      'guildBans'
+    ]
   })
 
   global.bot.editStatus('dnd', {
@@ -72,13 +77,8 @@ async function init () {
 
   indexCommands() // yes, block the thread while we read commands.
   await cacheGuildInfo()
-  const [on, once] = listenerIndexer()
 
-  // on.forEach(async event => global.bot.on(event.name, await event.handle))
-  // once.forEach(async event => global.bot.once(event.name, await event.handle))
-
-  on.forEach(async event => eventMiddleware(event, 'on'))
-  once.forEach(async event => eventMiddleware(event, 'once'))
+  addBotListeners()
 
   global.signale.note('Connecting to Discord...')
   global.bot.connect()
@@ -91,6 +91,7 @@ async function init () {
   // const oldMessagesDeleted = await deleteMessagesOlderThanDays(1l.envInfo.MESSAGE_HISTORY_DAYS) debating on removing these
   // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${global.envInfo.MESSAGE_HISTORY_DAYS} day(s).`)
 }
+
 process.on('exit', (code) => {
   console.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)
   // require('../db/clients/postgres').end()
@@ -103,15 +104,15 @@ process.on('SIGINT', async () => {
 })
 
 process.on('unhandledRejection', (e) => {
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('global ratelimit')) {
-    console.error(e)
-    Raven.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('503 Service Temporarily Unavailable') && !e.message.includes('global ratelimit') && !e.message.includes('hang up')) {
+    global.signale.error(e)
+    // sentry catches these already, stop double reporting
+    // Sentry.captureException(e.stack, { level: 'error' }) // handle when Discord freaks out
   }
 })
 
 process.on('uncaughtException', (e) => {
-  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR')) {
-    console.error(e)
-    Raven.captureException(e.stack, { level: 'fatal' })
+  if (!e.message.includes('[50013]') && !e.message.includes('Request timed out') && !e.message.startsWith('500 INTERNAL SERVER ERROR') && !e.message.includes('503 Service Temporarily Unavailable') && !e.message.includes('global ratelimit') && !e.message.includes('hang up')) {
+    global.signale.error(e)
   }
 })

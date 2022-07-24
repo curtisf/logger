@@ -1,5 +1,7 @@
+const Eris = require('eris')
+
 module.exports = async message => {
-  if (message.author.bot || !message.member) return
+  if (message.author.bot || !message.member || message.channel instanceof Eris.TextVoiceChannel) return
   if (message.content.startsWith(global.envInfo.GLOBAL_BOT_PREFIX)) {
     const cmd = message.content.substring(global.envInfo.GLOBAL_BOT_PREFIX.length).split(' ')[0].toLowerCase()
     const splitSuffix = message.content.substr(global.envInfo.GLOBAL_BOT_PREFIX).split(' ')
@@ -16,8 +18,11 @@ function processCommand (message, commandName, suffix) {
   if ((command.noDM || command.perm || command.type === 'admin') && !message.channel.guild) {
     message.channel.createMessage('You cannot use this command in a DM!')
     return
+  } else if (command.noThread && (message.channel.type === 10 || message.channel.type === 11 || message.channel.type === 12)) {
+    message.channel.createMessage('You cannot use this command in a thread!')
+    return
   } else if (message.author.id === global.envInfo.CREATOR_IDS) {
-    console.info(`Developer override by ${message.author.username}#${message.author.discriminator} at ${new Date().toUTCString()}`)
+    global.signale.info(`Developer override by ${message.author.username}#${message.author.discriminator} at ${new Date().toUTCString()}`)
     command.func(message, suffix)
     return
   } else if (command.type === 'creator' && !global.envInfo.CREATOR_IDS.includes(message.author.id)) {

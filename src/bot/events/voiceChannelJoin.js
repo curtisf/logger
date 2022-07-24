@@ -8,7 +8,7 @@ module.exports = {
     await send({
       guildID: channel.guild.id,
       eventName: 'voiceChannelJoin',
-      embed: {
+      embeds: [{
         author: {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
@@ -22,7 +22,7 @@ module.exports = {
           value: `\`\`\`ini\nUser = ${member.id}\nChannel = ${channel.id}\`\`\``
         }],
         color: 3553599
-      }
+      }]
     })
   }
 }

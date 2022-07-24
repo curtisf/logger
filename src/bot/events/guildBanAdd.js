@@ -7,7 +7,7 @@ module.exports = {
     const guildBanAddEvent = {
       guildID: guild.id,
       eventName: 'guildBanAdd',
-      embed: {
+      embeds: [{
         author: {
           name: `${user.username}#${user.discriminator} `,
           icon_url: user.avatarURL
@@ -24,7 +24,7 @@ module.exports = {
           value: `\`\`\`ini\nUser = ${user.id}\nPerpetrator = Unknown\`\`\``
         }],
         color: 3553599
-      }
+      }]
     }
     /*
      * Race condition time ladies and gentlemen:
@@ -33,20 +33,27 @@ module.exports = {
      * The 1 second wait makes sure the bot gets the new entry on time.
      * Thanks Discord.
     */
+    const actionStartedTime = new Date()
     setTimeout(async () => {
-      const logs = await guild.getAuditLogs(10, null, 22).catch(() => {})
-      if (!logs) return
-      const log = logs.entries.find(e => e.targetID === user.id)
-      if (!log) return
-      if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() > 30000) return
+      const logs = await guild.getAuditLog({ limit: 10, actionType: 22 }).catch(() => {})
+      if (!logs) {
+        global.logger.warn(`Guild Ban Add was unable to fetch audit logs in guild ${guild.name} (${guild.id})`)
+        return
+      }
+      const log = logs.entries.find(e => e.targetID === user.id && actionStartedTime.getTime() - new Date((e.id / 4194304) + 1420070400000).getTime() < 60000)
+      if (!log) {
+        global.logger.warn(`Guild Ban Add on ${guild.name} (${guild.id}) was not able to match a log.`)
+        return
+      }
+      if (!log.user) return
       const perp = log.user
-      if (log.reason) guildBanAddEvent.embed.fields[1].value = log.reason
-      guildBanAddEvent.embed.fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
-      guildBanAddEvent.embed.footer = {
+      if (log.reason) guildBanAddEvent.embeds[0].fields[1].value = log.reason
+      guildBanAddEvent.embeds[0].fields[2].value = `\`\`\`ini\nUser = ${user.id}\nPerpetrator = ${perp.id}\`\`\``
+      guildBanAddEvent.embeds[0].footer = {
         text: `${perp.username}#${perp.discriminator}`,
         icon_url: perp.avatarURL
       }
       await send(guildBanAddEvent)
-    }, 1000)
+    }, 5000)
   }
 }

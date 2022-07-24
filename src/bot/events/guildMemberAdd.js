@@ -9,7 +9,7 @@ module.exports = {
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
-      embed: {
+      embeds: [{
         author: {
           name: `${member.username}#${member.discriminator}`,
           icon_url: member.avatarURL
@@ -20,7 +20,7 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
         }, {
           name: 'Joined At',
-          value: new Date().toUTCString()
+          value: `<t:${Math.round(Date.now() / 1000)}:F>`
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,
@@ -28,11 +28,11 @@ module.exports = {
         },
         {
           name: 'Member Count',
-          value: guild.memberCount,
+          value: guild.memberCount.toLocaleString(),
           inline: true
         }],
         color: 65280
-      }
+      }]
     }
     if (!member.username) { // No username? nope.
       return
@@ -50,13 +50,13 @@ module.exports = {
       }
       if (!usedInvite) {
         if (guild.features.includes('VANITY_URL')) {
-          GMAEvent.embed.fields.push({
+          GMAEvent.embeds[0].fields.push({
             name: 'Invite Used',
             value: 'Server vanity',
             inline: true
           })
         } else if (member.bot) {
-          GMAEvent.embed.fields.push({
+          GMAEvent.embeds[0].fields.push({
             name: 'Invite Used',
             value: 'OAuth flow',
             inline: true
@@ -64,9 +64,9 @@ module.exports = {
         }
       }
       if (usedInvite) {
-        GMAEvent.embed.fields.push({
+        GMAEvent.embeds[0].fields.push({
           name: 'Invite Used',
-          value: `${usedInvite.code} with ${usedInvite.uses} uses`,
+          value: `${usedInvite.code} with ${usedInvite.uses.toLocaleString()} uses`,
           inline: true
         })
       }
@@ -75,7 +75,7 @@ module.exports = {
       console.error(_)
       // They're denying the bot the permissions it needs.
     }
-    GMAEvent.embed.fields.push({
+    GMAEvent.embeds[0].fields.push({
       name: 'ID',
       value: `\`\`\`ini\nMember = ${member.id}\nGuild = ${guild.id}\`\`\``
     })

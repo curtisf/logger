@@ -17,8 +17,7 @@ const commandStatistics = {
   setchannel: 0,
   togglemodule: 0,
   userinfo: 0,
-  setup: 0,
-  settz: 0
+  setup: 0
 }
 
 const eventStatistics = {
@@ -52,7 +51,10 @@ const eventStatistics = {
   webhookSends: 0,
   nonWebhookSends: 0,
   'rest-hit': 0,
-  'global-ratelimit-hit': 0
+  'global-ratelimit-hit': 0,
+  'ratelimit-hit': 0,
+  'webhook-ratelimit-hit': 0,
+  guildMemberBoostUpdate: 0
 }
 
 const miscStatistics = {

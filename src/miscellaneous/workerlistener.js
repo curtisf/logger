@@ -120,8 +120,8 @@ module.exports = async worker => {
   })
 
   worker.on('disconnect', () => {
-    console.error(`[${cluster.worker.rangeForShard}] IPC disconnected!`)
-    global.webhook.error(`[${cluster.worker.rangeForShard}] IPC disconnected! <@&349414410869276673>`)
+    console.error(`[${worker.rangeForShard}] IPC disconnected!`)
+    global.webhook.error(`[${worker.rangeForShard}] IPC disconnected! <@&349414410869276673>`)
     process.exit(1)
   })
 

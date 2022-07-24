@@ -21,7 +21,7 @@ module.exports = {
       await clearEventByID(message.channel.guild.id, message.channel.id) // any event logging to this channel id will be wiped
 
       await message.channel.createMessage({
-        embed: {
+        embeds: [{
           title: 'Any events associated with this channel have been undone.',
           color: 16711680,
           timestamp: new Date(),
@@ -34,7 +34,7 @@ module.exports = {
             icon_url: message.author.avatarURL
           },
           fields: []
-        }
+        }]
       })
     }
   },
@@ -44,6 +44,7 @@ module.exports = {
   \`${global.envInfo.GLOBAL_BOT_PREFIX}stoplogging messageDelete, messageUpdate\` <- if the bot was logging messageDelete and messageUpdate to the channel this is used in, now it is unset
   \`${global.envInfo.GLOBAL_BOT_PREFIX}stoplogging guildMemberVerify\` <- if the bot was logging member verify events to the channel this was used in, it will stop doing so`,
   type: 'admin',
+  noThread: true,
   category: 'Logging'
 }
 

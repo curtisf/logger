@@ -1,4 +1,3 @@
-const sa = require('superagent')
 
 module.exports = {
   func: async (message, suffix) => {

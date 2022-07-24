@@ -20,11 +20,11 @@ async function paste (messages, guildID) {
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',
-    embed: {
+    embeds: [{
       description: `**${messages.length}** message(s) were deleted and known in cache.`,
       fields: [],
       color: 15550861
-    }
+    }]
   }
   const pasteString = messages.reverse().map(m => {
     let globalUser = global.bot.users.get(m.author_id)

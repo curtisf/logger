@@ -3,6 +3,8 @@ const clearEventByID = require('../../db/interfaces/sqlite').clearEventByID
 const statAggregator = require('./statAggregator')
 const cacheGuild = require('../utils/cacheGuild')
 
+const logChannelLocks = {}
+
 module.exports = async (guildID, channelID) => {
   if (!global.bot.guilds.get(guildID)) return // if not in that guild anymore, stop.
   const perms = global.bot.getChannel(channelID)?.permissionsOf(global.bot.user.id).json
@@ -12,6 +14,14 @@ module.exports = async (guildID, channelID) => {
   const guild = global.bot.guilds.get(guildID)
   if (!guild) {
     return
+  }
+  if (logChannelLocks[channelID]) {
+    return
+  } else {
+    logChannelLocks[channelID] = true
+    setTimeout(() => {
+      delete logChannelLocks[channelID]
+    }, 30000) // release cacher after 30 seconds for a guild
   }
   let logChannel
   try {
@@ -28,7 +38,7 @@ module.exports = async (guildID, channelID) => {
     webhooks = await logChannel?.getWebhooks()
     statAggregator.incrementMisc('fetchWebhooks')
   } catch (_) {
-    global.logger.warn(`Logchannel ${channelID} in ${global.bot.guilds.get(guildID).name} ${guildID} does not exist even though it is in cache`)
+    global.signale.warn(`Logchannel ${channelID} in ${guildID} does not exist even though it is in cache`)
     await global.redis.del(`webhook-${channelID}`)
     global.bot.guildSettingsCache[guildID].clearEventByID(channelID)
     await clearEventByID(guildID, channelID)
@@ -36,7 +46,7 @@ module.exports = async (guildID, channelID) => {
     return
   }
   for (let i = 0; i < webhooks.length; i++) {
-    if (webhooks[i].token && webhooks[i].channel_id === channelID) { // check for token because channel subscriptions count as webhooks
+    if (webhooks[i].token && webhooks[i].channel_id === channelID && webhooks[i].application_id === global.bot.user.id) { // check for token because channel subscriptions count as webhooks
       webhookCache.setWebhook(channelID, webhooks[i].id, webhooks[i].token)
       console.info(`G: ${guildID} C: ${channelID} found hook ${webhooks[i].id}, set cache`)
       return

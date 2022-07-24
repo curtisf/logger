@@ -4,7 +4,7 @@ const createGuild = require('../../db/interfaces/sqlite').createGuild
 module.exports = {
   func: async message => {
     const msg = await message.channel.createMessage({
-      embed: {
+      embeds: [{
         description: `Are you absolutely sure, ${message.author.username}#${message.author.discriminator} (${message.author.id})? Reply *yes* if so.`,
         color: 3553599,
         timestamp: new Date(),
@@ -16,7 +16,7 @@ module.exports = {
           name: `${message.author.username}#${message.author.discriminator}`,
           icon_url: message.author.avatarURL
         }
-      }
+      }]
     })
     let i = 0
     let complete = false
@@ -26,7 +26,7 @@ module.exports = {
           global.bot.removeListener('messageCreate', temp)
           if (!complete) {
             message.channel.createMessage({
-              embed: {
+              embeds: [{
                 description: 'You didn\'t reply with *yes* within 10 seconds.',
                 color: 3553599,
                 timestamp: new Date(),
@@ -38,7 +38,7 @@ module.exports = {
                   name: `${message.author.username}#${message.author.discriminator}`,
                   icon_url: message.author.avatarURL
                 }
-              }
+              }]
             })
             msg.delete()
           }
@@ -46,7 +46,7 @@ module.exports = {
       }
       if (m.channel.id === message.channel.id && m.author.id === message.author.id && m.content.toLowerCase() === 'yes' && !complete) {
         message.channel.createMessage({
-          embed: {
+          embeds: [{
             description: 'Alright, resetting guild settings.',
             color: 3553599,
             timestamp: new Date(),
@@ -58,7 +58,7 @@ module.exports = {
               name: `${message.author.username}#${message.author.discriminator}`,
               icon_url: message.author.avatarURL
             }
-          }
+          }]
         })
         complete = true
         await deleteGuild(message.channel.guild.id)

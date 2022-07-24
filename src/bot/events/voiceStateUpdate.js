@@ -12,7 +12,7 @@ module.exports = {
     const voiceStateUpdateEvent = {
       guildID: member.guild.id,
       eventName: 'voiceStateUpdate',
-      embed: {
+      embeds: [{
         author: {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
@@ -26,40 +26,27 @@ module.exports = {
           value: `\`\`\`ini\nUser = ${member.id}\nChannel = ${channel.id}\n`
         }],
         color: 3553599
-      }
+      }]
     }
     // if (member.guild.voiceStates.size < 20) {
-    const logs = await member.guild.getAuditLogs(5, null, 24).catch(() => {})
+    const logs = await member.guild.getAuditLogs({ limit: 5, actionType: 24 }).catch(() => {})
     if (!logs) return
-    const log = logs.entries.find(e => e.targetID === member.id)
-    if (!log || Date.now() - ((log.id / 4194304) + 1420070400000) > 3000) return // if the most recent log is too far away, stop
+    const log = logs.entries.find(e => e.targetID === member.id && (Date.now() - ((e.id / 4194304) + 1420070400000) < 3000))
+    if (!log) return
     const user = log.user
     const actionName = Object.keys(log.before)[0]
     if (!actionName) return
-    voiceStateUpdateEvent.embed.fields.unshift({
+    voiceStateUpdateEvent.embeds[0].fields.unshift({
       name: 'Action',
       value: `${log.before[actionName] ? 'un' : 'now '}${actionName}` || 'Unknown'
     })
-    voiceStateUpdateEvent.embed.fields[voiceStateUpdateEvent.embed.fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
-    voiceStateUpdateEvent.embed.footer = {
-      text: `${user.username}#${user.discriminator}`,
-      icon_url: user.avatarURL
+    if (user && user.id && user.username) {
+      voiceStateUpdateEvent.embeds[0].fields[voiceStateUpdateEvent.embeds[0].fields.length - 1].value += `Perpetrator = ${user.id}\`\`\``
+      voiceStateUpdateEvent.embeds[0].footer = {
+        text: `${user.username}#${user.discriminator}`,
+        icon_url: user.avatarURL
+      }
     }
     await send(voiceStateUpdateEvent)
-    // } else {
-    //   const toPushField = {
-    //     name: 'Action',
-    //     value: ''
-    //   }
-    //   if (oldState.mute && !state.mute) toPushField.value += 'unmuted'
-    //   else if (!oldState.mute && state.mute) toPushField.value += 'muted'
-    //   else if (oldState.deaf && !state.deaf) toPushField.value += 'undeafened'
-    //   else if (!oldState.deaf && state.deaf) toPushField.value += 'deafened'
-    //   if (toPushField.value) {
-    //     voiceStateUpdateEvent.embed.fields.unshift(toPushField)
-    //     voiceStateUpdateEvent.embed.fields[voiceStateUpdateEvent.embed.fields.length - 1].value += '```'
-    //     send(voiceStateUpdateEvent)
-    //   }
-    // }
   }
 }

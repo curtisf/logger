@@ -11,7 +11,7 @@ module.exports = {
     const disabled = await ignoreChannel(message.channel.guild.id, toIgnore) // return a boolean representing whether a channel is ignored or not
     const respStr = `Toggled logging events targeting <#${toIgnore}> (${message.channel.guild.channels.get(toIgnore).name}). I am now ${disabled ? 'ignoring' : 'logging'} events from this channel`
     message.channel.createMessage({
-      embed: {
+      embeds: [{
         description: respStr,
         color: 3553599,
         timestamp: new Date(),
@@ -23,7 +23,7 @@ module.exports = {
           name: `${message.author.username}#${message.author.discriminator}`,
           icon_url: message.author.avatarURL
         }
-      }
+      }]
     })
   },
   name: 'ignorechannel',
