@@ -51,7 +51,7 @@ module.exports = {
         name: 'Emojis',
         value: 'None'
       })
-      interaction.createMessage({ embed }).catch(() => {})
+      interaction.createMessage({ embeds: [embed] }).catch(() => {})
     } else {
       const emojiObj = {
         0: []
