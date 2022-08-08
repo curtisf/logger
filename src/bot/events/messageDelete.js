@@ -57,13 +57,30 @@ module.exports = {
         value: chunk
       })
     })
-    messageDeleteEvent.embeds[0].fields.push({
-      name: 'Date',
-      value: `<t:${Math.round(cachedMessage.ts / 1000)}:F>`
-    }, {
-      name: 'ID',
-      value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
-    })
+    const logs = await message.channel.guild.getAuditLog({ limit: 5, actionType: 72 })
+    const log = logs.entries.find(e => toString(e.id) == toString(message.id))
+    if (log && log.user) {
+      messageDeleteEvent.embeds[0].fields.push({
+        name: 'Date',
+        value: `<t:${Math.round(cachedMessage.ts / 1000)}:F>`
+      }, {
+        name: 'ID',
+        value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\nPerpetrator = ${log.user.id}\`\`\``
+      })
+      messageDeleteEvent.embeds[0].footer = {
+        text: `${log.user.username}#${log.user.discriminator}`,
+        icon_url: log.user.avatarURL
+      }
+      console.log("Test: ${log.user.username}")
+    } else {
+      messageDeleteEvent.embeds[0].fields.push({
+        name: 'Date',
+        value: `<t:${Math.round(cachedMessage.ts / 1000)}:F>`
+      }, {
+        name: 'ID',
+        value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\nPerpetrator = Unknown\`\`\``
+      })
+    }
     await send(messageDeleteEvent)
   }
 }

@@ -6,7 +6,7 @@ module.exports = {
   name: 'messageCreate',
   type: 'on',
   handle: async message => {
-    if (message.type === 23 || message.type === 24 || message.author.bot || !message.member) return // do not log automod actions
+    if (message.type === 23 || message.type === 24 || message.author.system || !message.member) return // do not log automod actions
     await commandHandler(message)
     if (message.author.id === global.bot.user.id) return // dump logs made by the bot
     const guildSettings = global.bot.guildSettingsCache[message.channel.guild.id]
