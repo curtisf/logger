@@ -17,8 +17,8 @@ module.exports = {
           name: 'General Invite (Least Permissions)',
           value: `Use [this invite link](https://discord.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot+applications.commands&permissions=537218176) to invite me with the least permissions required.`
         }, {
-          name: 'Joinlog Permissions Invite',
-          value: `Use [this invite link](https://discord.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot+applications.commands&permissions=537218224) to invite me with the permissions required for join logging. \`Manage Channels\` (can be channel permission overwrites) and \`Manage Server\` are **required** for invite logging on join because Discord does not send invite information to the bot without it. (Manage Channels: receives invites made for channels realtime | Manage Server: to fetch server invites)`
+          name: 'Invite Tracking Invite (requires manage server & manage channels to fetch data)',
+          value: `Use [this invite link](https://discord.com/oauth2/authorize?client_id=${global.bot.user.id}&scope=bot+applications.commands&permissions=537218224) to invite me with the permissions required for invite tracking join logging. \`Manage Channels\` (can be channel permission overwrites) and \`Manage Server\` are **required** for invite logging on join because Discord does not send invite information to the bot without it. (Manage Channels: receives invites made for channels realtime | Manage Server: to fetch server invites)`
         }],
         footer: getEmbedFooter(global.bot.user)
       }],
