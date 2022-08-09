@@ -121,7 +121,7 @@ module.exports = {
       },
       {
         name: 'logbots',
-        description: 'Use this to toggle whether I log actions done by bots or not (DEFAULT: disabled). Does NOT ignore bots deleting messages!'
+        description: 'Toggle whether I log other bot actions (DEFAULT: disabled). Does NOT ignore bots deleting messages!'
       },
       {
         name: 'help',

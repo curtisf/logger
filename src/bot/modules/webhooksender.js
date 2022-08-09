@@ -60,8 +60,16 @@ module.exports = async pkg => {
       pkg.embeds[0].timestamp = new Date()
     }
 
+    statAggregator.incrementGuild(pkg.guildID)
+    if (!doNotAggregate.includes(pkg.eventName)) {
+      statAggregator.incrementEvent(pkg.eventName)
+    }
+    if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
+      statAggregator.incrementMisc('fetchAuditLogs')
+    }
+
     // Thanks for the help, De Morgan's laws.
-    if (guild.memberCount < 10000 && guild.voiceStates.size < 1000) {
+    if (guild.memberCount < 10000 && guild.voiceStates.size < 100) {
       global.bot.executeWebhook(webhookID, webhookToken, {
         file: pkg.file ? pkg.file : '',
         username: global.bot.user.username,
@@ -89,13 +97,6 @@ module.exports = async pkg => {
       pkg.webhookID = webhookID
       pkg.webhookToken = webhookToken
       enqueue(pkg, guildSettings)
-    }
-    // statAggregator.incrementGuild(pkg.guildID)
-    if (!doNotAggregate.includes(pkg.eventName)) {
-      statAggregator.incrementEvent(pkg.eventName)
-    }
-    if (EVENTS_USING_AUDITLOGS.includes(pkg.eventName)) {
-      statAggregator.incrementMisc('fetchAuditLogs')
     }
   }
 }
