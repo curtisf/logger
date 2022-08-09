@@ -1,4 +1,4 @@
-const { setEventLogs } = require('../../db/interfaces/postgres/update')
+const { setEventsLogId } = require('../../db/interfaces/postgres/update')
 const guildWebhookCacher = require('../modules/guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 
@@ -42,12 +42,12 @@ module.exports = {
     if (events.length === 0 && suffix) {
       message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
     } else if (events.length === 0 && !suffix) {
-      await setEventLogs(message.channel.guild.id, message.channel.id, eventList)
+      await setEventsLogId(message.channel.guild.id, message.channel.id, eventList)
       await cacheGuild(message.channel.guild.id)
       await guildWebhookCacher(message.channel.guild.id, message.channel.id)
       message.channel.createMessage(`<@${message.author.id}>, I set all events to log here! ${!botPerms.manageChannels || !botPerms.manageGuild ? 'Invite tracking will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
     } else {
-      await setEventLogs(message.channel.guild.id, message.channel.id, events)
+      await setEventsLogId(message.channel.guild.id, message.channel.id, events)
       await cacheGuild(message.channel.guild.id)
       await guildWebhookCacher(message.channel.guild.id, message.channel.id)
       message.channel.createMessage(`<@${message.author.id}>, it has been done. ${events.includes('guildMemberAdd') && (!botPerms.manageChannels || !botPerms.manageGuild) ? 'Invite tracking will not work until I\'m granted manage channels & manage server (I cannot get invite information without both!)' : ''}`)
