@@ -44,6 +44,9 @@ module.exports = {
         }
         const command = slashCommands.find(c => c.name === interaction.data.name)
         if (command) {
+          if (command?.type === 'creator' && interaction.member.user.id !== process.env.CREATOR_IDS) {
+            return
+          }
           if (command.noThread && (interaction.channel instanceof NewsThreadChannel || interaction.channel instanceof PrivateThreadChannel || interaction.channel instanceof PublicThreadChannel)) {
             interaction.createMessage({
               embeds: [{

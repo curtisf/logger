@@ -195,6 +195,10 @@ module.exports = {
       }
     }
 
+    if (channelUpdateEvent.embeds[0].fields.length === 1) { // if there is no change detected
+      return
+    }
+
     if (log && user) {
       channelUpdateEvent.embeds[0].author.name = `${user.username}#${user.discriminator}`
       channelUpdateEvent.embeds[0].author.icon_url = user.avatarURL
