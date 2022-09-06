@@ -107,6 +107,7 @@ module.exports = {
           // using `` to surround topic because topic can be just spaces
           continue
         }
+        if (changedKey === 'tags') continue
         const changes = transformAuditLogEntry(changedKey, log.before[changedKey], log.after[changedKey])
         channelUpdateEvent.embeds[0].fields.push({
           name: toTitleCase(changedKey),
@@ -193,6 +194,10 @@ module.exports = {
           }
         })
       }
+    }
+
+    if (channelUpdateEvent.embeds[0].fields.length === 1) { // if there is no change detected
+      return
     }
 
     if (log && user) {

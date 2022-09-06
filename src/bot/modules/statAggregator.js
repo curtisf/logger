@@ -101,6 +101,9 @@ module.exports = {
   },
   getMostActiveGuilds () {
     return [...guildActivity.entries()].sort((e1, e2) => e2[1] - e1[1])
+  },
+  clearGuildActivity () {
+    guildActivity.clear()
   }
 }
 
@@ -126,7 +129,6 @@ function sendStatsIPC () {
       miscStatistics[k] = 0
     })
   }
-  guildActivity.clear()
 }
 
 process.on('message', m => {
@@ -135,6 +137,9 @@ process.on('message', m => {
   }
 })
 
+let webhookHitCount = 0
+let lastWebhookTs = Date.now()
+
 global.bot.on('rawREST', r => {
   if (!r || !r.url) return
   module.exports.incrementEvent('rest-hit')
@@ -142,7 +147,17 @@ global.bot.on('rawREST', r => {
     module.exports.incrementMisc('fetchAuditLogs')
   }
   if (r.url.includes('webhooks')) {
+    webhookHitCount++
     module.exports.incrementEvent('webhookSends')
+    if (Date.now() - lastWebhookTs > 5000 && webhookHitCount > 1000) { // 1000 webhook sends in 5 seconds is a lot
+      global.logger.warn('Webhook activity heuristic', r.url, r.body)
+      if (webhookHitCount >= 2000) { // dump the flooding requests for some time
+        webhookHitCount = 0
+      }
+    } else if (Date.now() - lastWebhookTs > 5000) {
+      lastWebhookTs = Date.now()
+      webhookHitCount = 0
+    }
   } else {
     module.exports.incrementEvent('nonWebhookSends')
   }

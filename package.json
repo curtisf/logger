@@ -17,25 +17,25 @@
   "author": "Curtis Fowler",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "@sentry/node": "^6.11.0",
-    "aes256": "^1.0.4",
-    "chalk": "^4.1.0",
-    "dotenv": "^8.2.0",
+    "@sentry/node": "^7.9.0",
+    "aes256": "^1.1.0",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.0.1",
     "eris": "github:curtisf/eris#ff-dev",
-    "ioredis": "^4.17.3",
+    "ioredis": "^5.2.2",
     "markdown-escape": "^1.1.0",
-    "moment-timezone": "^0.5.33",
+    "moment-timezone": "^0.5.34",
     "os-utils": "0.0.14",
-    "pg": "^8.3.3",
+    "pg": "^8.7.3",
     "pg-format": "^1.0.4",
-    "redis": "^3.0.2",
-    "redlock": "^4.1.0",
-    "superagent": "^6.1.0",
+    "redis": "^4.2.0",
+    "redlock": "^4.2.0",
+    "superagent": "^8.0.0",
     "uuid": "^8.3.2",
     "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^7.9.0",
-    "standard": "^16.0.4"
+    "eslint": "^8.21.0",
+    "standard": "^17.0.0"
   }
 }

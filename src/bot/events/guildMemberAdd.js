@@ -4,9 +4,7 @@ const inviteCache = require('../modules/invitecache')
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
-  requiredPerms: ['manageGuild', 'manageChannels'], // manageGuild -> fetch invites, manageChannels -> receive INVITE_CREATE & INVITE_DELETE
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permissions.json.manageGuild) return
     const GMAEvent = {
       guildID: guild.id,
       eventName: 'guildMemberAdd',
@@ -38,43 +36,46 @@ module.exports = {
     if (!member.username) { // No username? nope.
       return
     }
-    let guildInvites
-    try {
-      guildInvites = (await guild.getInvites()).map(i => inviteCache.formatInvite(i, false))
-      const cachedInvites = await inviteCache.getCachedInvites(guild.id)
-      let usedInvite
-      if (guildInvites.length > cachedInvites.length) {
+    const botPerms = guild.members.get(global.bot.user.id)?.permissions?.json
+    if (botPerms.manageGuild && botPerms.manageChannels) {
+      let guildInvites
+      try {
+        guildInvites = (await guild.getInvites()).map(i => inviteCache.formatInvite(i, false))
+        const cachedInvites = await inviteCache.getCachedInvites(guild.id)
+        let usedInvite
+        if (guildInvites.length > cachedInvites.length) {
         // invite desync between redis and Discord, fix it
-        await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
-      } else {
-        usedInvite = compareInvites(guildInvites, cachedInvites)
-      }
-      if (!usedInvite) {
-        if (guild.features.includes('VANITY_URL')) {
+          await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
+        } else {
+          usedInvite = compareInvites(guildInvites, cachedInvites)
+        }
+        if (!usedInvite) {
+          if (guild.features.includes('VANITY_URL')) {
+            GMAEvent.embeds[0].fields.push({
+              name: 'Invite Used',
+              value: 'Server vanity',
+              inline: true
+            })
+          } else if (member.bot) {
+            GMAEvent.embeds[0].fields.push({
+              name: 'Invite Used',
+              value: 'OAuth flow',
+              inline: true
+            })
+          }
+        }
+        if (usedInvite) {
           GMAEvent.embeds[0].fields.push({
             name: 'Invite Used',
-            value: 'Server vanity',
-            inline: true
-          })
-        } else if (member.bot) {
-          GMAEvent.embeds[0].fields.push({
-            name: 'Invite Used',
-            value: 'OAuth flow',
+            value: `${usedInvite.code} with ${usedInvite.uses.toLocaleString()} uses`,
             inline: true
           })
         }
-      }
-      if (usedInvite) {
-        GMAEvent.embeds[0].fields.push({
-          name: 'Invite Used',
-          value: `${usedInvite.code} with ${usedInvite.uses.toLocaleString()} uses`,
-          inline: true
-        })
-      }
-      await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
-    } catch (_) {
-      console.error(_)
+        await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
+      } catch (_) {
+        console.error(_)
       // They're denying the bot the permissions it needs.
+      }
     }
     GMAEvent.embeds[0].fields.push({
       name: 'ID',

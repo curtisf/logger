@@ -5,7 +5,7 @@ const { EMBED_COLORS, PRESET_EVENT_MAP, ALL_EVENTS } = require('../utils/constan
 const { getEmbedFooter, getAuthorField } = require('../utils/embeds')
 
 async function returnMissingPerms (channelID, userID, events) {
-  const requiredPerms = events.includes('guildMemberAdd') ? ['manageWebhooks', 'viewAuditLog', 'viewChannel', 'sendMessages', 'embedLinks', 'readMessageHistory', 'useExternalEmojis', 'manageChannels', 'manageGuild'] : ['manageWebhooks', 'viewAuditLog', 'viewChannel', 'sendMessages', 'embedLinks', 'readMessageHistory', 'useExternalEmojis']
+  const requiredPerms = ['manageWebhooks', 'viewAuditLog', 'viewChannel', 'sendMessages', 'embedLinks', 'readMessageHistory', 'useExternalEmojis']
   let logChannelPerms
   try {
     const logChannel = global.bot.getChannel(channelID)
@@ -130,7 +130,7 @@ async function handlePresetSetup (interaction, recursionUUID) {
         thumbnail: {
           url: global.bot.user.dynamicAvatarURL(null, 64)
         },
-        description: `I cannot update logging settings with new presets: I need the following permissions in this channel: ${missingPermissions.map(p => `**${p}**.`).join(', ')}. Have questions? See \`/help usage: Guide\``,
+        description: `I cannot update logging settings with new presets: I need the following permissions in this channel: ${missingPermissions.map(p => `**${p}**`).join(', ')}. Have questions? See \`/help usage: Guide\``,
         color: EMBED_COLORS.YELLOW_ORANGE,
         footer: getEmbedFooter(global.bot.user),
         author: getAuthorField(interaction.member.user)
@@ -416,7 +416,7 @@ async function handleIndividualSetup (interaction, recursionUUID) {
         thumbnail: {
           url: global.bot.user.dynamicAvatarURL(null, 64)
         },
-        description: `I cannot update logging settings with new presets: I need the following permissions in this channel: ${missingPermissions.map(p => `**${p}**.`).join(', ')}. Have questions? See \`/help usage: Guide\``,
+        description: `I cannot update logging settings with new presets: I need the following permissions in this channel: ${missingPermissions.map(p => `**${p}**`).join(', ')}. Have questions? See \`/help usage: Guide\``,
         color: EMBED_COLORS.YELLOW_ORANGE,
         footer: getEmbedFooter(global.bot.user),
         author: getAuthorField(interaction.member.user)
@@ -457,8 +457,8 @@ async function handleListLogSetup (interaction) {
 
 module.exports = {
   name: 'setup',
-  userPerms: ['manageWebhooks', 'manageChannels'],
-  botPerms: ['manageWebhooks', 'manageChannels'],
+  userPerms: ['manageWebhooks', 'manageChannels', 'viewAuditLogs'],
+  botPerms: ['manageWebhooks', 'viewAuditLogs'],
   noThread: true,
   func: async interaction => {
     if (interaction.data.options?.find(o => o.name === 'via_presets')) {

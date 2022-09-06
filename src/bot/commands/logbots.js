@@ -1,5 +1,4 @@
-const webhookCache = require('../modules/webhookcache')
-const toggleLogBots = require('../../db/interfaces/postgres/update').toggleLogBots
+const { toggleLogBots } = require('../../db/interfaces/postgres/update')
 
 module.exports = {
   func: async message => {
@@ -22,7 +21,7 @@ module.exports = {
     })
   },
   name: 'logbots',
-  quickHelp: 'Use this to toggle whether I log actions done bots or not (DEFAULT: disabled). Does NOT ignore bots deleting messages!',
+  quickHelp: 'Use this to toggle whether I log actions done by bots or not (DEFAULT: disabled). Does NOT ignore bots deleting messages!',
   examples: `\`${process.env.GLOBAL_BOT_PREFIX}logbots\` <- toggle whether bot actions are logged, current status will be returned (ignoring or actively logging)`,
   type: 'admin',
   category: 'Logging'
