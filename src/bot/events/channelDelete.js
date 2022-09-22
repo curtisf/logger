@@ -4,7 +4,8 @@ const CHANNEL_TYPE_MAP = {
   2: 'Voice channel',
   4: 'Category',
   5: 'Announcement',
-  13: 'Stage Channel'
+  13: 'Stage Channel',
+  15: 'Forum channel'
 }
 
 module.exports = {
