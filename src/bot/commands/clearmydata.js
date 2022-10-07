@@ -3,7 +3,7 @@ module.exports = {
     await message.channel.createMessage({
       embeds: [{
         title: 'Action needed:',
-        description: 'To clear your data (messages), please join [my support server](https://discord.gg/ed7Gaa3) and ask in the bot support channel OR join the server and private message `piero#2048`. Remember: all messages stored are removed automatically after two days from the database.',
+        description: 'To clear your data (messages), please join [my support server](https://discord.gg/ed7Gaa3) and ask in the bot support channel OR join the server and private message `piero#5432`. Remember: all messages stored are removed automatically after two days from the database.',
         color: 16711680,
         timestamp: new Date(),
         footer: {

@@ -25,7 +25,7 @@ module.exports = {
           },
           {
             name: 'The Author',
-            value: 'Logger is developed and maintained by [piero#2048](https://github.com/curtisf). You can contact him via my [home server](https://discord.gg/ed7Gaa3).'
+            value: 'Logger is developed and maintained by [piero#5432](https://github.com/curtisf). You can contact him via my [home server](https://discord.gg/ed7Gaa3).'
           },
           {
             name: 'Bot Info',
