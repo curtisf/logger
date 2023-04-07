@@ -50,7 +50,7 @@ module.exports = {
           usedInvite = compareInvites(guildInvites, cachedInvites)
         }
         if (!usedInvite) {
-          if (guild.features.includes('VANITY_URL')) {
+          if (guild.vanityURL != null) {
             GMAEvent.embeds[0].fields.push({
               name: 'Invite Used',
               value: 'Server vanity',
