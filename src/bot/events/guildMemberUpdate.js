@@ -93,6 +93,7 @@ module.exports = {
     if (possibleRoleLog) {
       possibleRoleLog.guild = []
       const user = possibleRoleLog.user
+      if (user == null) return
       if (user.bot && !global.bot.guildSettingsCache[guild.id].isLogBots()) return
       const added = []
       const removed = []
