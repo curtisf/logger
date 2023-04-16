@@ -72,7 +72,7 @@ module.exports = async (guildID, channelID) => {
       // global.bot.guilds.get(guildID).leave() comment this out for now
       // it may be uncommented out when I'm certain it won't
       // throw an error on prod and leave thousands of servers
-      global.webhook.warn(`Leaving guild ${guildID} (${global.bot.guilds.get(guildID).name}, ${global.bot.guilds.get(guildID).memberCount}) because of an error: ${e.message}`)
+      // global.webhook.warn(`Leaving guild ${guildID} (${global.bot.guilds.get(guildID).name}, ${global.bot.guilds.get(guildID).memberCount}) because of an error: ${e.message}`)
     })
     if (newHook && newHook.id) {
       global.logger.info(`Webhook made in ${guildID} for ${channelID}`)

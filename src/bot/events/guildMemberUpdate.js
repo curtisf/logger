@@ -93,7 +93,7 @@ module.exports = {
     if (possibleRoleLog) {
       possibleRoleLog.guild = []
       const user = possibleRoleLog.user
-      if (user.bot && !global.bot.guildSettingsCache[guild.id].isLogBots()) return
+      if (user == null || (user.bot && !global.bot.guildSettingsCache[guild.id].isLogBots())) return
       const added = []
       const removed = []
       let roleColor

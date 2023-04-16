@@ -56,7 +56,7 @@ async function init () {
     },
     restMode: true,
     messageLimit: 0,
-    autoreconnect: true,
+    autoreconnect: 'auto',
     intents: [
       'guilds',
       'guildVoiceStates',
