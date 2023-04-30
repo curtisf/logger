@@ -23,6 +23,7 @@ module.exports = {
         if (failedHealthCheckCount >= 5) {
           global.logger.warn(`[${cluster.worker.rangeForShard}] Shard health check failed 5 times in a row, hard resetting shards`)
           global.webhook.error(`[${cluster.worker.rangeForShard}] Shard health check failed 5 times in a row, hard resetting shards`)
+          failedHealthCheckCount = 0
           bot.shards.forEach(shard => {
             shard.hardReset()
             shard.connect()
