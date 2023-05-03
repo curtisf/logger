@@ -37,7 +37,7 @@ module.exports = {
       message.addReaction('❌').catch(_ => {})
       return
     }
-    let events = suffix.split(', ')
+    let events = suffix.split(/[, ]/).filter(i => i != "");
     events = cleanArray(events)
     if (events.length === 0 && suffix) {
       message.channel.createMessage(`<@${message.author.id}>, none of the provided events are valid. Look at ${process.env.GLOBAL_BOT_PREFIX}help to see what is valid.`)
