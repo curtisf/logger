@@ -20,6 +20,7 @@ module.exports = {
     setInterval(() => {
       if (bot.shards.filter(shard => shard.latency == Infinity && shard.status === 'disconnected').length !== 0) {
         failedHealthCheckCount++
+        global.logger.warn(`[${cluster.worker.rangeForShard}] Found disconnected shards ${bot.shards.filter(shard => shard.latency == Infinity && shard.status === 'disconnected').map(s => s.id).join(', ')}, failure count is ${failedHealthCheckCount}`)
         if (failedHealthCheckCount >= 5) {
           global.logger.warn(`[${cluster.worker.rangeForShard}] Shard health check failed 5 times in a row, hard resetting shards`)
           global.webhook.error(`[${cluster.worker.rangeForShard}] Shard health check failed 5 times in a row, hard resetting shards`)
@@ -29,7 +30,10 @@ module.exports = {
             shard.connect()
           })
         }
+      } else if (failedHealthCheckCount > 0) {
+        failedHealthCheckCount--
       }
     }, 1000 * 60)
   }
 }
+
