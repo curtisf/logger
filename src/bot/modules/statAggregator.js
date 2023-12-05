@@ -1,5 +1,7 @@
 // This file exists to aggregate command, event, & other miscellaneous statistics to send to Zabbix.
 
+const { getBotMetricsArray } = require("./prometheus")
+
 const guildActivity = new Map()
 
 const commandStatistics = {
@@ -68,46 +70,39 @@ const miscStatistics = {
 }
 
 module.exports = {
-  incrementCommand (command) {
+  incrementCommand(command) {
     if (!commandStatistics.hasOwnProperty(command)) {
       console.error(`${command} is not a valid command to increment the statistics of!`)
       return
     }
     commandStatistics[command]++
   },
-  incrementEvent (event) {
+  incrementEvent(event) {
     if (!eventStatistics.hasOwnProperty(event)) {
       console.error(`${event} is not a valid event to increment the statistics of!`)
       return
     }
     eventStatistics[event]++
   },
-  incrementMisc (miscItem) {
+  incrementMisc(miscItem) {
     if (!miscStatistics.hasOwnProperty(miscItem)) {
       console.error(`${miscItem} is not a valid item to increment the statistics of!`)
       return
     }
     miscStatistics[miscItem]++
   },
-  incrementRedisGet () {
+  incrementRedisGet() {
     miscStatistics.redisGet++
   },
-  incrementRedisSet () {
+  incrementRedisSet() {
     miscStatistics.redisSet++
   },
-  incrementGuild (guildID) {
-    if (guildActivity.has(guildID)) guildActivity.set(guildID, guildActivity.get(guildID) + 1)
-    else guildActivity.set(guildID, 1)
-  },
-  getMostActiveGuilds () {
+  getMostActiveGuilds() {
     return [...guildActivity.entries()].sort((e1, e2) => e2[1] - e1[1])
-  },
-  clearGuildActivity () {
-    guildActivity.clear()
   }
 }
 
-function sendStatsIPC () {
+function sendStatsIPC() {
   let allEventAggregate = 0
   Object.keys(eventStatistics).forEach(k => {
     allEventAggregate += eventStatistics[k]
@@ -131,7 +126,15 @@ function sendStatsIPC () {
   }
 }
 
-process.on('message', m => {
+process.on('message', async m => {
+  if (m && m.type === 'prom-client:getMetricsReq') {
+    const botMetrics = await getBotMetricsArray()
+    process.send({
+      type: 'prom-client:getMetricsRes',
+      metrics: [botMetrics],
+      requestId: m.requestId
+    })
+  }
   if (m && m.type === 'sendStats') {
     sendStatsIPC()
   }

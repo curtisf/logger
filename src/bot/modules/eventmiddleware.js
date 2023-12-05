@@ -1,4 +1,5 @@
 const cacheGuild = require('../utils/cacheGuild')
+const { eventExecutionHistogram } = require('./prometheus')
 
 // I generally hate middleware associated with events, but this could potentially save
 // a whole lot on resources and audit log fetching if pulled off correctly.
@@ -7,11 +8,12 @@ module.exports = async (event, type) => {
   if (type === 'on') {
     global.bot.on(event.name, async (...args) => {
       const guildId = getGuildIdByEvent(event.name, args)
-
       if (!guildId) {
         global.logger.warn(`While executing event ${event.name}, a guild ID was not returned!`)
       } else if (guildId === true) { // when true, don't fetch event logs
+        const eventExecutionTimer = eventExecutionHistogram.startTimer()
         await event.handle.apply(this, args)
+        eventExecutionTimer({ event_name: event.name })
       } else {
         if (!global.bot.guildSettingsCache[guildId]) {
           await cacheGuild(guildId)
@@ -33,7 +35,9 @@ module.exports = async (event, type) => {
 
         if (guildId !== true && !global.bot.guildSettingsCache[guildId]) return // true means skip guildsettings fetch
         if (guildId !== true && global.bot.guildSettingsCache[guildId].eventIsDisabled(event.name)) return
+        const eventExecutionTimer = eventExecutionHistogram.startTimer()
         await event.handle.apply(this, args)
+        eventExecutionTimer({ event_name: event.name })
       }
     })
   } else if (type === 'once') {

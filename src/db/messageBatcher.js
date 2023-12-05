@@ -1,7 +1,7 @@
 const format = require('pg-format')
 const pool = require('./clients/postgres')
 const aes = require('./aes')
-const BATCH_SIZE = process.env.MESSAGE_BATCH_SIZE || 1000
+const BATCH_SIZE = process.env.MESSAGE_BATCH_SIZE || 500
 const batch = []
 
 async function addItem (messageAsArray) {
@@ -13,9 +13,7 @@ async function addItem (messageAsArray) {
 
 async function submitBatch () {
   const toSubmit = batch.splice(0, process.env.MESSAGE_BATCH_SIZE)
-  const poolClient = await pool.getPostgresClient()
-  await poolClient.query(format('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES %L ON CONFLICT DO NOTHING', toSubmit))
-  poolClient.release()
+  await pool.query(format('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES %L ON CONFLICT DO NOTHING', toSubmit))
 }
 
 function getMessage (messageID) {

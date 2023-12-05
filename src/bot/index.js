@@ -70,6 +70,8 @@ async function init () {
     ...(process.env.USE_MAX_CONCURRENCY === 'true' ? { useMaxConcurrency: true } : {})
   })
 
+  process.title = `${cluster.worker.shardStart}-${cluster.worker.shardEnd} | loggerbot`
+
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
   })

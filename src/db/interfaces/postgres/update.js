@@ -6,6 +6,7 @@ const cacheGuild = require('../../../bot/utils/cacheGuild')
 const getMessageFromBatch = require('../../messageBatcher').getMessage
 const updateBatchMessage = require('../../messageBatcher').updateMessage
 const aes = require('../../aes')
+const { postgresQueryExecution } = require('../../../bot/modules/prometheus')
 
 const eventList = [
   'channelCreate',
@@ -61,7 +62,9 @@ const eventLogs = {
 
 async function clearEventLog (guildID) {
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
+  const queryStartTimer = postgresQueryExecution.startTimer()
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
+  queryStartTimer({ context: 'clearEventLog' })
 }
 
 async function clearEventByID (guildID, channelID) {
@@ -72,7 +75,9 @@ async function clearEventByID (guildID, channelID) {
       eventLogs[event] = ''
     }
   })
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
+  queryStartTimer({ context: 'clearEventByID' })
   await cacheGuild(guildID)
 }
 
@@ -82,7 +87,9 @@ async function setAllEventsOneId (guildID, channelID) {
   Object.keys(eventLogs).forEach(event => {
     eventLogs[event] = channelID
   })
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
+  queryStartTimer({ context: 'setAllEventsOneId' })
   await cacheGuild(guildID)
 }
 
@@ -91,7 +98,9 @@ async function setEventsLogId (guildID, channelID, events) {
   events.forEach(event => {
     doc.event_logs[event] = channelID
   })
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+  queryStartTimer({ context: 'setEventsLogId' })
   await cacheGuild(guildID)
 }
 
@@ -112,7 +121,9 @@ async function disableEvent (guildID, event) {
     doc.disabled_events.push(event)
   }
   global.bot.guildSettingsCache[guildID].disabledEvents = doc.disabled_events
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET disabled_events=$1 WHERE id=$2', [doc.disabled_events, guildID])
+  queryStartTimer({ context: 'disableEvent' })
   await cacheGuild(guildID)
   return disabled
 }
@@ -128,18 +139,24 @@ async function ignoreChannel (guildID, channelID) {
     doc.ignored_channels.push(channelID)
   }
   global.bot.guildSettingsCache[guildID].ignoredChannels = doc.ignored_channels
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET ignored_channels=$1 WHERE id=$2', [doc.ignored_channels, guildID])
+  queryStartTimer({ context: 'ignoreChannel' })
   return disabled
 }
 
 async function clearIgnoredChannels (guildID) {
   global.bot.guildSettingsCache[guildID].ignoredChannels = []
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET ignored_channels=$1 WHERE id=$2', [[], guildID])
+  queryStartTimer({ context: 'clearIgnoredChannels' })
 }
 
 async function toggleLogBots (guildID) {
   const doc = await getDoc(guildID)
+  const queryStartTimer = postgresQueryExecution.startTimer()
   await pool.query('UPDATE guilds SET log_bots=$1 WHERE id=$2', [!doc.log_bots, guildID])
+  queryStartTimer({ context: 'toggleLogBots' })
   global.bot.guildSettingsCache[guildID].logBots = !doc.log_bots
   return !doc.log_bots
 }
@@ -147,7 +164,9 @@ async function toggleLogBots (guildID) {
 async function updateMessageByID (id, content) {
   const batchMessage = await getMessageFromBatch(id)
   if (!batchMessage) {
-    return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content || 'EMPTY STRING'), id])
+    const queryStartTimer = postgresQueryExecution.startTimer()
+    await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content || 'EMPTY STRING'), id])
+    queryStartTimer({ context: 'updateMessageByID' })
   } else {
     updateBatchMessage(id, content)
   }

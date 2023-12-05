@@ -28,6 +28,7 @@
     "os-utils": "0.0.14",
     "pg": "^8.11.3",
     "pg-format": "^1.0.4",
+    "prom-client": "^15.0.0",
     "redis": "^4.6.10",
     "redlock": "^4.2.0",
     "superagent": "^8.1.2",

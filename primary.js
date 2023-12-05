@@ -1,13 +1,16 @@
 const cluster = require('cluster')
 const sa = require('superagent')
 const addListeners = require('./src/miscellaneous/workerlistener')
+const http = require('http')
+const { AggregatorRegistry } = require('prom-client')
+const clusterMetricsAggregator = new AggregatorRegistry()
 
 require('dotenv').config()
 
 const staggerLaunchQueue = []
 let staggerInterval
 
-async function init () {
+async function init() {
   sa.get('https://discord.com/api/gateway/bot').set('Authorization', `Bot ${process.env.BOT_TOKEN}`).then(async b => {
     const totalShards = b.body.shards // get recommended shard count
     let shardsPerWorker
@@ -50,10 +53,33 @@ async function init () {
       Object.assign(worker, { type: 'bot', shardStart, shardEnd, rangeForShard, totalShards })
       addListeners(worker)
     }
+
+    // this is the way metrics should have been since the dawn of loggerbot
+    const metricsServer = http.createServer(async (req, res) => {
+      if (req.url === '/cluster_metrics') {
+        try {
+          const clusterMetrics = await clusterMetricsAggregator.clusterMetrics()
+          res.writeHead(200, { 'Content-Type': clusterMetricsAggregator.contentType })
+          res.end(clusterMetrics)
+        } catch (e) {
+          logger.error('Cluster master encountered error serving prometheus metrics', e)
+          res.writeHead(500)
+          res.end()
+        }
+      } else {
+        res.writeHead(404)
+        res.end()
+      }
+    })
+    if (process.env.USE_PROMETHEUS === 'true') {
+      metricsServer.listen(process.env.PROMETHEUS_PORT || 3002, () => {
+        logger.info(`Serving Prometheus metrics on port ${process.env.PROMETHEUS_PORT || 3002}`)
+      })
+    }
   }).catch(console.error)
 }
 
-function staggerLaunch (info) {
+function staggerLaunch(info) {
   // WARNING: 16x sharding won't work on default eris as of today, you will need a fork (mine works!)
   staggerLaunchQueue.push(info)
   if (!staggerInterval) {
