@@ -4,7 +4,7 @@ const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
 const statAggregator = require('./statAggregator')
 const enqueue = require('./bulkqueue')
-const { logSendCounter } = require('./prometheus')
+const { logSendCounter } = require('../../miscellaneous/prometheus')
 const setEventsByChannelID = require('../../db/interfaces/postgres/update').setEventsLogId
 
 // const doNotAggregate = ['voiceStateUpdate', 'voiceChannelLeave', 'voiceChannelSwitch', 'guildMemberVerify']

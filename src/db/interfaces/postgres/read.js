@@ -1,7 +1,7 @@
 const pool = require('../../clients/postgres')
 const createGuild = require('./create').createGuild
 const aes = require('../../aes')
-const { postgresQueryExecution } = require('../../../bot/modules/prometheus')
+const { postgresQueryExecution } = require('../../../miscellaneous/prometheus')
 
 async function getAllGuilds () {
   const queryStartTimer = postgresQueryExecution.startTimer()

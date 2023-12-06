@@ -1,13 +1,11 @@
-const { register, collectDefaultMetrics, Histogram, Counter } = require('prom-client')
+const { AggregatorRegistry } = require('prom-client')
+const { Histogram, Counter } = require('prom-client')
 
-register.setDefaultLabels({
+const clusterMetricsAggregator = new AggregatorRegistry()
+
+clusterMetricsAggregator.setDefaultLabels({
   app: 'loggerbot',
-  cluster: cluster.worker.rangeForShard, // assigned at start
-})
-
-collectDefaultMetrics({
-  timeout: 10000,
-  register
+  cluster: 'primary'
 })
 
 const postgresQueryExecution = new Histogram({
@@ -30,14 +28,14 @@ const logSendCounter = new Counter({
   labelNames: ['event_name']
 })
 
-register.registerMetric(eventExecutionHistogram)
-
-async function getBotMetricsArray() {
-  const botMetrics = await register.getMetricsAsJSON()
-  return botMetrics
+exports.getClusterMetrics = async function() {
+  const clusterMetrics = await clusterMetricsAggregator.clusterMetrics()
+  return {
+    contentType: clusterMetricsAggregator.contentType,
+    metrics: clusterMetrics
+  }
 }
 
-exports.getBotMetricsArray = getBotMetricsArray
 exports.logSendCounter = logSendCounter
 exports.postgresQueryExecution = postgresQueryExecution
 exports.eventExecutionHistogram = eventExecutionHistogram

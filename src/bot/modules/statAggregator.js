@@ -1,7 +1,5 @@
 // This file exists to aggregate command, event, & other miscellaneous statistics to send to Zabbix.
 
-const { getBotMetricsArray } = require("./prometheus")
-
 const guildActivity = new Map()
 
 const commandStatistics = {
@@ -127,14 +125,6 @@ function sendStatsIPC() {
 }
 
 process.on('message', async m => {
-  if (m && m.type === 'prom-client:getMetricsReq') {
-    const botMetrics = await getBotMetricsArray()
-    process.send({
-      type: 'prom-client:getMetricsRes',
-      metrics: [botMetrics],
-      requestId: m.requestId
-    })
-  }
   if (m && m.type === 'sendStats') {
     sendStatsIPC()
   }

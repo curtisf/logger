@@ -2,8 +2,7 @@ const cluster = require('cluster')
 const sa = require('superagent')
 const addListeners = require('./src/miscellaneous/workerlistener')
 const http = require('http')
-const { AggregatorRegistry } = require('prom-client')
-const clusterMetricsAggregator = new AggregatorRegistry()
+const { getClusterMetrics } = require('./src/miscellaneous/prometheus')
 
 require('dotenv').config()
 
@@ -58,9 +57,9 @@ async function init() {
     const metricsServer = http.createServer(async (req, res) => {
       if (req.url === '/cluster_metrics') {
         try {
-          const clusterMetrics = await clusterMetricsAggregator.clusterMetrics()
-          res.writeHead(200, { 'Content-Type': clusterMetricsAggregator.contentType })
-          res.end(clusterMetrics)
+          const clusterMetrics = await getClusterMetrics()
+          res.writeHead(200, { 'Content-Type': clusterMetrics.contentType })
+          res.end(clusterMetrics.metrics)
         } catch (e) {
           logger.error('Cluster master encountered error serving prometheus metrics', e)
           res.writeHead(500)

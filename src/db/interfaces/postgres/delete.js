@@ -1,4 +1,4 @@
-const { postgresQueryExecution } = require('../../../bot/modules/prometheus')
+const { postgresQueryExecution } = require('../../../miscellaneous/prometheus')
 const pool = require('../../clients/postgres')
 
 exports.deleteGuild = async function (guildID) {

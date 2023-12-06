@@ -3,7 +3,7 @@ const aes = require('../../aes')
 const cacheGuild = require('../../../bot/utils/cacheGuild')
 const batchHandler = require('../../messageBatcher')
 const escape = require('markdown-escape')
-const { postgresQueryExecution } = require('../../../bot/modules/prometheus')
+const { postgresQueryExecution } = require('../../../miscellaneous/prometheus')
 
 
 const eventLogs = {

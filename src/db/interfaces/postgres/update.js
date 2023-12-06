@@ -6,7 +6,7 @@ const cacheGuild = require('../../../bot/utils/cacheGuild')
 const getMessageFromBatch = require('../../messageBatcher').getMessage
 const updateBatchMessage = require('../../messageBatcher').updateMessage
 const aes = require('../../aes')
-const { postgresQueryExecution } = require('../../../bot/modules/prometheus')
+const { postgresQueryExecution } = require('../../../miscellaneous/prometheus')
 
 const eventList = [
   'channelCreate',

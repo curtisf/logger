@@ -5,6 +5,7 @@ const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
 const addBotListeners = require('./utils/addbotlisteners')
+const { collectWorkerMetrics } = require('../miscellaneous/workerprometheus')
 
 require('dotenv').config()
 
@@ -88,6 +89,11 @@ async function init () {
   await cacheGuildInfo()
 
   addBotListeners()
+
+  if (process.env.USE_PROMETHEUS === 'true') {
+    global.logger.startup(`Starting Prometheus nodejs metrics collector for shard range ${cluster.worker.rangeForShard}`)
+    collectWorkerMetrics()
+  }
 
   if (process.env.BEZERK_URI && process.env.BEZERK_SECRET) {
     global.logger.info('Using bridge for website')

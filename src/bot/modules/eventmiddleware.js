@@ -1,5 +1,5 @@
+const { eventExecutionHistogram } = require('../../miscellaneous/prometheus')
 const cacheGuild = require('../utils/cacheGuild')
-const { eventExecutionHistogram } = require('./prometheus')
 
 // I generally hate middleware associated with events, but this could potentially save
 // a whole lot on resources and audit log fetching if pulled off correctly.
