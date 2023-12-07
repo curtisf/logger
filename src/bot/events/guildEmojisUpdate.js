@@ -9,6 +9,7 @@ module.exports = {
   name: 'guildEmojisUpdate',
   type: 'on',
   handle: async (guild, emojis, oldEmojis) => {
+    if (emojis == null || oldEmojis == null) return
     let type
     const guildEmojisUpdateEvent = {
       guildID: guild.id,
