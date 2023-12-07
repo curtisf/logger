@@ -165,7 +165,7 @@ async function updateMessageByID (id, content) {
   const batchMessage = await getMessageFromBatch(id)
   if (!batchMessage) {
     const queryStartTimer = postgresQueryExecution.startTimer()
-    await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content || 'EMPTY STRING'), id])
+    await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [(await aes.encrypt([content || 'EMPTY STRING']))?.[0], id])
     queryStartTimer({ context: 'updateMessageByID' })
   } else {
     updateBatchMessage(id, content)

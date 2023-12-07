@@ -44,15 +44,18 @@ async function getMessageById (messageID) {
   return message
 }
 
-async function decryptUserDoc (userDoc) {
-  userDoc.names = JSON.parse(aes.decrypt(userDoc.names))
-  return userDoc
+async function decryptMessageDoc (message) {
+  message.content = (await aes.decrypt([message.content]))?.[0]
+  return message
 }
 
-async function decryptMessageDoc (message) {
-  message.content = aes.decrypt(message.content)
-  if (message.attachment_b64) message.attachment_b64 = aes.decrypt(message.attachment_b64)
-  return message
+async function decryptMessageDocs (messagesArray) {
+  const messageContentsToDecrypt = messagesArray.map(m => m.content)
+  const decryptedMessageContents = await aes.decrypt(messageContentsToDecrypt)
+  for (let i = 0; i < messagesArray.length; i++) { // same order is used returning from aes.decrypt
+    messagesArray[i].content = decryptedMessageContents[i]
+  }
+  return messagesArray
 }
 
 async function getMessagesByIds (messageIds) {
@@ -60,10 +63,7 @@ async function getMessagesByIds (messageIds) {
   const message = await pool.query('SELECT * FROM messages WHERE id = ANY ($1)', [messageIds])
   queryStartTimer({ context: 'getMessagesByIds' })
   if (message.rows.length === 0) return null
-  const decryptedMessages = []
-  message.rows.forEach(async row => {
-    decryptedMessages.push(await decryptMessageDoc(row))
-  })
+  const decryptedMessages = await decryptMessageDocs(message.rows)
   return decryptedMessages
 }
 

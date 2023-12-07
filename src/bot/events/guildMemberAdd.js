@@ -40,7 +40,7 @@ module.exports = {
     if (botPerms.manageGuild && botPerms.manageChannels) {
       let guildInvites
       try {
-        guildInvites = (await guild.getInvites()).map(i => inviteCache.formatInvite(i, false))
+        guildInvites = await Promise.all((await guild.getInvites()).map(async i => await inviteCache.formatInvite(i, false)))
         const cachedInvites = await inviteCache.getCachedInvites(guild.id)
         let usedInvite
         if (guildInvites.length > cachedInvites.length) {

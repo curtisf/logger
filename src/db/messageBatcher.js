@@ -13,6 +13,10 @@ async function addItem (messageAsArray) {
 
 async function submitBatch () {
   const toSubmit = batch.splice(0, process.env.MESSAGE_BATCH_SIZE)
+  const decryptedMessageContents = await aes.encrypt(toSubmit.map(m => m[2])) // send an array of message contents for decryption instead of many single calls
+  for (let i = 0; i < decryptedMessageContents.length; i++) {
+    toSubmit[i][2] = decryptedMessageContents[i] // assumes the order is the same, which it should be :eyes:
+  }
   await pool.query(format('INSERT INTO messages (id, author_id, content, attachment_b64, ts) VALUES %L ON CONFLICT DO NOTHING', toSubmit))
 }
 
@@ -22,7 +26,7 @@ function getMessage (messageID) {
   return {
     id: message[0],
     author_id: message[1],
-    content: aes.decrypt(message[2]),
+    content: message[2],
     attachment_b64: '',
     ts: Date.parse(message[4])
   }
@@ -31,7 +35,7 @@ function getMessage (messageID) {
 function updateMessage (messageID, content) {
   for (let i = 0; i < batch.length; i++) {
     if (batch[i][0] === messageID) {
-      batch[i][2] = aes.encrypt(content || 'None')
+      batch[i][2] = content || 'None'
       break
     }
   }
