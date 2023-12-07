@@ -44,7 +44,8 @@ async function createGuild (guild) {
 
 async function cacheMessage (message) {
   message.attachment_b64 = ''
-  batchHandler.addItem([message.id, message.author.id, message.content, message.attachment_b64, new Date().toISOString()])
+  const messageContent = message.content != null ? escape(message.content.replace(/~/g, '\\~'), ['angle brackets']) : 'None'
+  batchHandler.addItem([message.id, message.author.id, messageContent, message.attachment_b64, new Date().toISOString()])
 }
 
 exports.cacheMessage = cacheMessage
