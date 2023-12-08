@@ -74,11 +74,19 @@ if (isMainThread) {
   const cipher = AES.createCipher(workerData.aesKey)
   parentPort.on('message', async (message) => {
     if (message.type === 'encrypt' && Array.isArray(message.data)) {
-      const encryptedContent = message.data.map(content => cipher.encrypt(content))
-      parentPort.postMessage({ id: message.id, data: encryptedContent })
+      try {
+        const encryptedContent = message.data.map(content => cipher.encrypt(content))
+        parentPort.postMessage({ id: message.id, data: encryptedContent })
+      } catch (e) {
+        global.logger.error(`[Worker] AES worker failed to encrypt content${message.data.some(d => d == null) ? ', has null(s)' : ''}`, e)
+      }
     } else if (message.type === 'decrypt' && Array.isArray(message.data)) {
-      const decryptedContent = message.data.map(content => cipher.decrypt(content))
-      parentPort.postMessage({ id: message.id, data: decryptedContent })
+      try {
+        const decryptedContent = message.data.map(content => cipher.decrypt(content))
+        parentPort.postMessage({ id: message.id, data: decryptedContent })
+      } catch (e) {
+        global.logger.error(`[Worker] AES worker failed to decrypt content${message.data.some(d => d == null) ? ', has null(s)' : ''}`, e)
+      }
     }
   })
 }

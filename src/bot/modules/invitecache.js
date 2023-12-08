@@ -5,23 +5,31 @@ module.exports = {
     // Why linvites? So the bot doesn't error on old stored invites lmao
     const invites = await global.redis.get(`linvites-${guildID}`)
     if (!invites) return []
-    return Promise.all(JSON.parse(invites).map(async invite => {
-      const decryptedInvite = (await aes.decrypt([invite.code]))?.[0]
+    const decryptedCachedInvites = await Promise.all(JSON.parse(invites).map(async invite => {
+      let decryptedInvite
+      try {
+        decryptedInvite = (await aes.decrypt([invite.code]))?.[0]
+      } catch (e) {
+        global.logger.error('Failed to decrypt invite', invite.code, e)
+      }
       return {
         code: decryptedInvite,
         channel: invite.channel,
         uses: invite.uses
       }
     }))
+    return decryptedCachedInvites
   },
   cacheInvitesWhole: async (guildID, invitesArray) => {
     await global.redis.del(`linvites-${guildID}`)
-    await global.redis.set(`linvites-${guildID}`, JSON.stringify(await Promise.all(invitesArray.map(async i => await module.exports.formatInvite(i, true)))), 'EX', 10800000)
+    const allInvitesToInsert = JSON.stringify(await Promise.all(invitesArray.map(async i => await module.exports.formatInvite(i, true))))
+    await global.redis.set(`linvites-${guildID}`, allInvitesToInsert, 'EX', 10800000)
   },
   insertInvite: async (guildID, invite) => {
     const invites = await module.exports.getCachedInvites(guildID)
     if (!invites) {
-      await global.redis.set(`linvites-${guildID}`, JSON.stringify(await Promise.all([await module.exports.formatInvite(invite, true)])), 'EX', 10800000)
+      const newInvitesArray = JSON.stringify(await Promise.all([await module.exports.formatInvite(invite, true)]))
+      await global.redis.set(`linvites-${guildID}`, newInvitesArray, 'EX', 10800000)
     } else {
       invites.push(await module.exports.formatInvite(invite, false))
       await global.redis.set(`linvites-${guildID}`, JSON.stringify(await Promise.all(invites.map(async i => await module.exports.formatInvite(i, true)))), 'EX', 10800000)
@@ -35,10 +43,11 @@ module.exports = {
     const inviteToDelete = guildInvites.find(i => i.code === code)
     if (!inviteToDelete) return // no more work to be done
     guildInvites.splice(guildInvites.indexOf(inviteToDelete), 1)
-    await global.redis.set(`linvites-${guildID}`, JSON.stringify(await Promise.all(guildInvites.map(async i => { // pain
+    const newInvites = JSON.stringify(await Promise.all(guildInvites.map(async i => { // pain
       i.code = (await aes.encrypt([code]))?.[0]
       return i
-    }))), 'EX', 10800000)
+    })))
+    await global.redis.set(`linvites-${guildID}`, newInvites, 'EX', 10800000)
   },
   formatInvite: async (invite, doEncrypt) => { // strip useless info and only keep what I want
     if (!invite) throw new Error('Invite given to be stripped is null-ish')

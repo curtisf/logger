@@ -42,13 +42,8 @@ module.exports = {
       try {
         guildInvites = await Promise.all((await guild.getInvites()).map(async i => await inviteCache.formatInvite(i, false)))
         const cachedInvites = await inviteCache.getCachedInvites(guild.id)
-        let usedInvite
-        if (guildInvites.length > cachedInvites.length) {
-        // invite desync between redis and Discord, fix it
-          await inviteCache.cacheInvitesWhole(guild.id, guildInvites)
-        } else {
-          usedInvite = compareInvites(guildInvites, cachedInvites)
-        }
+        const usedInvite = compareInvites(guildInvites, cachedInvites)
+
         if (!usedInvite) {
           if (guild.vanityURL != null) {
             GMAEvent.embeds[0].fields.push({
