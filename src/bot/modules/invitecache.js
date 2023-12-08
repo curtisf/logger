@@ -3,7 +3,7 @@ const aes = require('../../db/aes')
 module.exports = {
   getCachedInvites: async (guildID) => {
     // Why linvites? So the bot doesn't error on old stored invites lmao
-    const invites = await global.redis.get(`linvites-${guildID}`)
+    const invites = await global.redis.get(`llinvites-${guildID}`)
     if (!invites) return []
     const decryptedCachedInvites = await Promise.all(JSON.parse(invites).map(async invite => {
       let decryptedInvite
@@ -21,22 +21,22 @@ module.exports = {
     return decryptedCachedInvites
   },
   cacheInvitesWhole: async (guildID, invitesArray) => {
-    await global.redis.del(`linvites-${guildID}`)
+    await global.redis.del(`llinvites-${guildID}`)
     const allInvitesToInsert = JSON.stringify(await Promise.all(invitesArray.map(async i => await module.exports.formatInvite(i, true))))
-    await global.redis.set(`linvites-${guildID}`, allInvitesToInsert, 'EX', 10800000)
+    await global.redis.set(`llinvites-${guildID}`, allInvitesToInsert, 'EX', 10800000)
   },
   insertInvite: async (guildID, invite) => {
     const invites = await module.exports.getCachedInvites(guildID)
     if (!invites) {
       const newInvitesArray = JSON.stringify(await Promise.all([await module.exports.formatInvite(invite, true)]))
-      await global.redis.set(`linvites-${guildID}`, newInvitesArray, 'EX', 10800000)
+      await global.redis.set(`llinvites-${guildID}`, newInvitesArray, 'EX', 10800000)
     } else {
       invites.push(await module.exports.formatInvite(invite, false))
-      await global.redis.set(`linvites-${guildID}`, JSON.stringify(await Promise.all(invites.map(async i => await module.exports.formatInvite(i, true)))), 'EX', 10800000)
+      await global.redis.set(`llinvites-${guildID}`, JSON.stringify(await Promise.all(invites.map(async i => await module.exports.formatInvite(i, true)))), 'EX', 10800000)
     }
   },
   deleteInvites: async (guildID) => {
-    await global.redis.del(`linvites-${guildID}`)
+    await global.redis.del(`llinvites-${guildID}`)
   },
   deleteInvite: async (guildID, code) => {
     const guildInvites = await module.exports.getCachedInvites(guildID)
@@ -47,7 +47,7 @@ module.exports = {
       i.code = (await aes.encrypt([code]))?.[0]
       return i
     })))
-    await global.redis.set(`linvites-${guildID}`, newInvites, 'EX', 10800000)
+    await global.redis.set(`llinvites-${guildID}`, newInvites, 'EX', 10800000)
   },
   formatInvite: async (invite, doEncrypt) => { // strip useless info and only keep what I want
     if (!invite) throw new Error('Invite given to be stripped is null-ish')
