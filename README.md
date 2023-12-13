@@ -4,7 +4,8 @@
 </a>
 </center>
 
-Logger is a powerful [Discord](https://discordapp.com) bot meant to give staff members oversight over the various actions taking place in their server. Come talk about me with my creator at [Logger's Lounge](https://discord.gg/ed7Gaa3).
+
+Logger is a powerful [Discord](https://discordapp.com) bot designed to provide staff members with comprehensive oversight over various actions in their server. With features such as message deletion tracking, user moderation history, and channel activity logs, Logger enables server administrators to efficiently monitor and manage server activity. For more information about Logger and its capabilities, feel free to join the discussion with my creator at [Logger's Lounge](https://discord.gg/ed7Gaa3).
 
 ## Installation
 
@@ -30,10 +31,12 @@ node index.js
 ```
 
 ## Contributing
-Pull requests are welcome as long as it follows the following guidelines:
-1. Is your idea really one that a large group of moderators would like?
-2. Is your idea scalable?
-3. Will your idea cause the bot to hit it's global ratelimit?
-4. Have you proposed it to *piero#5432* in my [support server?](https://discord.gg/ed7Gaa3)
+Pull requests are welcome if they follow these guidelines:
+- Your idea should be one that a large group of moderators would find useful.
+- Your idea should be scalable, so that it can handle large volumes of traffic without performance issues.
+- Your idea should not cause the bot to hit its global ratelimit.
+- You should propose your idea to *piero#5432* in the [support server?](https://discord.gg/ed7Gaa3).
+- Please provide as much detail as possible about your idea to make the review process smoother.
 
-If you have done all of the above steps, then open a pull request and I will review it. Style guide and testing will be implemented in a later update.
+Style guide and testing information will be implemented in a later update. In the meantime, please do your best to follow best practices and test thoroughly before submitting a pull request.
+For more information, please refer to the support server and any relevant documentation or resources
